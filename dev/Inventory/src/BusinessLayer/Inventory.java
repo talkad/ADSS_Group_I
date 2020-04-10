@@ -1,11 +1,21 @@
 package BusinessLayer;
 
 import DTO.ItemDTO;
+import DTO.ProductDTO;
 
 import java.util.List;
 
 public class Inventory {
-    private List<Products> productsList;
+//
+//    private static class SingletonHolder {
+//        private static HardCodeInitializer instance = new HardCodeInitializer();
+//    }
+//
+//    public static HardCodeInitializer getInstance() {
+//        return HardCodeInitializer.SingletonHolder.instance;
+//    }
+
+    private List<Product> productsList;
 
     void initialize(){}
 
@@ -14,7 +24,7 @@ public class Inventory {
      * @param item
      * @return
      */
-    public static boolean addItem(ItemDTO item){
+    public static boolean addItem(ItemDTO item, String manufacturer, String name){
         return true;
     }
 
@@ -22,11 +32,11 @@ public class Inventory {
         return true;
     }
 
-    public static boolean addProduct(){
+    public static boolean addProduct(ProductDTO productDTO){
         return true;
     }
 
-    public static boolean removeProduct(){
+    public static boolean removeProduct(String manufacturer, String name){
         return true;
     }
 
