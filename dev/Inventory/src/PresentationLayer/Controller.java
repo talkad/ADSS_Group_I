@@ -1,63 +1,204 @@
 package PresentationLayer;
 
-import java.util.Scanner;
+import BusinessLayer.Inventory;
+import DTO.ItemDTO;
 
-public class Controller {
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+/**
+ * This class provides services for menu
+ */
+public class Controller implements Observer {
 
     /**
-     * This function displays the menu to the standard output stream
+     * This function takes care over illegal date inputs
+     * @param date is a string which have to be in the pre-defined format
+     * @return a new date by the given string. if the string invalid return null.
      */
-    public static void displayMenu(){
-        String[] options=new String[]
-                {"opt 1", "opt 2", "exit"};
-
-        for(int i=0; i<options.length; i++)
-            System.out.println((i+1) +". "+ options[i]);
-
-        System.out.print("Selection: ");
+    public static Date parseDate(String date) {
+        try {
+            return new SimpleDateFormat("dd-MM-yyyy").parse(date);
+        } catch (ParseException e) {
+            return null;
+        }
     }
 
     /**
-     * The function takes care on invalid inputs in order to make the menu algorithm more robust for invalid inputs.
-     * @param in get an input stream
-     * @return the input number. return 0 if the input wasn't a number.
+     * This function get input from the user and activates the addItem method in the Inventory.
+     * @param in standard input stream
      */
-    public static int getInputIndex(Scanner in){
-        int input=0;
-        try{
-            input= in.nextInt();
-        } catch (Exception e){
-            System.out.println("Invalid input- this is not a number.");
+    public static void addItem(Scanner in){
+        int id= 0;
+        Date expiryDate= null;
+        System.out.print("insert the item id [number]: ");
+        id=in.nextInt();
+        while(!Inventory.isIdUnique(id)){
+            System.out.print("The id is not unique- try again [number]: ");
+            id=in.nextInt();
         }
-        return input;
+
+        System.out.print("insert the item expiry date [dd-mm-yyyy]: ");
+        expiryDate=parseDate(in.next());
+        while(expiryDate==null){
+            System.out.print("The date is illegal- try again [dd-mm-yyyy]: ");
+            expiryDate=parseDate(in.next());
+        }
+
+        Inventory.addItem(new ItemDTO(id,false,expiryDate,"Inventory"));
     }
 
-    public static void main(String [] args){
-        Scanner in= new Scanner(System.in);
-        boolean shouldTerminate=false;
-        int input=0;
+    /**
+     * This function get as input id of an item, and removes it if the item exists
+     * @param in  standard input stream
+     */
+    public static void removeItem(Scanner in){
+        int id;
+        System.out.print("insert the item id [number]: ");
+        id=in.nextInt();
+        if(Inventory.removeItem(id))
+            System.out.println("item with id "+id+" removed successfully");
+        else
+            System.out.println("id "+id+" is not exists");
+    }
 
-        while(!shouldTerminate){
-            displayMenu();
-            input=getInputIndex(in);
+    /**
+     * Add a new product to the inventory
+     */
+    public static void addProduct(){
+        Inventory.addProduct();
+    }
 
-            switch (input) {
-                case 1:
-                    System.out.println ( "You picked option 1" );
-                    break;
-                case 2:
-                    System.out.println ( "You picked option 2" );
-                    break;
-                case 3:
-                    System.out.println ( "Bye..." );
-                    shouldTerminate=true;
-                    break;
-                default:
-                    System.out.println ( "Unrecognized option" );
-                    shouldTerminate=true;
-                    break;
-            }
-        }
+    /**
+     * Remove an exists product from the inventory
+     */
+    public static void removeProduct(){
+        Inventory.removeProduct();
+    }
 
+    /**
+     * This function get as an input id and min quantity, and updating this quantity of the relevant item
+     * @param in standard input stream
+     */
+    public static void updateMinQuantity(Scanner in){
+        int id, minQuantity;
+        System.out.print("insert the item id [number]: ");
+        id=in.nextInt();
+        System.out.print("insert min quantity [number]: ");
+        minQuantity=in.nextInt();
+
+        if(Inventory.updateMinQuantity(id,minQuantity))
+            System.out.println("item with id "+id+" was updated");
+        else
+            System.out.println("id "+id+" is not exists");
+    }
+
+    /**
+     * This function get as an input the identifiers of a product (its manufacturer and the product name)
+     * and updates the selling price
+     * @param in standard input stream
+     */
+    public static void updateSellingPrice(Scanner in){
+        int price;
+        String name, manufacturer;
+        System.out.print("insert the manufacturer name [String]: ");
+        name=in.next();
+        System.out.print("insert the product name [String]: ");
+        manufacturer=in.next();
+        System.out.print("insert new price [number]: ");
+        price=in.nextInt();
+
+        if(Inventory.updateSellingPrice(manufacturer,name,price))
+            System.out.println("Updated successfully");
+        else
+            System.out.println("The update failed");
+    }
+
+    /**
+     * This function get as an input the identifiers of a product (its manufacturer and the product name)
+     * and updates the buying price
+     * @param in  standard input stream
+     */
+    public static void updateBuyingPrice(Scanner in){
+        int price;
+        String name, manufacturer;
+        System.out.print("insert the manufacturer name [String]: ");
+        name=in.next();
+        System.out.print("insert the product name [String]: ");
+        manufacturer=in.next();
+        System.out.print("insert new price [number]: ");
+        price=in.nextInt();
+
+        if(Inventory.updateBuyingPrice(manufacturer,name,price))
+            System.out.println("Updated successfully");
+        else
+            System.out.println("The update failed");
+    }
+
+    /**
+     * This function get as an input an id of an item, and set its status to be a defect item
+     * @param in standard input stream
+     */
+    public static void updateItemStatus(Scanner in){
+        int id;
+        System.out.print("insert the item id [number]: ");
+        id=in.nextInt();
+
+        if(Inventory.setDefect(id))
+            System.out.println("item with id "+id+" was updated");
+        else
+            System.out.println("id "+id+" is not exists");
+    }
+
+    /**
+     * This function updates the location of an item
+     * @param in standard input stream
+     */
+    public static void updateItemLocation(Scanner in){
+        int id;
+        String location;
+        System.out.print("insert the item id [number]: ");
+        id=in.nextInt();
+
+        System.out.print("insert a new location [String]: ");
+        location=in.next();
+
+        if(Inventory.updateItemLocation(id,location))
+            System.out.println("item with id "+id+" was updated");
+        else
+            System.out.println("id "+id+" is not exists");
+    }
+
+    /**
+     * This function gets a list of categories the user is interested about,
+     * and display the relevant items status on the screen
+     * @param in standard input stream
+     */
+    public static void getCategoriesReport(Scanner in){
+        String categoriesSTR;
+        List<String> categories;
+        System.out.print("insert categories separated by ',': ");
+        categoriesSTR=in.next();
+        categories=Arrays.asList(categoriesSTR.split(","));
+        System.out.println(Inventory.getCategoriesReport(categories));
+    }
+
+    /**
+     * This function displays all the defect items status on screen
+     */
+    public static void getDefectsReports(){
+        System.out.println(Inventory.getDefectsReports());
+    }
+
+    /**
+     * This function takes care of notification when minCapacity is achieved.
+     * When it happens a notification will display on screen.
+     * @param observable all the exist product in the inventory
+     * @param o minCapacity
+     */
+    @Override
+    public void update(Observable observable, Object o) {
+        //print notification
     }
 }
