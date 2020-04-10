@@ -25,6 +25,8 @@ public class Controller implements Observer {
         }
     }
 
+    private static Inventory invetory = Inventory.getInstance();
+
     /**
      * This function get input from the user and activates the addItem method in the Inventory.
      * @param in standard input stream
@@ -34,7 +36,7 @@ public class Controller implements Observer {
         Date expiryDate= null;
         System.out.print("insert the item id [number]: ");
         id=in.nextInt();
-        while(!Inventory.isIdUnique(id)){
+        while(!invetory.isIdUnique(id)){
             System.out.print("The id is not unique- try again [number]: ");
             id=in.nextInt();
         }
@@ -46,7 +48,7 @@ public class Controller implements Observer {
             expiryDate=parseDate(in.next());
         }
 
-        Inventory.addItem(new ItemDTO(id,false,expiryDate,"Inventory"));
+        invetory.addItem(new ItemDTO(id,false,expiryDate,"Inventory"));
     }
 
     /**
@@ -57,7 +59,7 @@ public class Controller implements Observer {
         int id;
         System.out.print("insert the item id [number]: ");
         id=in.nextInt();
-        if(Inventory.removeItem(id))
+        if(invetory.removeItem(id))
             System.out.println("item with id "+id+" removed successfully");
         else
             System.out.println("id "+id+" is not exists");
@@ -67,14 +69,14 @@ public class Controller implements Observer {
      * Add a new product to the inventory
      */
     public static void addProduct(){
-        Inventory.addProduct();
+        invetory.addProduct();
     }
 
     /**
      * Remove an exists product from the inventory
      */
     public static void removeProduct(){
-        Inventory.removeProduct();
+        invetory.removeProduct();
     }
 
     /**
@@ -88,7 +90,7 @@ public class Controller implements Observer {
         System.out.print("insert min quantity [number]: ");
         minQuantity=in.nextInt();
 
-        if(Inventory.updateMinQuantity(id,minQuantity))
+        if(invetory.updateMinQuantity(id,minQuantity))
             System.out.println("item with id "+id+" was updated");
         else
             System.out.println("id "+id+" is not exists");
@@ -109,7 +111,7 @@ public class Controller implements Observer {
         System.out.print("insert new price [number]: ");
         price=in.nextInt();
 
-        if(Inventory.updateSellingPrice(manufacturer,name,price))
+        if(invetory.updateSellingPrice(manufacturer,name,price))
             System.out.println("Updated successfully");
         else
             System.out.println("The update failed");
@@ -130,7 +132,7 @@ public class Controller implements Observer {
         System.out.print("insert new price [number]: ");
         price=in.nextInt();
 
-        if(Inventory.updateBuyingPrice(manufacturer,name,price))
+        if(invetory.updateBuyingPrice(manufacturer,name,price))
             System.out.println("Updated successfully");
         else
             System.out.println("The update failed");
@@ -145,7 +147,7 @@ public class Controller implements Observer {
         System.out.print("insert the item id [number]: ");
         id=in.nextInt();
 
-        if(Inventory.setDefect(id))
+        if(invetory.setDefect(id))
             System.out.println("item with id "+id+" was updated");
         else
             System.out.println("id "+id+" is not exists");
@@ -164,7 +166,7 @@ public class Controller implements Observer {
         System.out.print("insert a new location [String]: ");
         location=in.next();
 
-        if(Inventory.updateItemLocation(id,location))
+        if(invetory.updateItemLocation(id,location))
             System.out.println("item with id "+id+" was updated");
         else
             System.out.println("id "+id+" is not exists");
@@ -181,14 +183,14 @@ public class Controller implements Observer {
         System.out.print("insert categories separated by ',': ");
         categoriesSTR=in.next();
         categories=Arrays.asList(categoriesSTR.split(","));
-        System.out.println(Inventory.getCategoriesReport(categories));
+        System.out.println(invetory.getCategoriesReport(categories));
     }
 
     /**
      * This function displays all the defect items status on screen
      */
     public static void getDefectsReports(){
-        System.out.println(Inventory.getDefectsReports());
+        System.out.println(invetory.getDefectsReports());
     }
 
     /**
