@@ -11,10 +11,10 @@ public class ILEmployee {
     private String bankDetails;
     private String workConditions;
     private Date startTime;
-    private double salary;
+    private int salary;
     private List<String> roles;
 
-    public ILEmployee(int id, String firstName, String lastName, String bankDetails, String workConditions, Date startTime, double salary) {
+    public ILEmployee(int id, String firstName, String lastName, String bankDetails, String workConditions, Date startTime, int salary, List<String> roles) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -22,7 +22,7 @@ public class ILEmployee {
         this.workConditions = workConditions;
         this.startTime = startTime;
         this.salary = salary;
-        this.roles = new LinkedList<>();
+        this.roles = roles;
     }
 
     public int getId() {
@@ -49,7 +49,7 @@ public class ILEmployee {
         return startTime;
     }
 
-    public double getSalary() {
+    public int getSalary() {
         return salary;
     }
 

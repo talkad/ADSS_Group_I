@@ -1,7 +1,6 @@
 package BusinessLayer;
 
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 public class Employee {
@@ -11,11 +10,11 @@ public class Employee {
     private String bankDetails;
     private String workConditions;
     private Date startTime;
-    private double salary;
+    private int salary;
     private boolean[][] freeTime;
     private List<String> roles;
 
-    public Employee(int id, String firstName, String lastName, String bankDetails, String workConditions, Date startTime, double salary, List<String> roles) {
+    public Employee(int id, String firstName, String lastName, String bankDetails, String workConditions, Date startTime, int salary, List<String> roles) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -31,9 +30,43 @@ public class Employee {
         this.roles.add(role);
     }
 
-    public void setFreeTime(int day, int shift, boolean isFree){
-        freeTime[shift-1][day-1] = isFree;
+    public void setFreeTime(boolean[][] freeTime){
+        this.freeTime = freeTime;
     }
 
+    public int getId() {
+        return id;
+    }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getBankDetails() {
+        return bankDetails;
+    }
+
+    public String getWorkConditions() {
+        return workConditions;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public int getSalary() {
+        return salary;
+    }
+
+    public boolean[][] getFreeTime() {
+        return freeTime;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
 }
