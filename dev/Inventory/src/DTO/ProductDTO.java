@@ -2,8 +2,6 @@ package DTO;
 
 import java.util.List;
 
-//TODO: do we need setters?
-
 public class ProductDTO {
     protected String name;
     private String manufacturer;
@@ -28,9 +26,7 @@ public class ProductDTO {
         this.itemDTOs = itemDTOs;
     }
 
-<<<<<<< HEAD
 
-=======
     public String getName() {
         return name;
     }
@@ -102,5 +98,5 @@ public class ProductDTO {
     public void setItemDTOs(List<ItemDTO> itemDTOs) {
         this.itemDTOs = itemDTOs;
     }
->>>>>>> business_layer
+
 }

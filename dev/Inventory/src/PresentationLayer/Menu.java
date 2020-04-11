@@ -30,15 +30,29 @@ public class Menu {
         return input;
     }
 
+    /**
+     * This function initialize the system with the hard coded items.
+     * @param in get an input stream
+     */
+    public static void initialize(Scanner in){
+        char answer;
+        System.out.print("Would you like to initialize the system? [y/n]");
+        answer=in.next().charAt(0);
+        if(answer=='y' || answer=='Y')
+            Controller.getInstance().initialize();
+    }
+
     public static void main(String [] args){
         Scanner in= new Scanner(System.in);
         String[] options=new String[]
-                {"Initialize the system", "Add a new item", "Remove an item", "Add a new product", "Remove a product",
+                {"Add a new product", "Remove a product", "Add a new item", "Remove an item",
                         "Update minimum quantity", "Update selling price", "Update buying price", "Set defect",
                         "Update item location", "Get report by categories", "Get defect report", "exit"};
 
         boolean shouldTerminate=false;
         int input=0;
+
+        initialize(in);
 
         while(!shouldTerminate){
             displayMenu(options);
@@ -46,42 +60,39 @@ public class Menu {
 
             switch (input) {
                 case 1:
-                    //Controller.inialize();
+                    Controller.getInstance().addProduct(in);
                     break;
                 case 2:
-                    Controller.addItem(in);
+                    Controller.getInstance().removeProduct(in);
                     break;
                 case 3:
-                    Controller.removeItem(in);
+                    Controller.getInstance().addItem(in);
                     break;
                 case 4:
-                    Controller.addProduct();
+                    Controller.getInstance().removeItem(in);
                     break;
                 case 5:
-                    Controller.removeProduct();
+                    Controller.getInstance().updateMinQuantity(in);
                     break;
                 case 6:
-                    Controller.updateMinQuantity(in);
+                    Controller.getInstance().updateSellingPrice(in);
                     break;
                 case 7:
-                    Controller.updateSellingPrice(in);
+                    Controller.getInstance().updateBuyingPrice(in);
                     break;
                 case 8:
-                    Controller.updateBuyingPrice(in);
+                    Controller.getInstance().updateItemStatus(in);
                     break;
                 case 9:
-                    Controller.updateItemStatus(in);
+                    Controller.getInstance().updateItemLocation(in);
                     break;
                 case 10:
-                    Controller.updateItemLocation(in);
+                    Controller.getInstance().getCategoriesReport(in);
                     break;
                 case 11:
-                    Controller.getCategoriesReport(in);
+                    Controller.getInstance().getDefectsReports();
                     break;
                 case 12:
-                    Controller.getDefectsReports();
-                    break;
-                case 13:
                     System.out.println ( "Bye..." );
                     shouldTerminate=true;
                     break;

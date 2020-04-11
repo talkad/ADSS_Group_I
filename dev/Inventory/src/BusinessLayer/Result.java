@@ -30,7 +30,7 @@ public class Result {
 
     /**
      * sets the object to "failure" which means the operation the object has returned from failed, and attaches an error message to the object
-     * @param errorMsg an error message describing why the operation has failed
+     * @param errorMessage an error message describing why the operation has failed
      */
     public void failure(String errorMessage){
         this.isSuccessful = false;

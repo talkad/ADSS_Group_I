@@ -10,21 +10,6 @@ import java.util.List;
  * a singleton class
  */
 public class Inventory {
-    /*
-<<<<<<< HEAD
-//
-//    private static class SingletonHolder {
-//        private static HardCodeInitializer instance = new HardCodeInitializer();
-//    }
-//
-//    public static HardCodeInitializer getInstance() {
-//        return HardCodeInitializer.SingletonHolder.instance;
-//    }
-
-    private List<Product> productsList;
-=======
->>>>>>> business_layer
-*/
 
     private List<Product> productsList;
 
@@ -35,28 +20,15 @@ public class Inventory {
     }
 
     /**
-     * 
      * @return an instance of Inventory
      */
-
-     /*
-<<<<<<< HEAD
-    public static boolean addItem(ItemDTO item, String manufacturer, String name){
-        return true;
-=======
     public static Inventory getInstance(){
         if(instance == null){
             instance = new Inventory();
         }
-
         return instance;
->>>>>>> business_layer
-
-
     }
 
-    ;
-    */
 
     /**
      * adds a product to the inventory
@@ -138,7 +110,7 @@ public class Inventory {
      * adds an item from type product to the inventory
      * @param productName the product's name of the item to add
      * @param manufacturerName the manufacturer's name of the item to add
-     * @param item the item to add
+     * @param itemDTO the item to add
      * @return a Result object with information about the result of the operation
      */
     public Result addItem(String productName, String manufacturerName, ItemDTO itemDTO){
@@ -365,7 +337,7 @@ public class Inventory {
         if(defectsReport.compareTo("Defects or Expired Report:\n") == 0){
             defectsReport = "There are no defect or expired items in the inventory";
         }
-        return "";
+        return defectsReport;
     }
 
     /**

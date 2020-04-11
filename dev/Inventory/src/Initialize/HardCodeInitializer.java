@@ -1,3 +1,6 @@
+package Initialize;
+
+import BusinessLayer.Inventory;
 import DTO.ItemDTO;
 import DTO.ProductDTO;
 
@@ -23,12 +26,16 @@ public class HardCodeInitializer {
         }
     }
 
-    private static class SingletonHolder {
-        private static HardCodeInitializer instance = new HardCodeInitializer();
-    }
+    public static HardCodeInitializer init = null;
 
-    public static HardCodeInitializer getInstance() {
-        return SingletonHolder.instance;
+    /**
+     * @return an instance of Initialize.HardCodeInitializer
+     */
+    public static HardCodeInitializer getInstance(){
+        if(init == null){
+            init = new HardCodeInitializer();
+        }
+        return init;
     }
 
     //milk items:
@@ -72,7 +79,29 @@ public class HardCodeInitializer {
 
 
     public void initialize(){
-        //add the products
+        Inventory.getInstance().addProduct(milk);
+        Inventory.getInstance().addItem("milk","Tnuva",milk1);
+        Inventory.getInstance().addItem("milk","Tnuva",milk2);
+        Inventory.getInstance().addItem("milk","Tnuva",milk3);
+        Inventory.getInstance().addItem("milk","Tnuva",milk4);
+        Inventory.getInstance().addItem("milk","Tnuva",milk5);
+        Inventory.getInstance().addItem("milk","Tnuva",milk6);
+
+        Inventory.getInstance().addProduct(shampoo);
+        Inventory.getInstance().addItem("shampoo","head&shoulders",shampoo1);
+        Inventory.getInstance().addItem("shampoo","head&shoulders",shampoo2);
+        Inventory.getInstance().addItem("shampoo","head&shoulders",shampoo3);
+        Inventory.getInstance().addItem("shampoo","head&shoulders",shampoo4);
+        Inventory.getInstance().addItem("shampoo","head&shoulders",shampoo5);
+        Inventory.getInstance().addItem("shampoo","head&shoulders",shampoo6);
+
+        Inventory.getInstance().addProduct(cheese);
+        Inventory.getInstance().addItem("cheese","Tara",cheese1);
+        Inventory.getInstance().addItem("cheese","Tara",cheese2);
+        Inventory.getInstance().addItem("cheese","Tara",cheese3);
+        Inventory.getInstance().addItem("cheese","Tara",cheese4);
+        Inventory.getInstance().addItem("cheese","Tara",cheese5);
+        Inventory.getInstance().addItem("cheese","Tara",cheese6);
     }
 
 }
