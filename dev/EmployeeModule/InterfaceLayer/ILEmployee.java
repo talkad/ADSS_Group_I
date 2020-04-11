@@ -1,5 +1,7 @@
-package InterfaceLayer;
+package EmployeeModule.InterfaceLayer;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,8 +15,9 @@ public class ILEmployee {
     private Date startTime;
     private int salary;
     private List<String> roles;
+    private boolean[][] freeTime;
 
-    public ILEmployee(int id, String firstName, String lastName, String bankDetails, String workConditions, Date startTime, int salary, List<String> roles) {
+    public ILEmployee(int id, String firstName, String lastName, String bankDetails, String workConditions, Date startTime, int salary, List<String> roles, boolean[][] freeTime) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -23,6 +26,7 @@ public class ILEmployee {
         this.startTime = startTime;
         this.salary = salary;
         this.roles = roles;
+        this.freeTime = freeTime;
     }
 
     public int getId() {
@@ -59,5 +63,14 @@ public class ILEmployee {
             lst.add(role);
         }
         return lst;
+    }
+
+    @Override
+    public String toString() {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        return "id: " + id + "\n" + "first name: " + firstName + "\n" +
+                "last name: " + lastName + "\n" + "bank details: " + bankDetails + "\n" +
+                "work conditions: " + workConditions + "\n" +"shift date: " + formatter.format(this.startTime) + "\n" +
+                "salary: " + salary + "\n" + "roles: " + this.roles.toString() + "\n";
     }
 }

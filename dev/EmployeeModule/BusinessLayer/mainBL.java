@@ -1,8 +1,9 @@
-package BusinessLayer;
+package EmployeeModule.BusinessLayer;
 
-import InterfaceLayer.ILEmployee;
-import InterfaceLayer.ILShift;
-import InterfaceLayer.Service;
+import EmployeeModule.InterfaceLayer.ILEmployee;
+import EmployeeModule.InterfaceLayer.ILShift;
+import EmployeeModule.InterfaceLayer.Service;
+import EmployeeModule.Pair;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,7 @@ public class mainBL {
                 shift.getTime(), shift.getBranch(), shift.getShiftId(), shift.getRoles()));
     }
 
-    public void setFreeTime(int id, boolean[][] freeTime, Service service){
+    public void setFreeTime(int id, boolean[][] freeTime){
             employeeMap.get(id).setFreeTime(freeTime);
     }
 
@@ -31,6 +32,12 @@ public class mainBL {
         if(!this.employeeMap.containsKey(id))
             send("Error: Employee doesn't exist in the system", service);
         return this.employeeMap.containsKey(id);
+    }
+
+    public boolean searchShift(int id, Service service){
+        if(!this.shiftHistory.containsKey(id))
+            send("Error: Shift doesn't exist in the system", service);
+        return this.shiftHistory.containsKey(id);
     }
 
     public boolean hasRole(int id, String role, Service service){
@@ -45,8 +52,20 @@ public class mainBL {
         return employeeMap.get(id).getFreeTime()[period][day];
     }
 
-    public void assignEmployees(int id, List<Pair<Integer, String>> employees, Service service){
+    public void assignEmployees(int id, List<Pair<Integer, String>> employees){
         shiftHistory.get(id).setEmployees(employees);
+    }
+
+    public ILEmployee employeeInfo(int id){
+        Employee employee = employeeMap.get(id);
+        return new ILEmployee(employee.getId(), employee.getFirstName(), employee.getLastName(),
+                employee.getBankDetails(), employee.getWorkConditions(), employee.getStartTime(), employee.getSalary(),
+                employee.getRoles(), employee.getFreeTime());
+    }
+
+    public ILShift shiftInfo(int id){
+        Shift shift = shiftHistory.get(id);
+        return new ILShift(shift.getDate(), shift.getTime(), shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees());
     }
 
     public void send(String message, Service service){

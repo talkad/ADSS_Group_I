@@ -1,9 +1,8 @@
-package InterfaceLayer;
+package EmployeeModule.InterfaceLayer;
 
-import BusinessLayer.Employee;
-import BusinessLayer.mainBL;
+import EmployeeModule.BusinessLayer.mainBL;
+import EmployeeModule.Pair;
 
-import javax.print.attribute.standard.DateTimeAtCreation;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -12,7 +11,7 @@ public class Service {
 
     public static void main(String [] args){
         Service service = new Service();
-        BusinessLayer.mainBL mainBL = new mainBL();
+        EmployeeModule.BusinessLayer.mainBL mainBL = new mainBL();
         Scanner scanner = new Scanner(System.in);
         int shiftCounter = 1;
         boolean quit = false;
@@ -38,13 +37,26 @@ public class Service {
                     scanner.nextLine();
                     service.editFreeTime(scanner, id, mainBL);
                     break;
+                case ("4"):
+                    System.out.print("Please insert the shift's id number: ");
+                    int shiftId = scanner.nextInt();
+                    scanner.nextLine();
+                    service.displayShift(shiftId, mainBL);
+                    break;
+                case ("5"):
+                    System.out.print("Please insert the employee's id number: ");
+                    int employeeId = scanner.nextInt();
+                    scanner.nextLine();
+                    service.displayEmployee(employeeId, mainBL);
+                    break;
                 case ("6"):
                     quit = true;
+                    break;
             }
         }
     }
 
-    public void insertEmployee(Scanner scanner, BusinessLayer.mainBL mainBL) {
+    public void insertEmployee(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL) {
         System.out.print("Insert employee's id: ");
         int id = scanner.nextInt();
         scanner.nextLine();
@@ -82,16 +94,16 @@ public class Service {
             System.out.println("Invalid role list, all employees must have 1 role at least");
         else {
             System.out.println("Successfully added the employee");
-            ILEmployee employee = new ILEmployee(id, firstName, lastName, bankDetails, workCond, startDate, salary, employeeRoles);
+            ILEmployee employee = new ILEmployee(id, firstName, lastName, bankDetails, workCond, startDate, salary, employeeRoles, new boolean[2][7]);
             createEmployee(mainBL, employee);
         }
     }
 
-    public void createEmployee(BusinessLayer.mainBL mainBL, ILEmployee employee){
+    public void createEmployee(EmployeeModule.BusinessLayer.mainBL mainBL, ILEmployee employee){
         mainBL.createEmployee(employee);
     }
 
-    public void insertShift(Scanner scanner, BusinessLayer.mainBL mainBL, int shiftCounter){
+    public void insertShift(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL, int shiftCounter){
         System.out.println("Insert shift's date in the format <dd/mm/yyyy>: ");
         String shiftDateStr = scanner.nextLine();
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -118,6 +130,7 @@ public class Service {
                 String inRole = "Insert role: ";
                 String inAmount = "Insert amount: ";
                 List<String> shiftRolesList = new LinkedList<>();
+                shiftRolesList.add("shift manager");
                 while(true){
                     System.out.print(inRole);
                     role = scanner.nextLine();
@@ -137,7 +150,7 @@ public class Service {
                     }
                 }
                 System.out.println("Successfully added the shift");
-                ILShift shift = new ILShift(shiftDate, shiftTime, branch, shiftCounter, shiftRolesList);
+                ILShift shift = new ILShift(shiftDate, shiftTime, branch, shiftCounter, shiftRolesList, new LinkedList<>());
                 createShift(mainBL, shift, scanner);
             }
             else{
@@ -146,12 +159,12 @@ public class Service {
         } catch (ParseException e) {}
     }
 
-    public void createShift(BusinessLayer.mainBL mainBL, ILShift shift, Scanner scanner){
+    public void createShift(EmployeeModule.BusinessLayer.mainBL mainBL, ILShift shift, Scanner scanner){
         mainBL.createShift(shift);
         addEmployeesToShift(scanner, shift.getRoles(), shift.getDate(), shift.getTime(), shift.getShiftId(), mainBL);
     }
 
-    public void editFreeTime(Scanner scanner, int id, BusinessLayer.mainBL mainBL){
+    public void editFreeTime(Scanner scanner, int id, EmployeeModule.BusinessLayer.mainBL mainBL){
         if(mainBL.searchEmployee(id, this)){
             boolean[][] freeTime = new boolean[2][7];
             System.out.println("Insert true or false according to the employee's availability:");
@@ -197,13 +210,14 @@ public class Service {
             System.out.print("Saturday night shift: ");
             freeTime[1][6] = scanner.nextBoolean();
             scanner.nextLine();
-            mainBL.setFreeTime(id, freeTime, this);
+            mainBL.setFreeTime(id, freeTime);
             System.out.println("Successfully edited the employee's free time");
         }
     }
 
-    public void addEmployeesToShift(Scanner scanner, List<String> roles, Date date, int time, int shiftID, BusinessLayer.mainBL mainBL){
-        List<BusinessLayer.Pair<Integer, String>> shiftList = new LinkedList<>();//TODO WTF CASTING
+    public void addEmployeesToShift(Scanner scanner, List<String> roles, Date date, int time, int shiftID, EmployeeModule.BusinessLayer.mainBL mainBL){
+        List<Pair<Integer, String>> shiftList = new LinkedList<>();
+        List<String> checkRoles = new LinkedList<>(roles);
         System.out.println("Insert employees id followed by their required role for the shift. type 'stop' to stop adding employees");
         while(true) {
             System.out.print("Insert employee's id for the shift: ");
@@ -220,8 +234,8 @@ public class Service {
                     int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
                     if(mainBL.isFree(empId, dayOfWeek-1, time-1, this)) {
                         if (mainBL.hasRole(empId, empRole, this)) {
-                            roles.remove(empRole);
-                            shiftList.add(new Pair<Integer, String>(empId, empRole));
+                            checkRoles.remove(empRole);
+                            shiftList.add(new Pair<>(empId, empRole));
                         }
                     }
                 }
@@ -230,8 +244,9 @@ public class Service {
                 System.out.println("Invalid id, must be a number");
             }
         }
-        if(roles.isEmpty()){
-            mainBL.assignEmployees(shiftID, shiftList, this);
+        if(checkRoles.isEmpty()){
+            mainBL.assignEmployees(shiftID, shiftList);
+            System.out.println("Successfully assigned the shift");
         }
         else{
             System.out.println("Missing roles for shift, cannot assign employees for the shift");
@@ -243,6 +258,18 @@ public class Service {
             return true;
         } catch(NumberFormatException e){
             return false;
+        }
+    }
+
+    public void displayEmployee(int id, mainBL mainBL){
+        if(mainBL.searchEmployee(id, this)){
+            System.out.println(mainBL.employeeInfo(id).toString());
+        }
+    }
+
+    public void displayShift(int shiftId, mainBL mainBL) {
+        if(mainBL.searchShift(shiftId, this)){
+            System.out.println(mainBL.shiftInfo(shiftId).toString());
         }
     }
 

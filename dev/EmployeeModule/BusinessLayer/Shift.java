@@ -1,4 +1,6 @@
-package BusinessLayer;
+package EmployeeModule.BusinessLayer;
+
+import EmployeeModule.Pair;
 
 import java.util.Date;
 import java.util.LinkedList;
