@@ -145,7 +145,9 @@ public class Inventory {
         if(itemToRemove != null){// if itemToRemove is null the item does not exist
             productToRemoveFrom.removeItem(itemToRemove);
 
-            result.successful();
+            String quantityMessage = minQuantityNotification(productToRemoveFrom);
+
+            result.successful(quantityMessage);
         }
         else{
             result.failure("The item you are trying to remove does not exist");
@@ -154,46 +156,204 @@ public class Inventory {
         return result;
     }
 
-    public boolean isItemExists(int id){
-        return true;
+    /**
+     * given a product, checks if the minimum quantity set for the product is reached
+     * @param product the product to check
+     * @return a String saying the minimum quantity is reached if so or null if the quantity hasn't reached yet
+     */
+    public String minQuantityNotification(Product product){
+        if(product.hasMinQuantityReached()){
+            return "Minimum quantity for " + product.getName() + " reached!";
+        }
+
+        return null;
     }
 
-    public String notification(){
-        return "";
+    /**
+     * updates the min quantity of a product from which the user will get notification about the quantity of the product
+     * @param productName the name of the product to be updated
+     * @param manufacturerName the name of the manufacturer of the product to be updated
+     * @param newMinQuantity the new mininum quantity to update to
+     * @return a Result object with information about the result of the operation
+     */
+    public Result updateMinQuantity(String productName, String manufacturerName, int newMinQuantity){
+        Result result = new Result();
+
+        Product product = getProduct(productName, manufacturerName);
+
+        if(product != null){
+            product.setMinCapacity(newMinQuantity);
+
+
+            result.successful();
+        }
+        else{
+            result.failure("The product you are trying to update its minimum quantity does not exist");
+        }
+
+        return result;
     }
 
-    public boolean updateMinQuantity(int id, int minQuantity){
-        return true;
+    /**
+     * updates the selling price of a product
+     * @param productName the name of the product to be updated
+     * @param manufacturerName the name of the manufacturer of the product to be updated
+     * @param newSellingPrice the new selling price to update to
+     * @return a Result object with information about the result of the operation
+     */
+    public Result updateSellingPrice(String productName, String manufacturerName, int newSellingPrice){
+        Result result = new Result();
+
+        Product product = getProduct(productName, manufacturerName);
+
+        if(product != null){
+            product.setSellingPrice(newSellingPrice);
+
+
+            result.successful();
+        }
+        else{
+            result.failure("The product you are trying to update its selling price does not exist");
+        }
+
+        return result;
     }
 
-    public boolean updateSellingPrice(String manufacturer, String name, int price){
-        return true;
+    /**
+     * updates the buying price of a product
+     * @param productName the name of the product to be updated
+     * @param manufacturerName the name of the manufacturer of the product to be updated
+     * @param newBuyingPrice the new buying price to update to
+     * @return a Result object with information about the result of the operation
+     */
+    public Result updateBuyingPrice(String productName, String manufacturerName, int newBuyingPrice){
+        Result result = new Result();
+
+        Product product = getProduct(productName, manufacturerName);
+
+        if(product != null){
+            product.setSellingPrice(newBuyingPrice);
+
+
+            result.successful();
+        }
+        else{
+            result.failure("The product you are trying to update its buying price does not exist");
+        }
+
+        return result;
     }
 
-    public boolean updateBuyingPrice(String manufacturer, String name, int price){
-        return true;
+    /**
+     * sets a given item as defect
+     * @param productName the product's name from which to set an item as defect
+     * @param manufacturerName the product manufacturer's name from which to set an item as defect 
+     * @param itemId the item's id to set as defect 
+     * @return a Result object with information about the result of the operation
+     */
+    public Result setDefect(String productName, String manufacturerName, int itemId){
+        Result result = new Result();
+
+        Product productToSetDefectFrom = getProduct(productName, manufacturerName);
+
+        Item itemToSetAsDefect = productToSetDefectFrom.getItem(itemId);
+
+        if(itemToSetAsDefect != null){// if itemToSetAsDefect is null the item does not exist
+            itemToSetAsDefect.setDefect(true);
+
+            result.successful();
+        }
+        else{
+            result.failure("The item you are trying to update its status does not exist");
+        }
+
+        return result;
     }
 
-    public boolean setDefect(int id){
-        return true;
+    /**
+     * sets a new location to a given item
+     * @param productName the product's name from which to set an item a new location
+     * @param manufacturerName the product manufacturer's name from which to set an item a new location
+     * @param itemId the item's id to set a new location to
+     * @param location the new location to set
+     * @return a Result object with information about the result of the operation
+     */
+    public Result updateItemLocation(String productName, String manufacturerName, int itemId, String location){
+        Result result = new Result();
+
+        Product productToSetLoactionFrom = getProduct(productName, manufacturerName);
+
+        Item itemToSetNewLocationTo = productToSetLoactionFrom.getItem(itemId);
+
+        if(itemToSetNewLocationTo != null){// if itemToSetNewLocationTo is null the item does not exist
+            itemToSetNewLocationTo.setLocation(location);
+
+            result.successful();
+        }
+        else{
+            result.failure("The item you are trying to set a new location to does not exist");
+        }
+
+        return result;
     }
 
-    public boolean updateItemLocation(int id, String location){
-        return true;
-    }
-
+    /**
+     * creates an inventory report according to given catagories
+     * @param categories the catagories to include in the report 
+     * @return an inventory report according to the given {@code catagories} 
+     */
     public String getCategoriesReport(List<String> categories){
-        return "";
+        String catagoriesReport = "Catagories Report:\n";
+
+        boolean isIncluded = true; // a flag if the current product is to be included in the report
+        for(Product product: productsList){
+            for(String catagory: categories){
+                isIncluded = isIncluded & product.isInCatagory(catagory);
+            }
+
+            if(isIncluded){
+                catagoriesReport += product.toString() + "\n";
+            }
+            
+            isIncluded = true;
+        }
+
+        if(catagoriesReport.compareTo("Catagories Report:\n") == 0){
+            catagoriesReport = "There are no products in the requested catagories";
+        }
+        return catagoriesReport;
     }
 
+    /**
+     * 
+     * @return a report listing all the defected and expired items in the inventory
+     */
     public String getDefectsReports(){
+        String defectsReport = "Defects or Expired Report:\n\n";
+
+        for(Product product: productsList){
+            defectsReport += product.productDefects() + "\n";
+        }
+
+
+        if(defectsReport.compareTo("Defects or Expired Report:\n") == 0){
+            defectsReport = "There are no defect or expired items in the inventory";
+        }
         return "";
     }
 
-    public boolean isIdUnique(int id){ return true; }
+    /**
+     * given an id, the function checks if there is already an item with this id
+     * @param id the id to check
+     * @return whether there's already an item with id {@code id}
+     */
+    public boolean isIdUnique(int id){
+        for(Product product: productsList){
+            if(product.hasAnItemWithID(id)){
+                return false;
+            }
+        }
 
-
-
-
-
+        return true;
+    }
 }

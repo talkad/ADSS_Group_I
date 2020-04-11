@@ -6,9 +6,9 @@ package BusinessLayer;
  */
 public class Result {
     private boolean isSuccessful;
-    private String errorMsg;
+    private String message; //the message is necessery for when isSuccessful is false and optional when true
 
-    //has the empty constructor
+    //this class uses the empty constructor
 
 
     /**
@@ -16,24 +16,33 @@ public class Result {
      */
     public void successful(){
         this.isSuccessful = true;
-        this.errorMsg = null;
+        this.message = null;
+    }
+
+    /**
+     * sets the object to "successful" which means the operation the object has returned from was successful and attaches a message from the operation
+     * @param message a message to attach to the object
+     */
+    public void successful(String message){
+        this.isSuccessful = true;
+        this.message = message;
     }
 
     /**
      * sets the object to "failure" which means the operation the object has returned from failed, and attaches an error message to the object
      * @param errorMsg an error message describing why the operation has failed
      */
-    public void failure(String errorMsg){
+    public void failure(String errorMessage){
         this.isSuccessful = false;
-        this.errorMsg = errorMsg;
+        this.message = errorMessage;
     }
 
     public boolean isSuccessful() {
-        return isSuccessful;
+        return this.isSuccessful;
     }
 
     public String getErrorMsg() {
-        return errorMsg;
+        return this.message;
     }
 
 }

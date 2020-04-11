@@ -49,5 +49,52 @@ public class Item {
         this.location = location;
     }
 
+    /**
+     * 
+     * @return an information about the item if it's defected or expired, otherwise returns null
+     */
+    public String defectInfo(){
+        Date currentDate = new Date(); // creates a Date object with the current date
+
+        if(this.isDefect || expiryDate.compareTo(currentDate) == -1){
+            String info = "Item ID: " + this.id + "\n";
+            info += "Experation date: " + this.expiryDate + "\n";
+
+            info += "Status: ";
+            if(this.isDefect){
+                info += "Defect";
+
+                if(expiryDate.compareTo(currentDate) == -1){
+                    info += ", Exipred\n";
+                }
+            }
+            else{
+                info += "Expired\n";
+            }
+         
+            info += "Located in: " + this.location + "\n";
+        
+            return info;
+        }
+
+        return null;
+    }
+
+    @Override
+    public String toString(){
+        String toString = "Item ID: " + this.id + "\n";
+
+        if(this.isDefect){
+            toString += "Status: Defect\n";
+        }
+        else{
+            toString += "Status: Not defect\n";
+        }
+
+        toString += "Experation date: " + this.expiryDate + "\n";
+        toString += "Located in: " + this.location + "\n";
+        
+        return toString;
+    }
 
 }
