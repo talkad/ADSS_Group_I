@@ -260,7 +260,7 @@ public class Service {
             return shiftList;
         }
         else{
-            System.out.println("Missing roles for shift, cannot assign employees for the shift");
+            System.out.println("Missing roles for shift, shift cannot be assigned");
             return null;
         }
     }
