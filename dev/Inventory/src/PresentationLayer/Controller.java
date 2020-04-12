@@ -104,10 +104,10 @@ public class Controller{
         int minCapacity, buyingPrice, sellingPrice;
         Result result;
 
-        System.out.print("insert the item name [String]: ");
+        System.out.print("insert the product name [String]: ");
         productName=in.next();
 
-        System.out.print("insert the item manufacturer name [String]: ");
+        System.out.print("insert the manufacturer name [String]: ");
         manufacturer=in.next();
 
         System.out.print("insert the minimal capacity [number]: ");

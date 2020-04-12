@@ -41,7 +41,6 @@ public class Inventory {
         
         if(!doesProductExist(newProduct)){//checks if the product already exists
             productsList.add(newProduct);
-
             result.successful();
         }
         else{
@@ -59,11 +58,11 @@ public class Inventory {
     private boolean doesProductExist(Product productToCheck){
         for(Product product : productsList){
             if(product.equals(productToCheck)){
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -117,6 +116,8 @@ public class Inventory {
         Result result = new Result();
 
         Product productToAddTo = getProduct(productName, manufacturerName);
+
+        // TODO - check if productToAddTo is not null
 
         Item itemToAdd = new Item(itemDTO);
         productToAddTo.addItem(itemToAdd);
