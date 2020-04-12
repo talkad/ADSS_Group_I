@@ -3,10 +3,8 @@ package EmployeeModule.BusinessLayer;
 import EmployeeModule.InterfaceLayer.ILEmployee;
 import EmployeeModule.InterfaceLayer.ILShift;
 import EmployeeModule.InterfaceLayer.Service;
-import EmployeeModule.Pair;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class mainBL {
@@ -21,15 +19,19 @@ public class mainBL {
 
     public void createShift(ILShift shift){
         shiftHistory.put(shift.getShiftId(), new Shift(shift.getDate(),
-                shift.getTime(), shift.getBranch(), shift.getShiftId(), shift.getRoles()));
+                shift.getTime(), shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees()));
     }
 
     public void setFreeTime(int id, boolean[][] freeTime){
             employeeMap.get(id).setFreeTime(freeTime);
     }
 
-    public boolean searchEmployee(int id, Service service){
-        if(!this.employeeMap.containsKey(id))
+    public void unFreeTime(int id, int period, int day){
+        employeeMap.get(id).setUnFreeTime(period, day);
+    }
+
+    public boolean searchEmployee(int id, Service service, boolean flag){
+        if(flag && !this.employeeMap.containsKey(id))
             send("Error: Employee doesn't exist in the system", service);
         return this.employeeMap.containsKey(id);
     }
@@ -50,10 +52,6 @@ public class mainBL {
         if(!employeeMap.get(id).getFreeTime()[period][day])
             send("Error: Employee isn't free during that time", service);
         return employeeMap.get(id).getFreeTime()[period][day];
-    }
-
-    public void assignEmployees(int id, List<Pair<Integer, String>> employees){
-        shiftHistory.get(id).setEmployees(employees);
     }
 
     public ILEmployee employeeInfo(int id){

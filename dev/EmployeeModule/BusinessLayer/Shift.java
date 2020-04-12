@@ -3,7 +3,6 @@ package EmployeeModule.BusinessLayer;
 import EmployeeModule.Pair;
 
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 public class Shift {
@@ -14,13 +13,13 @@ public class Shift {
     private List<String> roles;
     private List<Pair<Integer, String>> employees;
 
-    public Shift(Date date, int time, int branch, int shiftId, List<String> roles) {
+    public Shift(Date date, int time, int branch, int shiftId, List<String> roles, List<Pair<Integer, String>> employees) {
         this.date = date;
         this.time = time;
         this.branch = branch;
         this.shiftId = shiftId;
         this.roles = roles;
-        this.employees = new LinkedList<>();
+        this.employees = employees;
     }
 
     public Date getDate() {

@@ -1,7 +1,6 @@
 package EmployeeModule.InterfaceLayer;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,12 +64,27 @@ public class ILEmployee {
         return lst;
     }
 
+    public boolean[][] getFreeTime() {
+        return freeTime;
+    }
+
+    public String toStringFreeTime(){
+        String str = "";
+        for (int i = 0; i<this.freeTime.length; i++){
+            for (int j = 0; j<freeTime[i].length;j++){
+                str = str + "Shift period: " + (i+1) + ", Day: " + (j+1) + " availability: " + freeTime[i][j] + "\n";
+            }
+        }
+        return str;
+    }
+
     @Override
     public String toString() {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         return "id: " + id + "\n" + "first name: " + firstName + "\n" +
                 "last name: " + lastName + "\n" + "bank details: " + bankDetails + "\n" +
-                "work conditions: " + workConditions + "\n" +"shift date: " + formatter.format(this.startTime) + "\n" +
-                "salary: " + salary + "\n" + "roles: " + this.roles.toString() + "\n";
+                "work conditions: " + workConditions + "\n" +"started working on: " + formatter.format(this.startTime) + "\n" +
+                "salary: " + salary + "\n" + "roles: " + this.roles.toString() + "\n"
+                + "free time:\n" + toStringFreeTime();
     }
 }

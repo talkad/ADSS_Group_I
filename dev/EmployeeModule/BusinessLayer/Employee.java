@@ -26,10 +26,6 @@ public class Employee {
         this.roles = roles;
     }
 
-    public void addRole(String role){
-        this.roles.add(role);
-    }
-
     public void setFreeTime(boolean[][] freeTime){
         this.freeTime = freeTime;
     }
@@ -68,5 +64,9 @@ public class Employee {
 
     public List<String> getRoles() {
         return roles;
+    }
+
+    public void setUnFreeTime(int period, int day){
+        this.freeTime[period][day] = false;
     }
 }

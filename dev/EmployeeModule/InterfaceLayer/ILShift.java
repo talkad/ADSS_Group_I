@@ -48,6 +48,18 @@ public class ILShift {
         return lst;
     }
 
+    public List<Pair<Integer, String>> getEmployees() {
+        List<Pair<Integer, String>> lst = new LinkedList<>();
+        for (Pair<Integer, String> employee : employees) {
+            lst.add(employee);
+        }
+        return lst;
+    }
+
+    public void setEmployees(List<Pair<Integer, String>> employees) {
+        this.employees = employees;
+    }
+
     public String toString(){
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         String period = "day";
