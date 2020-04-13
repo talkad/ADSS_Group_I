@@ -65,8 +65,10 @@ public class Item {
                 info += "Defect";
 
                 if(expiryDate.compareTo(currentDate) == -1){
-                    info += ", Exipred\n";
+                    info += ", Exipred";
                 }
+
+                info += "\n";
             }
             else{
                 info += "Expired\n";

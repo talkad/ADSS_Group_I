@@ -79,11 +79,11 @@ public class Product {
 
     /**
      *
-     * @param catagory the catagory to check
-     * @return if the current product is in caragoty {@code catagory}
+     * @param category the catagory to check
+     * @return if the current product is in category {@code category}
      */
-    public boolean isInCatagory(String catagory){
-        return catagory.contains(catagory);
+    public boolean isInCatagory(String category){
+        return categories.contains(category);
     }
 
     /**

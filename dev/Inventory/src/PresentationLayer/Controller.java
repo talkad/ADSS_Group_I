@@ -274,7 +274,7 @@ public class Controller{
                 allCategories.add(Arrays.asList(categories.split(",")));
         }
 
-        System.out.println(Inventory.getInstance().getCategoriesReport(categoriesCollection));
+        System.out.println(Inventory.getInstance().getCategoriesReport(allCategories));
     }
 
     /**

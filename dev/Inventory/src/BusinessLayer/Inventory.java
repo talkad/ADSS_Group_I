@@ -316,20 +316,28 @@ public class Inventory {
      * @param categories the catagories to include in the report 
      * @return an inventory report according to the given {@code catagories} 
      */
-    public String getCategoriesReport(List<String> categories){
+    public String getCategoriesReport(List<List<String>> categories){
         String catagoriesReport = "Catagories Report:\n";
 
-        boolean isIncluded = true; // a flag if the current product is to be included in the report
+        boolean isIncluded = false; // a flag if the current product is to be included in the report
+        boolean isInAllCategories = true; // a flag if the current product is in all of the subcategories asked for
         for(Product product: productsList){
-            for(String catagory: categories){
-                isIncluded = isIncluded & product.isInCatagory(catagory);
+            for(List<String> category: categories){
+                for(String categoryName: category){
+                    System.out.println("CHECKING THIS CATEGORY: " + categoryName);
+                    isInAllCategories = isInAllCategories && product.isInCatagory(categoryName); // needs to be in all of the subcategories
+                }
+                isIncluded = isIncluded || isInAllCategories; // has to be in only one of the "main" categories asked for
+                isInAllCategories = true;
             }
 
+            
             if(isIncluded){
                 catagoriesReport += product.toString() + "\n";
+                break;
             }
-            
-            isIncluded = true;
+
+            isIncluded = false;
         }
 
         if(catagoriesReport.compareTo("Catagories Report:\n") == 0){
@@ -343,14 +351,14 @@ public class Inventory {
      * @return a report listing all the defected and expired items in the inventory
      */
     public String getDefectsReports(){
-        String defectsReport = "Defects or Expired Arrays.asList(categories.split(\",\")));Report:\n\n";
+        String defectsReport = "Defects or Expired Report:\n\n";
 
         for(Product product: productsList){
             defectsReport += product.productDefects() + "\n";
         }
 
 
-        if(defectsReport.compareTo("Defects or Expired Report:\n") == 0){
+        if(defectsReport.compareTo("Defects or Expired Report:\n\n") == 0){
             defectsReport = "There are no defect or expired items in the inventory";
         }
         return defectsReport;
