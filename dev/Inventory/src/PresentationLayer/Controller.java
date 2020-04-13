@@ -96,12 +96,14 @@ public class Controller{
             System.out.println(result.getErrorMsg());
     }
 
+
     /**
      * Add a new product to the inventory
      */
     public void addProduct(Scanner in){
-        String productName, manufacturer;
+        String productName, manufacturer, categoriesSTR;
         int minCapacity, buyingPrice, sellingPrice;
+        List<String> categories;
         Result result;
 
         System.out.print("insert the product name [String]: ");
@@ -119,8 +121,12 @@ public class Controller{
         System.out.print("insert the selling price [number]: ");
         sellingPrice=in.nextInt();
 
+        System.out.print("insert the categories the product belongs to separated by ','  [exp. milk, salty, 500ml]: ");
+        categoriesSTR=in.next();
+        categories= Arrays.asList(categoriesSTR.split(","));
+
         result= Inventory.getInstance().addProduct(new ProductDTO(productName,manufacturer,minCapacity,buyingPrice,sellingPrice,
-                                          0,0,new LinkedList<>(),new LinkedList<>()));
+                                          0,0, categories, new LinkedList<>()));
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }

@@ -343,7 +343,7 @@ public class Inventory {
      * @return a report listing all the defected and expired items in the inventory
      */
     public String getDefectsReports(){
-        String defectsReport = "Defects or Expired Report:\n\n";
+        String defectsReport = "Defects or Expired Arrays.asList(categories.split(\",\")));Report:\n\n";
 
         for(Product product: productsList){
             defectsReport += product.productDefects() + "\n";
