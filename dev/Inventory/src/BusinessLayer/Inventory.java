@@ -117,12 +117,21 @@ public class Inventory {
 
         Product productToAddTo = getProduct(productName, manufacturerName);
 
-        // TODO - check if productToAddTo is not null
+        if(productToAddTo != null){// if productToAddTo is null then there is no such product in the inventory
+            Item itemToAdd = new Item(itemDTO);
 
-        Item itemToAdd = new Item(itemDTO);
-        productToAddTo.addItem(itemToAdd);
+            if(isIdUnique(itemToAdd.getId())){// the id of the item to be added must be unique
+                productToAddTo.addItem(itemToAdd);
 
-        result.successful();
+                result.successful();
+            }
+            else{
+                result.failure("The ID of the item must be unique.");
+            }
+        }
+        else{
+            result.failure("The item you are trying to add does not have a corrisponding product in the inventory.");
+        }
 
         return result;
     }
@@ -139,17 +148,23 @@ public class Inventory {
 
         Product productToRemoveFrom = getProduct(productName, manufacturerName);
 
-        Item itemToRemove = productToRemoveFrom.getItem(id);
+        if(productToRemoveFrom != null){
 
-        if(itemToRemove != null){// if itemToRemove is null the item does not exist
-            productToRemoveFrom.removeItem(itemToRemove);
+            Item itemToRemove = productToRemoveFrom.getItem(id);
 
-            String quantityMessage = minQuantityNotification(productToRemoveFrom);
+            if(itemToRemove != null){// if itemToRemove is null the item does not exist
+                productToRemoveFrom.removeItem(itemToRemove);
 
-            result.successful(quantityMessage);
+                String quantityMessage = minQuantityNotification(productToRemoveFrom);
+
+                result.successful(quantityMessage);
+            }
+            else{
+                result.failure("The item you are trying to remove does not exist");
+            }
         }
         else{
-            result.failure("The item you are trying to remove does not exist");
+            result.failure("The item you are trying to remove does not have a corrisponding product in the inventory.");
         }
 
         return result;
@@ -162,7 +177,7 @@ public class Inventory {
      */
     public String minQuantityNotification(Product product){
         if(product.hasMinQuantityReached()){
-            return "Minimum quantity for " + product.getName() + " reached!";
+            return "Minimum quantity for product " + product.getName() + " by " + product.getManufacturer() + " reached!";
         }
 
         return null;

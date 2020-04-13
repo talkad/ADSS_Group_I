@@ -2,7 +2,6 @@ package DTO;
 
 import java.util.Date;
 
-//TODO: do we need setters?
 public class ItemDTO {
     private int id;
     private boolean isDefect;
