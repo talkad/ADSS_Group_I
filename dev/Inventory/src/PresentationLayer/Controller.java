@@ -256,25 +256,43 @@ public class Controller{
     }
 
     /**
+     * split a string to categories list
+     * @param categoriesST categories in CNF format [milk,500ml],[shampoo]
+     * @return return list of categories list
+     */
+    private List<List<String>> splitList(String categoriesST){
+        List<List<String>> allCategories=new LinkedList<>();
+        List<String> splitList, filterList=new LinkedList<>();
+
+        //exp. [milk,500ml],[shampoo]
+        splitList= Arrays.asList(categoriesST.split("\\["));  //   ,  milk,500ml]  ,   shampoo]
+        for(String categories: splitList)
+        {
+            if(categories.length()>1) {
+                filterList.add(categories.substring(0, categories.indexOf(']')));  //   milk,500ml  ,  shampoo
+            }
+        }
+
+        for(String categories: filterList)
+            allCategories.add(Arrays.asList(categories.split(",")));
+
+        return allCategories;
+    }
+
+    /**
      * This function gets a list of categories the user is interested about,
      * and display the relevant items status on the screen
      * @param in standard input stream
      */
     public void getCategoriesReport(Scanner in){
         String categoriesSTR;
-        List<List<String>> allCategories=new LinkedList<>();
-        List<String> categoriesCollection;
 
-        System.out.print("insert categories in CNF format [exp. |milk,500ml|,|shampoo|]:");
+        System.out.println("insert categories you wish to see in the report:");
+        System.out.println("The format should be like [milk,500ml],[shampoo].");
+        System.out.println("There's an AND inside the brackets and an OR between them:");
         categoriesSTR=in.next();
 
-        categoriesCollection=Arrays.asList(categoriesSTR.split("|"));
-        for (String categories: categoriesCollection) {
-            if(!(categories.length()==0 || (categories.length()==1 && categories.charAt(0)==',')))
-                allCategories.add(Arrays.asList(categories.split(",")));
-        }
-
-        System.out.println(Inventory.getInstance().getCategoriesReport(allCategories));
+        System.out.println(Inventory.getInstance().getCategoriesReport(splitList(categoriesSTR)));
     }
 
     /**
