@@ -322,10 +322,8 @@ public class Inventory {
         boolean isIncluded = false; // a flag if the current product is to be included in the report
         boolean isInAllCategories = true; // a flag if the current product is in all of the subcategories asked for
         for(Product product: productsList){
-            System.out.println("Checking product: " + product.getName());
             for(List<String> category: categories){
                 for(String categoryName: category){
-                    System.out.println("CHECKING THIS CATEGORY: " + categoryName);
                     isInAllCategories = isInAllCategories && product.isInCatagory(categoryName); // needs to be in all of the subcategories
                 }
                 isIncluded = isIncluded || isInAllCategories; // has to be in only one of the "main" categories asked for

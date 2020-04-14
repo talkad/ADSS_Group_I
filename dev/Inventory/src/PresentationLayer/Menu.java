@@ -50,7 +50,7 @@ public class Menu {
                         "Update item location", "Get report by categories", "Get defect report", "exit"};
 
         boolean shouldTerminate=false;
-        int input=0;
+        int input;
 
         initialize(in);
 

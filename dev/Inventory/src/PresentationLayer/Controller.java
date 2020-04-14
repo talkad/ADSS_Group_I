@@ -256,12 +256,43 @@ public class Controller{
     }
 
     /**
+     * clean the spaces at the beginning and at the end of a string
+     * @param str assume not null and not empty string
+     * @return new string without spaces at the beginning ant at the end
+     */
+    private String spaceCleaner(String str){
+        while(str.charAt(0)==' ')
+            str= str.substring(1);
+
+        while(str.charAt(str.length()-1)==' ')
+            str= str.substring(0,str.length()-1);
+
+        return str;
+    }
+
+    /**
+     * This function removes the redundant spaces in each cell of the list
+     * @param list List that contains redundant spaces
+     * @return new list cleaned of redundant spaces
+     */
+    private List<String> cleanList(List<String> list){
+        List<String> cleanedList=new LinkedList<>();
+
+        for(String str: list)
+            cleanedList.add(spaceCleaner(str));
+
+        return cleanedList;
+    }
+
+
+    /**
      * split a string to categories list
      * @param categoriesST categories in CNF format [milk,500ml],[shampoo]
      * @return return list of categories list
      */
     private List<List<String>> splitList(String categoriesST){
         List<List<String>> allCategories=new LinkedList<>();
+        List<List<String>> allCategoriesSpaces=new LinkedList<>();
         List<String> splitList, filterList=new LinkedList<>();
 
         //exp. [milk,500ml],[shampoo]
@@ -273,8 +304,13 @@ public class Controller{
             }
         }
 
-        for(String categories: filterList)
-            allCategories.add(Arrays.asList(categories.split(",")));
+        for(String categories: filterList) {
+            allCategoriesSpaces.add(Arrays.asList(categories.split(",")));
+        }
+
+        for(List<String> list: allCategoriesSpaces) { //clean redundant spaces
+            allCategories.add(cleanList(list));
+        }
 
         return allCategories;
     }
@@ -285,12 +321,14 @@ public class Controller{
      * @param in standard input stream
      */
     public void getCategoriesReport(Scanner in){
-        String categoriesSTR;
+        String categoriesSTR="";
 
         System.out.println("insert categories you wish to see in the report:");
         System.out.println("The format should be like [milk,500ml],[shampoo].");
         System.out.println("There's an AND inside the brackets and an OR between them:");
-        categoriesSTR=in.next();
+
+        while(categoriesSTR.length()==0) //get over '\n' at the start of a line
+            categoriesSTR= in.nextLine();
 
         System.out.println(Inventory.getInstance().getCategoriesReport(splitList(categoriesSTR)));
     }
