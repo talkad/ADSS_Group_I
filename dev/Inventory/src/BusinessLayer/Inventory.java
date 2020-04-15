@@ -3,6 +3,7 @@ package BusinessLayer;
 import DTO.ItemDTO;
 import DTO.ProductDTO;
 import Initialize.HardCodeInitializer;
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +30,8 @@ public class Inventory {
         }
         return instance;
     }
+
+
 
     /**
      * Initialize the system with hardcoded products and items
@@ -102,7 +105,7 @@ public class Inventory {
      * @param manufacturer the name of the manufacturer of the product
      * @return the product object represented by the {@code name} and {@code manufacturer}
      */
-    private Product getProduct(String name, String manufacturer){
+    public Product getProduct(String name, String manufacturer){
         for(Product product : productsList){
             if(product.isRepresentedProduct(name, manufacturer)){
                 return product;
@@ -254,7 +257,7 @@ public class Inventory {
         Product product = getProduct(productName, manufacturerName);
 
         if(product != null){
-            product.setSellingPrice(newBuyingPrice);
+            product.setBuyingPrice(newBuyingPrice);
 
 
             result.successful();
@@ -278,15 +281,20 @@ public class Inventory {
 
         Product productToSetDefectFrom = getProduct(productName, manufacturerName);
 
-        Item itemToSetAsDefect = productToSetDefectFrom.getItem(itemId);
+        if(productToSetDefectFrom != null) { // if productToSetDefectFrom is null then it means he does not exist
 
-        if(itemToSetAsDefect != null){// if itemToSetAsDefect is null the item does not exist
-            itemToSetAsDefect.setDefect(true);
+            Item itemToSetAsDefect = productToSetDefectFrom.getItem(itemId);
 
-            result.successful();
+            if (itemToSetAsDefect != null) {// if itemToSetAsDefect is null the item does not exist
+                itemToSetAsDefect.setDefect(true);
+
+                result.successful();
+            } else {
+                result.failure("The item you are trying to update its status does not exist");
+            }
         }
         else{
-            result.failure("The item you are trying to update its status does not exist");
+            result.failure("You are trying to set an item as defect in a product which does not exist");
         }
 
         return result;
@@ -303,17 +311,21 @@ public class Inventory {
     public Result updateItemLocation(String productName, String manufacturerName, int itemId, String location){
         Result result = new Result();
 
-        Product productToSetLoactionFrom = getProduct(productName, manufacturerName);
+        Product productToSetLocationFrom = getProduct(productName, manufacturerName);
 
-        Item itemToSetNewLocationTo = productToSetLoactionFrom.getItem(itemId);
+        if(productToSetLocationFrom != null) {// if productToSetLocationFrom is null then it means he does not exist
+            Item itemToSetNewLocationTo = productToSetLocationFrom.getItem(itemId);
 
-        if(itemToSetNewLocationTo != null){// if itemToSetNewLocationTo is null the item does not exist
-            itemToSetNewLocationTo.setLocation(location);
+            if (itemToSetNewLocationTo != null) {// if itemToSetNewLocationTo is null the item does not exist
+                itemToSetNewLocationTo.setLocation(location);
 
-            result.successful();
+                result.successful();
+            } else {
+                result.failure("The item you are trying to set a new location to does not exist");
+            }
         }
         else{
-            result.failure("The item you are trying to set a new location to does not exist");
+            result.failure("You are trying to set an item a new location in a product which does not exist");
         }
 
         return result;
@@ -325,7 +337,7 @@ public class Inventory {
      * @return an inventory report according to the given {@code catagories} 
      */
     public String getCategoriesReport(List<List<String>> categories){
-        String catagoriesReport = "Catagories Report:\n";
+        String categoriesReport = "Categories Report:\n";
 
         boolean isIncluded = false; // a flag if the current product is to be included in the report
         boolean isInAllCategories = true; // a flag if the current product is in all of the subcategories asked for
@@ -340,16 +352,16 @@ public class Inventory {
 
             
             if(isIncluded){
-                catagoriesReport += product.toString() + "\n";
+                categoriesReport += product.toString() + "\n";
             }
 
             isIncluded = false;
         }
 
-        if(catagoriesReport.compareTo("Catagories Report:\n") == 0){
-            catagoriesReport = "There are no products in the requested catagories";
+        if(categoriesReport.compareTo("Catagories Report:\n") == 0){
+            categoriesReport = "There are no products in the requested catagories";
         }
-        return catagoriesReport;
+        return categoriesReport;
     }
 
     /**
