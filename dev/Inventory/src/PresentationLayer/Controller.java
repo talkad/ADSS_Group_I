@@ -4,7 +4,6 @@ import BusinessLayer.Inventory;
 import BusinessLayer.Result;
 import DTO.ItemDTO;
 import DTO.ProductDTO;
-import Initialize.HardCodeInitializer;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,8 +27,11 @@ public class Controller{
         return controller;
     }
 
+    /**
+     * Initialize the system with hardcoded products and items
+     */
     public void initialize(){
-        HardCodeInitializer.getInstance().initialize();
+        Inventory.getInstance().initialize();
     }
 
     /**
@@ -46,6 +48,16 @@ public class Controller{
     }
 
 
+    private String readLine(Scanner in){
+        String input="";
+
+        while(input.length()==0) //get over '\n' at the start of a line
+            input= in.nextLine();
+
+        return input;
+    }
+
+
     /**
      * This function get input from the user and activates the addItem method in the Inventory.
      * @param in standard input stream
@@ -57,10 +69,10 @@ public class Controller{
         Result result;
 
         System.out.print("insert the item name [String]: ");
-        productName=in.next();
+        productName= readLine(in);
 
         System.out.print("insert the item manufacturer name [String]: ");
-        manufacturer=in.next();
+        manufacturer= readLine(in);
 
         System.out.print("insert the item id [number]: ");
         id=in.nextInt();
@@ -86,10 +98,10 @@ public class Controller{
         id=in.nextInt();
 
         System.out.print("insert the item name [String]: ");
-        productName=in.next();
+        productName= readLine(in);
 
         System.out.print("insert the item manufacturer name [String]: ");
-        manufacturer=in.next();
+        manufacturer= readLine(in);
 
         result= Inventory.getInstance().removeItem(productName,manufacturer,id);
         if(result.getErrorMsg()!=null)
@@ -107,10 +119,10 @@ public class Controller{
         Result result;
 
         System.out.print("insert the product name [String]: ");
-        productName=in.next();
+        productName= readLine(in);
 
         System.out.print("insert the manufacturer name [String]: ");
-        manufacturer=in.next();
+        manufacturer= readLine(in);
 
         System.out.print("insert the minimal capacity [number]: ");
         minCapacity=in.nextInt();
@@ -122,11 +134,11 @@ public class Controller{
         sellingPrice=in.nextInt();
 
         System.out.print("insert the categories the product belongs to separated by ','  [exp. milk, salty, 500ml]: ");
-        categoriesSTR=in.next();
+        categoriesSTR= readLine(in);
         categories= Arrays.asList(categoriesSTR.split(","));
 
         result= Inventory.getInstance().addProduct(new ProductDTO(productName,manufacturer,minCapacity,buyingPrice,sellingPrice,
-                                          0,0, categories, new LinkedList<>()));
+                                          0,0, cleanList(categories), new LinkedList<>()));
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -138,11 +150,11 @@ public class Controller{
         String productName, manufacturer;
         Result result;
 
-        System.out.print("insert the item name [String]: ");
-        productName=in.next();
+        System.out.print("insert the product name [String]: ");
+        productName= readLine(in);
 
-        System.out.print("insert the item manufacturer name [String]: ");
-        manufacturer=in.next();
+        System.out.print("insert the manufacturer name [String]: ");
+        manufacturer= readLine(in);
 
         result= Inventory.getInstance().removeProduct(productName,manufacturer);
         if(result.getErrorMsg()!=null)
@@ -158,11 +170,11 @@ public class Controller{
         String productName, manufacturer;
         Result result;
 
-        System.out.print("insert the item name [String]: ");
-        productName=in.next();
+        System.out.print("insert the product name [String]: ");
+        productName= readLine(in);
 
-        System.out.print("insert the item manufacturer name [String]: ");
-        manufacturer=in.next();
+        System.out.print("insert the manufacturer name [String]: ");
+        manufacturer= readLine(in);
 
         System.out.print("insert min quantity [number]: ");
         minQuantity=in.nextInt();
@@ -182,11 +194,11 @@ public class Controller{
         String name, manufacturer;
         Result result;
 
-        System.out.print("insert the manufacturer name [String]: ");
-        name=in.next();
-
         System.out.print("insert the product name [String]: ");
-        manufacturer=in.next();
+        manufacturer= readLine(in);
+
+        System.out.print("insert the manufacturer name [String]: ");
+        name= readLine(in);
 
         System.out.print("insert new price [number]: ");
         price=in.nextInt();
@@ -207,10 +219,10 @@ public class Controller{
         Result result;
 
         System.out.print("insert the product name [String]: ");
-        productName=in.next();
+        productName= readLine(in);
 
-        System.out.print("insert the product name [String]: ");
-        manufacturer=in.next();
+        System.out.print("insert the manufacturer name [String]: ");
+        manufacturer= readLine(in);
 
         System.out.print("insert new price [number]: ");
         price=in.nextInt();
@@ -227,11 +239,19 @@ public class Controller{
      */
     public void updateItemStatus(Scanner in){
         int id;
+        String productName, manufacturer;
         Result result;
+
+        System.out.print("insert the product name [String]: ");
+        productName= readLine(in);
+
+        System.out.print("insert the manufacturer name [String]: ");
+        manufacturer= readLine(in);
+
         System.out.print("insert the item id [number]: ");
         id=in.nextInt();
 
-        result= Inventory.getInstance().setDefect("asd","asd",id);
+        result= Inventory.getInstance().setDefect(productName,manufacturer,id);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -242,15 +262,22 @@ public class Controller{
      */
     public void updateItemLocation(Scanner in){
         int id;
-        String location;
+        String location, productName, manufacturer;
         Result result;
+
+        System.out.print("insert the product name [String]: ");
+        productName= readLine(in);;
+
+        System.out.print("insert the manufacturer name [String]: ");
+        manufacturer= readLine(in);;
+
         System.out.print("insert the item id [number]: ");
         id=in.nextInt();
 
         System.out.print("insert a new location [String]: ");
-        location=in.next();
+        location= readLine(in);;
 
-        result= Inventory.getInstance().updateItemLocation("asd","asd",id,location);
+        result= Inventory.getInstance().updateItemLocation(productName,manufacturer,id,location);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }

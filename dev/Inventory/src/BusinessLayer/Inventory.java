@@ -2,6 +2,7 @@ package BusinessLayer;
 
 import DTO.ItemDTO;
 import DTO.ProductDTO;
+import Initialize.HardCodeInitializer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +28,13 @@ public class Inventory {
             instance = new Inventory();
         }
         return instance;
+    }
+
+    /**
+     * Initialize the system with hardcoded products and items
+     */
+    public void initialize(){
+        HardCodeInitializer.getInstance().initialize();
     }
 
 
