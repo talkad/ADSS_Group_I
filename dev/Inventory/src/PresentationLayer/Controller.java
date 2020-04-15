@@ -57,6 +57,29 @@ public class Controller{
         return input;
     }
 
+    /**
+     * This function reads input from standard input stream, and ask the user to insert an integer.
+     * if the input illegal, the user will try again until he inserts an integer.
+     * @param in standard input stream
+     * @return legal number input
+     */
+    private int readInteger(Scanner in){
+        int num=0;
+        String input="";
+        boolean isLegal=false;
+
+        while (!isLegal){
+            try{
+                input=in.nextLine();
+                num= Integer.parseInt(input);
+                isLegal=true;
+            }catch (Exception e){
+                System.out.print("This is not a number, try again: ");
+            }
+        }
+
+        return num;
+    }
 
     /**
      * This function get input from the user and activates the addItem method in the Inventory.
@@ -75,7 +98,7 @@ public class Controller{
         manufacturer= readLine(in);
 
         System.out.print("insert the item id [number]: ");
-        id=in.nextInt();
+        id= readInteger(in);
 
         System.out.print("insert the item expiry date [dd-mm-yyyy]: ");
         expiryDate=parseDate(in.next());
@@ -95,7 +118,7 @@ public class Controller{
         Result result;
 
         System.out.print("insert the item id [number]: ");
-        id=in.nextInt();
+        id= readInteger(in);
 
         System.out.print("insert the item name [String]: ");
         productName= readLine(in);
@@ -125,13 +148,13 @@ public class Controller{
         manufacturer= readLine(in);
 
         System.out.print("insert the minimal capacity [number]: ");
-        minCapacity=in.nextInt();
+        minCapacity= readInteger(in);
 
         System.out.print("insert the buying price [number]: ");
-        buyingPrice=in.nextInt();
+        buyingPrice= readInteger(in);
 
         System.out.print("insert the selling price [number]: ");
-        sellingPrice=in.nextInt();
+        sellingPrice= readInteger(in);
 
         System.out.print("insert the categories the product belongs to separated by ','  [exp. milk, salty, 500ml]: ");
         categoriesSTR= readLine(in);
@@ -177,7 +200,7 @@ public class Controller{
         manufacturer= readLine(in);
 
         System.out.print("insert min quantity [number]: ");
-        minQuantity=in.nextInt();
+        minQuantity= readInteger(in);
 
         result= Inventory.getInstance().updateMinQuantity(productName,manufacturer,minQuantity);
         if(result.getErrorMsg()!=null)
@@ -201,7 +224,7 @@ public class Controller{
         name= readLine(in);
 
         System.out.print("insert new price [number]: ");
-        price=in.nextInt();
+        price= readInteger(in);
 
         result= Inventory.getInstance().updateSellingPrice(manufacturer,name,price);
         if(result.getErrorMsg()!=null)
@@ -225,7 +248,7 @@ public class Controller{
         manufacturer= readLine(in);
 
         System.out.print("insert new price [number]: ");
-        price=in.nextInt();
+        price= readInteger(in);
 
         result= Inventory.getInstance().updateBuyingPrice(productName,manufacturer,price);
         if(result.getErrorMsg()!=null)
@@ -249,7 +272,7 @@ public class Controller{
         manufacturer= readLine(in);
 
         System.out.print("insert the item id [number]: ");
-        id=in.nextInt();
+        id= readInteger(in);
 
         result= Inventory.getInstance().setDefect(productName,manufacturer,id);
         if(result.getErrorMsg()!=null)
@@ -272,7 +295,7 @@ public class Controller{
         manufacturer= readLine(in);;
 
         System.out.print("insert the item id [number]: ");
-        id=in.nextInt();
+        id= readInteger(in);
 
         System.out.print("insert a new location [String]: ");
         location= readLine(in);;

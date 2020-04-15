@@ -36,7 +36,7 @@ public class Menu {
      */
     public static void initialize(Scanner in){
         char answer;
-        System.out.print("Would you like to initialize the system? [y/n]");
+        System.out.print("Would you like to initialize the system? [y/n] ");
         answer=in.next().charAt(0);
         if(answer=='y' || answer=='Y')
             Controller.getInstance().initialize();
