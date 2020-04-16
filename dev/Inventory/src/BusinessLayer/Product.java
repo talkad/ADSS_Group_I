@@ -12,8 +12,8 @@ public class Product {
     private int minCapacity;
     private int buyingPrice;
     private int sellingPrice;
-    private int inventoryCapacity;
-    private int storeCapacity;
+    private int inventoryCapacity; // by inventory capacity we mean the amount of items of the current product currently physically in the store's inventory
+    private int storeCapacity; // by store capacity we mean the amount of items of the current product currently physically in the store
     private List<String> categories;
     private List<Item> items;
 
@@ -35,6 +35,12 @@ public class Product {
      */
     public void addItem(Item item){
         items.add(item);
+        if(item.getLocation().equals("Store")){// if the item was added to the store then we'll update the amount of items in the store accordingly
+            this.storeCapacity++;
+        }
+        else{ // else the item is about ot be added to the store's inventory
+            this.inventoryCapacity++;
+        }
     }
 
     /**
@@ -43,6 +49,13 @@ public class Product {
      */
     public void removeItem(Item item){
         items.remove(item);
+
+        if(item.getLocation().equals("Store")){// if the item was in the store then we'll update the amount of items in the store accordingly
+            this.storeCapacity--;
+        }
+        else{ // else the item is in the store's inventory
+            this.inventoryCapacity--;
+        }
     }
 
     /**

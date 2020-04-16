@@ -316,9 +316,24 @@ public class Inventory {
             Item itemToSetNewLocationTo = productToSetLocationFrom.getItem(itemId);
 
             if (itemToSetNewLocationTo != null) {// if itemToSetNewLocationTo is null the item does not exist
-                itemToSetNewLocationTo.setLocation(location);
 
-                result.successful();
+                if(!itemToSetNewLocationTo.getLocation().equals(location)) { //checking if the item is already where we're trying to change its location to
+                    if(itemToSetNewLocationTo.getLocation().equals("Store")){ // checks where the item was so to update the product's quantities accordingly
+                        productToSetLocationFrom.setStoreCapacity(productToSetLocationFrom.getStoreCapacity() - 1); // removing from the store
+                        productToSetLocationFrom.setInventoryCapacity(productToSetLocationFrom.getInventoryCapacity() + 1); // and moving the item to the inventory
+                    }
+                    else{ // else the item is in the store's inventory
+                        productToSetLocationFrom.setInventoryCapacity(productToSetLocationFrom.getInventoryCapacity() - 1); // removing from the inventory
+                        productToSetLocationFrom.setStoreCapacity(productToSetLocationFrom.getStoreCapacity() + 1); // and moving the item to the store
+                    }
+
+                    itemToSetNewLocationTo.setLocation(location);
+
+                    result.successful();
+                }
+                else{
+                    result.failure("The item is already in the " + location);
+                }
             } else {
                 result.failure("The item you are trying to set a new location to does not exist");
             }

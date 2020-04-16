@@ -6,7 +6,7 @@ package BusinessLayer;
  */
 public class Result {
     private boolean isSuccessful;
-    private String message; //the message is necessery for when isSuccessful is false and optional when true
+    private String message; //the message is necessary for when isSuccessful is false and optional when true
 
     //this class uses the empty constructor
 

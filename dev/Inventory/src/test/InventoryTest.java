@@ -11,8 +11,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 public class InventoryTest {
 
     public static Inventory inventory;
