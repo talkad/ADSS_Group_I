@@ -35,7 +35,7 @@ public class Product {
      */
     public void addItem(Item item){
         items.add(item);
-        if(item.getLocation().equals("Store")){// if the item was added to the store then we'll update the amount of items in the store accordingly
+        if(item.getLocation().equals("Store") || item.getLocation().equals("store") ){// if the item was added to the store then we'll update the amount of items in the store accordingly
             this.storeCapacity++;
         }
         else{ // else the item is about ot be added to the store's inventory
@@ -50,7 +50,7 @@ public class Product {
     public void removeItem(Item item){
         items.remove(item);
 
-        if(item.getLocation().equals("Store")){// if the item was in the store then we'll update the amount of items in the store accordingly
+        if(item.getLocation().equals("Store") || item.getLocation().equals("store")){// if the item was in the store then we'll update the amount of items in the store accordingly
             this.storeCapacity--;
         }
         else{ // else the item is in the store's inventory
