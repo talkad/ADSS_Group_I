@@ -117,14 +117,14 @@ public class Controller{
         String productName, manufacturer;
         Result result;
 
-        System.out.print("insert the item id [number]: ");
-        id= readInteger(in);
-
         System.out.print("insert the item name [String]: ");
         productName= readLine(in);
 
         System.out.print("insert the item manufacturer name [String]: ");
         manufacturer= readLine(in);
+
+        System.out.print("insert the item id [number]: ");
+        id= readInteger(in);
 
         result= Inventory.getInstance().removeItem(productName,manufacturer,id);
         if(result.getErrorMsg()!=null)
