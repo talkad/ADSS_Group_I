@@ -85,7 +85,7 @@ public class Service {
         }
     }
 
-    private void insertEmployee(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL) {
+    public void insertEmployee(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL) {
         System.out.print("Insert employee's id: ");
         String idStr = scanner.nextLine();
         if(isNumeric(idStr)){
@@ -138,7 +138,7 @@ public class Service {
         mainBL.createEmployee(employee);
     }
 
-    private void insertShift(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL){
+    public void insertShift(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL){
         System.out.println("Insert shift's date in the format <dd/MM/yyyy>: ");
         String shiftDateStr = scanner.nextLine();
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -184,9 +184,10 @@ public class Service {
                             }
                             ILShift shift = new ILShift(shiftDate, shiftTime, branch, shiftCounter, shiftRolesList, new LinkedList<>());
                             List<Pair<Integer, String>> addEmployees = addEmployeesToShift(scanner, shift.getRoles(), shift.getDate(), shift.getTime(), shift.getShiftId(), mainBL);
-                            if(addEmployees!=null)
+                            if(addEmployees!=null) {
                                 shift.setEmployees(addEmployees);
                                 createShift(mainBL, shift);
+                            }
                         }
                         else{
                             System.out.println("Branch id must be an integer");
@@ -212,7 +213,7 @@ public class Service {
         System.out.println("Successfully added the shift");
     }
 
-    private void editFreeTime(Scanner scanner, int id, EmployeeModule.BusinessLayer.mainBL mainBL){
+    public void editFreeTime(Scanner scanner, int id, EmployeeModule.BusinessLayer.mainBL mainBL){
         if(mainBL.searchEmployee(id, this, true)){
             boolean[][] freeTime = new boolean[2][7];
             String valueStr;
@@ -321,7 +322,7 @@ public class Service {
         return str.equals("true") || str.equals("false");
     }
 
-    private void displayEmployee(int id, mainBL mainBL){
+    public void displayEmployee(int id, mainBL mainBL){
         if(mainBL.searchEmployee(id, this, true)){
             System.out.println(mainBL.employeeInfo(id).toString());
         }
