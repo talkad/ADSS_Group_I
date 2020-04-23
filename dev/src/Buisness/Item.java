@@ -47,6 +47,6 @@ public class Item {
     }
 
     public String toString(){
-        return "Buisness.Item Id: " + _id + " Name: " + _name + " Price: " + _price;
+        return "Item Id: " + _id + " Name: " + _name + " Price: " + _price;
     }
 }

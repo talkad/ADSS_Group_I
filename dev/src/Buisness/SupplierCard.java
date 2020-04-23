@@ -15,7 +15,7 @@ public class SupplierCard {
     private Arrangement _arrangement;
     private ArrayList<ContactPerson> _contacts;
     private Map<Integer,Order> _orders;
-    private int _orderNumIncrement = 0;
+    private int _orderNumIncrement = 1;
 
     public SupplierCard(String name, String manufacturer, int companyId, int bankAccount, String paymentConditions, String arrangementType, boolean selfPickup){
         _name = name;

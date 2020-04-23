@@ -1,6 +1,4 @@
 package Buisness;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,7 +34,7 @@ public class QuantityAgreement {
         String output = "Quantity Agreement detail:\n==========================\n\n";
         List<Integer> item_list = _discounts.keySet().stream().sorted().collect(Collectors.toList());
         for (Integer item: item_list){
-            output += "Buisness.Item Id: " + item +" has the following discounts:\n";
+            output += "Item Id: " + item +" has the following discounts:\n";
             List<Integer> price_list = _discounts.get(item).keySet().stream().sorted().collect(Collectors.toList());
             for (Integer val: price_list)
                 output += "Value: " + val + " Discount: " + _discounts.get(item).get(val)+"\n";

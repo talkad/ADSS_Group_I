@@ -17,7 +17,7 @@ public class ArrangementMenu {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void runMenu() {
-        System.out.println("=====Buisness.Arrangement-Presentation.Menu=====\n" +
+        System.out.println("=====Arrangement-Menu=====\n" +
                 "Please enter a Supplier's Company Id:\n");
         int companyID;
         try {
@@ -30,7 +30,7 @@ public class ArrangementMenu {
         }
         if (!SuperLi.getSuppliers().containsKey(companyID)){
             System.out.println("error:404 - Supplier not found");
-            runMenu();
+            Menu.runMenu();
             return;
         }
 
@@ -38,8 +38,8 @@ public class ArrangementMenu {
                 "1.Add or Edit Quantity Agreement\n" +
                 "2.Modify items\n" +
                 "3.Modify Delivery Dates\n" +
-                "4.Print Buisness.Arrangement\n" +
-                "5.Return to Presentation.Main Presentation.Menu\n");
+                "4.Print Arrangement\n" +
+                "5.Return to Main Menu\n");
         int choice;
         try {
             choice = scanner.nextInt();
@@ -77,7 +77,7 @@ public class ArrangementMenu {
                 "1.Add items to the arrangement\n" +
                 "2.Remove items from the arrangement\n" +
                 "3.Change an item's price\n" +
-                "4.Return to Buisness.Arrangement Presentation.Menu\n");
+                "4.Return to Arrangement Menu\n");
         int choice;
         try {
             choice = scanner.nextInt();
@@ -123,7 +123,7 @@ public class ArrangementMenu {
                 double price = Double.parseDouble(itemVal[1]);
                 if(price <= 0) {
                     System.out.println("price cannot be <= 0\n" +
-                            "returning to Buisness.Arrangement Presentation.Menu\n");
+                            "returning to Arrangement Menu\n");
                     runMenu();
                     return;
                 }
@@ -131,7 +131,7 @@ public class ArrangementMenu {
             }
             catch (Exception e){
                 System.out.println("Input was not of the right format!\n" +
-                        "returning to Buisness.Arrangement Presentation.Menu\n");
+                        "returning to Arrangement Menu\n");
                 runMenu();
                 return;
             }
@@ -155,7 +155,7 @@ public class ArrangementMenu {
             }
             catch (Exception e){
                 System.out.println("Input was not of the right format!\n" +
-                        "returning to Buisness.Arrangement Presentation.Menu\n");
+                        "returning to Arrangement Menu\n");
                 runMenu();
                 return;
             }
@@ -177,7 +177,7 @@ public class ArrangementMenu {
             }
             catch (Exception e){
                 System.out.println("Input was not of the right format!\n" +
-                        "returning to Buisness.Arrangement Presentation.Menu\n");
+                        "returning to Arrangement Menu\n");
                 runMenu();
                 return;
             }
@@ -193,7 +193,7 @@ public class ArrangementMenu {
                 "2.Add items' discounts to agreement\n" +
                 "3.Remove items from agreement\n" +
                 "4.Change items' discounts\n" +
-                "5.Return to Buisness.Arrangement Presentation.Menu\n");
+                "5.Return to Arrangement Menu\n");
         int choice;
         try {
             choice = scanner.nextInt();
@@ -271,7 +271,7 @@ public class ArrangementMenu {
         if (SuperLi.getSuppliers().get(companyID).getArrangement().addNewAgreement(map))
             System.out.println("Quantity agreement added successfully!");
         else
-            System.out.println("Adding quantity agreement failed, item is not in the arrangement or price is invalid");
+            System.out.println("Adding quantity agreement failed, item is not in the arrangement, agreement already exists or price is invalid");
     }
 
     public static void addItemsToQuantity(int companyID){
@@ -315,7 +315,7 @@ public class ArrangementMenu {
             }
             catch (Exception e){
                 System.out.println("Input was not of the right format!\n" +
-                        "returning to Buisness.Arrangement Presentation.Menu\n");
+                        "returning to Arrangement Menu\n");
                 runMenu();
                 return;
             }
@@ -325,18 +325,16 @@ public class ArrangementMenu {
     }
 
     public static void runDeliveryDateMenu(int companyID){
-        System.out.flush();
         System.out.println("Please choose a function:\n" +
                 "1.Print past delivery dates\n" +
                 "2.Print future delivery dates\n" +
                 "3.Modify date\n" +
-                "4.Return to Buisness.Arrangement Presentation.Menu\n");
+                "4.Return to Arrangement Menu\n");
         int choice;
         try {
             choice = scanner.nextInt();
         }
         catch (Exception e){
-            System.out.flush();
             System.out.println("Please Enter a number Between 1 and 4");
             runMenu();
             return;
@@ -365,8 +363,8 @@ public class ArrangementMenu {
 
     public static void modifyDate(int companyID){
         if (!(SuperLi.getSuppliers().get(companyID).getArrangement() instanceof FixedArrangement)) {
-            System.out.println("Error - cannot modify date of a non fixed arrangement. go to Buisness.Order Presentation.Menu to place orders!\n" +
-                    "returning to Buisness.Arrangement Presentation.Menu\n");
+            System.out.println("Error - cannot modify date of a non fixed arrangement. go to Order Menu to place orders!\n" +
+                    "returning to Arrangement Menu\n");
             runMenu();
             return;
         }
@@ -380,7 +378,7 @@ public class ArrangementMenu {
             }
             catch (Exception e){
                 System.out.println("Input was not of the right format!\n" +
-                        "returning to Buisness.Arrangement Presentation.Menu\n");
+                        "returning to Arrangement Menu\n");
                 runMenu();
                 return;
             }

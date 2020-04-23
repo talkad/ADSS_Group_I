@@ -22,6 +22,12 @@ public class SuperLi {
         return true;
     }
 
+    public static boolean addSupplier (SupplierCard supplier){
+        if (_suppliers.containsKey(supplier.getCompanyId())) return false;
+        _suppliers.put(supplier.getCompanyId(), supplier);
+        return true;
+    }
+
     public static boolean deleteSupplier (int id) {
         if (!_suppliers.containsKey(id)) return false;
         _suppliers.remove(id);

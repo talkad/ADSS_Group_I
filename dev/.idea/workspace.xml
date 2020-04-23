@@ -51,6 +51,21 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="SuperLiTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Suppliers1" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="setUp.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="setUp" />
+      <option name="MAIN_CLASS_NAME" value="setUp.SuperLiTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="SuperLiTest.testAddSupplier" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Suppliers1" />
       <extension name="coverage">
@@ -70,6 +85,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.Main" />
+        <item itemvalue="JUnit.SuperLiTest" />
         <item itemvalue="JUnit.SuperLiTest.testAddSupplier" />
       </list>
     </recent_temporary>
@@ -105,6 +121,7 @@
       <workItem from="1587565451417" duration="6282000" />
       <workItem from="1587637137481" duration="1987000" />
       <workItem from="1587640050788" duration="978000" />
+      <workItem from="1587645650130" duration="4499000" />
     </task>
     <servers />
   </component>
@@ -124,22 +141,22 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="371" y="87" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1280.680@0.0.1280.680" timestamp="1587408766626" />
-    <state width="1237" height="255" key="GridCell.Tab.0.bottom" timestamp="1587641029643">
+    <state width="1237" height="209" key="GridCell.Tab.0.bottom" timestamp="1587650003227">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="255" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1587641029643" />
-    <state width="1237" height="255" key="GridCell.Tab.0.center" timestamp="1587641029643">
+    <state width="1237" height="209" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1587650003227" />
+    <state width="1237" height="209" key="GridCell.Tab.0.center" timestamp="1587650003227">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="255" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1587641029643" />
-    <state width="1237" height="255" key="GridCell.Tab.0.left" timestamp="1587641029643">
+    <state width="1237" height="209" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1587650003227" />
+    <state width="1237" height="209" key="GridCell.Tab.0.left" timestamp="1587650003226">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="255" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1587641029643" />
-    <state width="1237" height="255" key="GridCell.Tab.0.right" timestamp="1587641029643">
+    <state width="1237" height="209" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1587650003226" />
+    <state width="1237" height="209" key="GridCell.Tab.0.right" timestamp="1587650003227">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="255" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1587641029643" />
+    <state width="1237" height="209" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1587650003227" />
     <state width="1237" height="204" key="GridCell.Tab.1.bottom" timestamp="1587318409500">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
@@ -156,14 +173,14 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state width="1237" height="204" key="GridCell.Tab.1.right/0.0.1280.680@0.0.1280.680" timestamp="1587318409500" />
-    <state x="142" y="0" key="SettingsEditor" timestamp="1587640288645">
+    <state x="142" y="0" key="SettingsEditor" timestamp="1587645665482">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state x="142" y="0" key="SettingsEditor/0.0.1280.680@0.0.1280.680" timestamp="1587640288645" />
-    <state x="337" y="164" key="com.intellij.ide.util.TipDialog" timestamp="1587640054704">
+    <state x="142" y="0" key="SettingsEditor/0.0.1280.680@0.0.1280.680" timestamp="1587645665482" />
+    <state x="337" y="164" key="com.intellij.ide.util.TipDialog" timestamp="1587645650496">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state x="337" y="164" key="com.intellij.ide.util.TipDialog/0.0.1280.680@0.0.1280.680" timestamp="1587640054704" />
+    <state x="337" y="164" key="com.intellij.ide.util.TipDialog/0.0.1280.680@0.0.1280.680" timestamp="1587645650496" />
     <state x="376" y="234" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1587637510052">
       <screen x="0" y="0" width="1280" height="680" />
     </state>

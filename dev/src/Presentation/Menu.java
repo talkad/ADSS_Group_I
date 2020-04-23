@@ -12,7 +12,7 @@ import static java.lang.System.exit;
 public class Menu {
 
     public static void runMenu(){
-        System.out.println("=====Presentation.Main-Presentation.Menu=====\n" +
+        System.out.println("=====Main-Menu=====\n" +
                 "Choose a function:\n" +
                 "1.Manage Suppliers\n" +
                 "2.Manage Arrangements\n" +

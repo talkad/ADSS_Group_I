@@ -1,8 +1,6 @@
 package Interface;
-
 import Buisness.SuperLi;
 import Presentation.Menu;
-
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -11,12 +9,12 @@ public class SupplierMenu {
     static Scanner scanner = new Scanner(System.in);
 
     public static void runMenu(){
-        System.out.println("=====Supplier-Presentation.Menu=====\n" +
+        System.out.println("=====Supplier-Menu=====\n" +
                 "Please choose a function:\n" +
                 "1.Add new Supplier\n" +
                 "2.Delete a Supplier card\n" +
                 "3.Edit a Supplier card\n" +
-                "4.Return to Presentation.Main Presentation.Menu\n");
+                "4.Return to Main Menu\n");
         Scanner scanner = new Scanner(System.in);
         int choice;
         try {
@@ -66,7 +64,7 @@ public class SupplierMenu {
             selfPickup=Boolean.parseBoolean(values[6]);
         }
         catch (Exception e){
-            System.out.println("Input was not of the right format\nReturning to Supplier Presentation.Menu\n");
+            System.out.println("Input was not of the right format\nReturning to Supplier Menu\n");
             runMenu();
             return;
         }
@@ -84,7 +82,7 @@ public class SupplierMenu {
             companyID=Integer.parseInt(input);
         }
         catch (Exception e){
-            System.out.println("A Company ID is an integer\nReturning to Supplier Presentation.Menu\n");
+            System.out.println("A Company ID is an integer\nReturning to Supplier Menu\n");
             runMenu();
             return;
         }
@@ -102,7 +100,12 @@ public class SupplierMenu {
             companyID=Integer.parseInt(input);
         }
         catch (Exception e){
-            System.out.println("A Company ID is an integer\nReturning to Supplier Presentation.Menu\n");
+            System.out.println("A Company ID is an integer\nReturning to Supplier Menu\n");
+            runMenu();
+            return;
+        }
+        if (!SuperLi.getSuppliers().containsKey(companyID)){
+            System.out.println("error:404 - Supplier not found");
             runMenu();
             return;
         }
@@ -111,7 +114,7 @@ public class SupplierMenu {
                 "2.Change payment conditions \n" +
                 "3.Change Supplier Bank account number\n" +
                 "4.Print Supplier card\n" +
-                "5.Return to Presentation.Main Presentation.Menu\n");
+                "5.Return to Main Menu\n");
         Scanner scanner = new Scanner(System.in);
         int choice;
         try {
@@ -158,7 +161,7 @@ public class SupplierMenu {
         String input = scanner.nextLine();
         input = input.replaceAll("\\s+","");
         if (input.length() != 9) {
-            System.out.println("A bank account number is an integer with exactly 9 digits long!\nreturning to Supplier Presentation.Menu\n");
+            System.out.println("A bank account number is an integer with exactly 9 digits long!\nreturning to Supplier Menu\n");
             runMenu();
             return;
         }
@@ -167,7 +170,7 @@ public class SupplierMenu {
             bankNumber=Integer.parseInt(input);
         }
         catch (Exception e){
-            System.out.println("A bank account is an integer\nReturning to Supplier Presentation.Menu\n");
+            System.out.println("A bank account is an integer\nReturning to Supplier Menu\n");
             runMenu();
             return;
         }
@@ -181,7 +184,7 @@ public class SupplierMenu {
                 "2.Delete a Contact Person \n" +
                 "3.Edit a Contact Person\n" +
                 "4.Print all contacts\n" +
-                "5.Return to Presentation.Main Presentation.Menu\n");
+                "5.Return to Main Menu\n");
         Scanner scanner = new Scanner(System.in);
         int choice;
         try {
@@ -227,7 +230,7 @@ public class SupplierMenu {
         for (int i = 0; i < methods.length;i++){
             String[] methodsSplit = methods[i].split("-");
             if (methodsSplit.length != 2){
-                System.out.println("Input was of the wrong format\nreturning to Supplier Presentation.Menu\n");
+                System.out.println("Input was of the wrong format\nreturning to Supplier Menu\n");
                 runMenu();
                 return;
             }
@@ -255,7 +258,7 @@ public class SupplierMenu {
                 "1.Add method to contact\n" +
                 "2.Delete method from contact\n" +
                 "3.Edit details of method\n" +
-                "4.Return to Contact Presentation.Menu\n");
+                "4.Return to Contact Menu\n");
         int choice;
         try {
             choice = scanner.nextInt();

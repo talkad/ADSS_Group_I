@@ -55,7 +55,7 @@ public abstract class Arrangement {
         return output;
     }
     public boolean addNewAgreement (Map<Integer, Map<Integer,Double>> items) {
-        if (!_items.keySet().containsAll(items.keySet()) || !checkPrices(items)) return false;
+        if (!_items.keySet().containsAll(items.keySet()) || !checkPrices(items) || _quantityAgreement!=null) return false;
         _quantityAgreement = new QuantityAgreement(items);
         return true;
     }
