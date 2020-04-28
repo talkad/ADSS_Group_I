@@ -1,9 +1,13 @@
 package DataAccessLayer;
 
+import DTO.ItemDTO;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class Connector {
 
@@ -32,11 +36,14 @@ public class Connector {
         try {
             File dbFile=new File(".");
             // db parameters
-            String url = "jdbc:sqlite:"+dbFile.getAbsolutePath()+"\\..\\..\\..\\InventoryDB.db"; // relative path of db
+            String url = "jdbc:sqlite:/home/tal/Desktop/ADSS_Group_I/dev/InventoryDB";
+                    //"jdbc:sqlite:"+dbFile.getAbsolutePath()+"/InventoryDB.db"; // relative path of db
             // create a connection to the database
             conn = DriverManager.getConnection(url);
+            conn.setAutoCommit(false);
 
         } catch (SQLException e) {
+            System.out.println("as'fdasdfasdf");
             System.err.println(e.getMessage());
         } finally {
             try {
@@ -51,5 +58,12 @@ public class Connector {
 
     public Connection getConnection() {
         return conn;
+    }
+
+
+
+    public static void main(String[] args){
+        System.out.println(connector);
+
     }
 }
