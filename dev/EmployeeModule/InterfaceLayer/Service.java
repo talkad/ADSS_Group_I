@@ -19,8 +19,8 @@ public class Service {
         String menu = "choose action:\n" + "1) Add employee\n" +
                 "2) Edit employee free time\n" + "3) Add shift\n" +
                 "4) Get shift history\n" + "5) Get employee details\n"
-                + "6) Quit\n" + "7) Load pre-made data\n";
-        String input = "";
+                + "6) Quit\n" + "7) Load pre-made data\n" + "8) Edit employee's details\n";
+        String input;
         while(!quit){
             System.out.print(menu);
             input=scanner.nextLine();
@@ -32,9 +32,8 @@ public class Service {
                 case ("2"):
                     flag = true;
                     System.out.print("Please insert the employee's id number: ");
-                    String idStr = scanner.nextLine();
-                    if(isNumeric(idStr)){
-                        int id = Integer.parseInt(idStr);
+                    int id = isNumeric(scanner.nextLine());
+                    if(id != -1){
                         service.editFreeTime(scanner, id, mainBL);
                     }
                     else{
@@ -48,9 +47,8 @@ public class Service {
                 case ("4"):
                     flag = true;
                     System.out.print("Please insert the shift's id number: ");
-                    String shiftIdStr = scanner.nextLine();
-                    if(isNumeric(shiftIdStr)){
-                        int shiftId = Integer.parseInt(shiftIdStr);
+                    int shiftId = isNumeric(scanner.nextLine());
+                    if(shiftId != -1){
                         service.displayShift(shiftId, mainBL);
                     }
                     else {
@@ -60,9 +58,8 @@ public class Service {
                 case ("5"):
                     flag = true;
                     System.out.print("Please insert the employee's id number: ");
-                    String employeeIdStr = scanner.nextLine();
-                    if(isNumeric(employeeIdStr)){
-                        int employeeId = Integer.parseInt(employeeIdStr);
+                    int employeeId = isNumeric(scanner.nextLine());
+                    if(employeeId != -1){
                         service.displayEmployee(employeeId, mainBL);
                     }
                     else {
@@ -81,57 +78,84 @@ public class Service {
                     }
                     flag = true;
                     break;
+                case ("8"):
+                    flag = true;
+                    service.editEmployee(scanner, mainBL);
+                    break;
             }
         }
+    }
+    public ILEmployee generateEmployee(Scanner scanner, int id){
+        System.out.print("Insert employee's first name: ");
+        String firstName = scanner.nextLine();
+        System.out.print("Insert employee's last name: ");
+        String lastName = scanner.nextLine();
+        System.out.print("Insert employee's bank details: ");
+        String bankDetails = scanner.nextLine();
+        System.out.print("Insert employee's salary: ");
+        int salary = isNumeric(scanner.nextLine());
+        if(salary != -1) {
+            System.out.print("Insert employee's work conditions: ");
+            String workCond = scanner.nextLine();
+            System.out.print("Insert employee's work starting date in the format <dd/MM/yyyy>: ");
+            String startDateStr = scanner.nextLine();
+            Date startDate;
+            try{
+                startDate = new SimpleDateFormat("dd/MM/yyyy").parse(startDateStr);
+                List<String> employeeRoles = new LinkedList<>();
+                System.out.println("Insert employee's roles, to stop inserting roles type 'stop'");
+                String role = scanner.nextLine();
+                while(!role.equals("stop")){
+                    employeeRoles.add(role);
+                    role = scanner.nextLine();
+                }
+                if(employeeRoles.size()<1)
+                    System.out.println("Invalid role list, all employees must have 1 role at least");
+                else {
+                    return new ILEmployee(id, firstName, lastName, bankDetails, workCond, startDate, salary, employeeRoles, new boolean[2][7]);
+                }
+            } catch (ParseException e){System.out.println("Invalid date");}
+        }
+        else {
+            System.out.println("Invalid salary, must be an integer");
+        }
+        return null;
     }
 
     public void insertEmployee(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL) {
         System.out.print("Insert employee's id: ");
-        String idStr = scanner.nextLine();
-        if(isNumeric(idStr)){
-            int id = Integer.parseInt(idStr);
+        int id = isNumeric(scanner.nextLine());
+        if(id != -1){
             if(mainBL.searchEmployee(id, this, false))
                 System.out.print("Employee already exists in the system");
             else{
-                System.out.print("Insert employee's first name: ");
-                String firstName = scanner.nextLine();
-                System.out.print("Insert employee's last name: ");
-                String lastName = scanner.nextLine();
-                System.out.print("Insert employee's bank details: ");
-                String bankDetails = scanner.nextLine();
-                System.out.print("Insert employee's salary: ");
-                String salaryStr = scanner.nextLine();
-                if(isNumeric(salaryStr)) {
-                    int salary = Integer.parseInt(salaryStr);
-                    System.out.print("Insert employee's work conditions: ");
-                    String workCond = scanner.nextLine();
-                    System.out.print("Insert employee's work starting date in the format <dd/MM/yyyy>: ");
-                    String startDateStr = scanner.nextLine();
-                    Date startDate = null;
-                    try{
-                        startDate = new SimpleDateFormat("dd/MM/yyyy").parse(startDateStr);
-                        List<String> employeeRoles = new LinkedList<>();
-                        System.out.println("Insert employee's roles, to stop inserting roles type 'stop'");
-                        String role = scanner.nextLine();
-                        while(!role.equals("stop")){
-                            employeeRoles.add(role);
-                            role = scanner.nextLine();
-                        }
-                        if(employeeRoles.size()<1)
-                            System.out.println("Invalid role list, all employees must have 1 role at least");
-                        else {
-                            System.out.println("Successfully added the employee");
-                            ILEmployee employee = new ILEmployee(id, firstName, lastName, bankDetails, workCond, startDate, salary, employeeRoles, new boolean[2][7]);
-                            createEmployee(mainBL, employee);
-                        }
-                    } catch (ParseException e){System.out.println("Invalid date");}
-                }
-                else {
-                    System.out.println("Invalid salary, must be an integer");
+                ILEmployee employee = generateEmployee(scanner, id);
+                if(employee!=null){
+                    System.out.println("Successfully added the employee");
+                    createEmployee(mainBL, employee);
                 }
             }
         }
-        else System.out.println("Invalid id, must be an integer");
+        else
+            System.out.println("Invalid id, must be an integer");
+    }
+
+    public void editEmployee(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL){
+        System.out.print("Insert the id of the employee you wish to edit: ");
+        int id = isNumeric(scanner.nextLine());
+        if(id != -1){
+            if(mainBL.searchEmployee(id, this, true)){
+                ILEmployee employee = generateEmployee(scanner, id);
+                if(employee!=null){
+                    mainBL.removeEmployee(id);
+                    System.out.println("Successfully added the employee");
+                    createEmployee(mainBL, employee);
+                }
+            }
+        }
+        else{
+            System.out.println("Id must be an integer");
+        }
     }
 
     private void createEmployee(EmployeeModule.BusinessLayer.mainBL mainBL, ILEmployee employee){
@@ -147,17 +171,14 @@ public class Service {
             Date currDate = new Date();
             if(currDate.before(shiftDate)){
                 System.out.println("Insert shift's period - 1 is day, 2 is night: ");
-                String shiftTimeStr = scanner.nextLine();
-                if(isNumeric(shiftTimeStr)){
-                    int shiftTime = Integer.parseInt(shiftTimeStr);
+                int shiftTime = isNumeric(scanner.nextLine());
+                if(shiftTime != -1){
                     if((shiftTime==1) || (shiftTime == 2)){
                         System.out.println("Insert shift's branch number: ");
-                        String branchStr = scanner.nextLine();
-                        if(isNumeric(branchStr)){
-                            int branch = Integer.parseInt(branchStr);
-                            String role = "";
-                            String legalAmount = "";
-                            int amount = 0;
+                        int branch = isNumeric(scanner.nextLine());
+                        if(branch != -1){
+                            String role;
+                            int amount;
                             System.out.println("Insert shift's required role and after that the role's amount, " +
                                     "to stop inserting roles type 'stop'");
                             String inRole = "Insert role: ";
@@ -171,19 +192,18 @@ public class Service {
                                     break;
                                 else{
                                     System.out.print(inAmount);
-                                    legalAmount = scanner.nextLine();
-                                    while(!isNumeric(legalAmount)){
+                                    amount = isNumeric(scanner.nextLine());
+                                    while(amount == -1){
                                         System.out.println("Invalid input, please insert a number: ");
-                                        legalAmount = scanner.nextLine();
+                                        amount = isNumeric(scanner.nextLine());
                                     }
-                                    amount = Integer.parseInt(legalAmount);
                                     for (int i = 0; i<amount; i++){
                                         shiftRolesList.add(role);
                                     }
                                 }
                             }
                             ILShift shift = new ILShift(shiftDate, shiftTime, branch, shiftCounter, shiftRolesList, new LinkedList<>());
-                            List<Pair<Integer, String>> addEmployees = addEmployeesToShift(scanner, shift.getRoles(), shift.getDate(), shift.getTime(), shift.getShiftId(), mainBL);
+                            List<Pair<Integer, String>> addEmployees = addEmployeesToShift(scanner, shift.getRoles(), shift.getDate(), shift.getTime(), mainBL);
                             if(addEmployees!=null) {
                                 shift.setEmployees(addEmployees);
                                 createShift(mainBL, shift);
@@ -268,7 +288,7 @@ public class Service {
         }
     }
 
-    private List<Pair<Integer, String>> addEmployeesToShift(Scanner scanner, List<String> roles, Date date, int time, int shiftID, EmployeeModule.BusinessLayer.mainBL mainBL){
+    private List<Pair<Integer, String>> addEmployeesToShift(Scanner scanner, List<String> roles, Date date, int time, EmployeeModule.BusinessLayer.mainBL mainBL){
         List<Pair<Integer, String>> shiftList = new LinkedList<>();
         List<String> checkRoles = new LinkedList<>(roles);
         Calendar c = Calendar.getInstance();
@@ -278,10 +298,10 @@ public class Service {
         while(true) {
             System.out.print("Insert employee's id for the shift: ");
             String empIdStr = scanner.nextLine();
+            int empId = isNumeric(empIdStr);
             if(empIdStr.equals("stop"))
                 break;
-            if(isNumeric(empIdStr)){
-                int empId = Integer.parseInt(empIdStr);
+            if(empId != -1){
                 System.out.print("Insert employee's required role for the shift: ");
                 String empRole = scanner.nextLine();
                 if (mainBL.searchEmployee(empId, this, true)) {
@@ -309,12 +329,11 @@ public class Service {
         }
     }
 
-    public static boolean isNumeric(String str) {
+    public static int isNumeric(String str) {
         try {
-            Integer.parseInt(str);
-            return true;
+            return Integer.parseInt(str);
         } catch(NumberFormatException e){
-            return false;
+            return -1;
         }
     }
 

@@ -36,6 +36,9 @@ public class mainBL {
         return this.employeeMap.containsKey(id);
     }
 
+    public void removeEmployee(int id){
+        this.employeeMap.remove(id);
+    }
     public boolean searchShift(int id, Service service){
         if(!this.shiftHistory.containsKey(id))
             send("Error: Shift doesn't exist in the system", service);
