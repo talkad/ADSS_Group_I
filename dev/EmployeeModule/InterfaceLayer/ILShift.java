@@ -42,19 +42,11 @@ public class ILShift {
     }
 
     public List<String> getRoles() {
-        List<String> lst = new LinkedList<>();
-        for (String role : roles) {
-            lst.add(role);
-        }
-        return lst;
+        return new LinkedList<>(roles);
     }
 
     public List<Pair<Integer, String>> getEmployees() {
-        List<Pair<Integer, String>> lst = new LinkedList<>();
-        for (Pair<Integer, String> employee : employees) {
-            lst.add(employee);
-        }
-        return lst;
+        return new LinkedList<>(employees);
     }
 
     public void setEmployees(List<Pair<Integer, String>> employees) {

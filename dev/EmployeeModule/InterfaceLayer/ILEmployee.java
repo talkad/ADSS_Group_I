@@ -57,11 +57,7 @@ public class ILEmployee {
     }
 
     public List<String> getRoles() {
-        List<String> lst = new LinkedList<>();
-        for (String role : roles) {
-            lst.add(role);
-        }
-        return lst;
+        return new LinkedList<>(roles);
     }
 
     public boolean[][] getFreeTime() {
