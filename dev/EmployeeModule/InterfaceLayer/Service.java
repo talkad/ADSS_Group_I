@@ -46,14 +46,7 @@ public class Service {
                     break;
                 case ("4"):
                     flag = true;
-                    System.out.print("Please insert the shift's id number: ");
-                    int shiftId = isNumeric(scanner.nextLine());
-                    if(shiftId != -1){
-                        service.displayShift(shiftId, mainBL);
-                    }
-                    else {
-                        System.out.println("Id must be an integer");
-                    }
+                    service.displayShift(scanner, mainBL);
                     break;
                 case ("5"):
                     flag = true;
@@ -147,9 +140,11 @@ public class Service {
             if(mainBL.searchEmployee(id, this, true)){
                 ILEmployee employee = generateEmployee(scanner, id);
                 if(employee!=null){
+                    boolean[][] ft = mainBL.freeTime(id);
                     mainBL.removeEmployee(id);
-                    System.out.println("Successfully added the employee");
+                    System.out.println("Successfully edited the employee's details");
                     createEmployee(mainBL, employee);
+                    mainBL.setFreeTime(id, ft);
                 }
             }
         }
@@ -174,43 +169,47 @@ public class Service {
                 int shiftTime = isNumeric(scanner.nextLine());
                 if(shiftTime != -1){
                     if((shiftTime==1) || (shiftTime == 2)){
-                        System.out.println("Insert shift's branch number: ");
-                        int branch = isNumeric(scanner.nextLine());
-                        if(branch != -1){
-                            String role;
-                            int amount;
-                            System.out.println("Insert shift's required role and after that the role's amount, " +
-                                    "to stop inserting roles type 'stop'");
-                            String inRole = "Insert role: ";
-                            String inAmount = "Insert amount: ";
-                            List<String> shiftRolesList = new LinkedList<>();
-                            shiftRolesList.add("shift manager");
-                            while(true){
-                                System.out.print(inRole);
-                                role = scanner.nextLine();
-                                if(role.equals("stop"))
-                                    break;
-                                else{
-                                    System.out.print(inAmount);
-                                    amount = isNumeric(scanner.nextLine());
-                                    while(amount == -1){
-                                        System.out.println("Invalid input, please insert a number: ");
+                        if(!mainBL.searchShift(shiftDateStr+ " " + shiftTime, this, false)){
+                            System.out.println("Insert shift's branch number: ");
+                            int branch = isNumeric(scanner.nextLine());
+                            if(branch != -1){
+                                String role;
+                                int amount;
+                                System.out.println("Insert shift's required role and after that the role's amount, " +
+                                        "to stop inserting roles type 'stop'");
+                                String inRole = "Insert role: ";
+                                String inAmount = "Insert amount: ";
+                                List<String> shiftRolesList = new LinkedList<>();
+                                shiftRolesList.add("shift manager");
+                                while(true){
+                                    System.out.print(inRole);
+                                    role = scanner.nextLine();
+                                    if(role.equals("stop"))
+                                        break;
+                                    else{
+                                        System.out.print(inAmount);
                                         amount = isNumeric(scanner.nextLine());
-                                    }
-                                    for (int i = 0; i<amount; i++){
-                                        shiftRolesList.add(role);
+                                        while(amount == -1){
+                                            System.out.println("Invalid input, please insert a number: ");
+                                            amount = isNumeric(scanner.nextLine());
+                                        }
+                                        for (int i = 0; i<amount; i++){
+                                            shiftRolesList.add(role);
+                                            if(role.equals("driver"))
+                                                shiftRolesList.add("storekeeper");
+                                        }
                                     }
                                 }
+                                ILShift shift = new ILShift(shiftDate, shiftTime, branch, shiftCounter, shiftRolesList, new LinkedList<>());
+                                List<Pair<Integer, String>> addEmployees = addEmployeesToShift(scanner, shift.getRoles(), shift.getDate(), shift.getTime(), mainBL);
+                                if(addEmployees!=null) {
+                                    shift.setEmployees(addEmployees);
+                                    createShift(mainBL, shift);
+                                }
                             }
-                            ILShift shift = new ILShift(shiftDate, shiftTime, branch, shiftCounter, shiftRolesList, new LinkedList<>());
-                            List<Pair<Integer, String>> addEmployees = addEmployeesToShift(scanner, shift.getRoles(), shift.getDate(), shift.getTime(), mainBL);
-                            if(addEmployees!=null) {
-                                shift.setEmployees(addEmployees);
-                                createShift(mainBL, shift);
+                            else{
+                                System.out.println("Branch id must be an integer");
                             }
-                        }
-                        else{
-                            System.out.println("Branch id must be an integer");
                         }
                     }
                     else{
@@ -347,10 +346,17 @@ public class Service {
         }
     }
 
-    private void displayShift(int shiftId, mainBL mainBL) {
-        if(mainBL.searchShift(shiftId, this)){
-            System.out.println(mainBL.shiftInfo(shiftId).toString());
+    private void displayShift(Scanner scanner, mainBL mainBL) {
+        System.out.print("Please insert the shift's date in the format <dd/MM/yyyy> " +
+                "followed by a space and time of the shift (1 for day and 2 for night):\n");
+        String shiftTime = scanner.nextLine();
+        if(mainBL.searchShift(shiftTime, this, true)){
+            System.out.println(mainBL.shiftInfo(shiftTime).toString());
         }
+    }
+
+    public boolean isEmployeeInShift(int id, String shiftTime, mainBL mainBL){
+        return mainBL.isEmployeeInShift(id, shiftTime,this);
     }
 
     public void send(String message){
@@ -481,6 +487,6 @@ public class Service {
             mainBL.unFreeTime(9, 0, 2);
             shiftCounter = shiftCounter + 3;
             System.out.println("Successfully loaded pre-made data");
-        }catch (ParseException e){}
+        }catch (ParseException ignored){}
     }
 }

@@ -3,13 +3,17 @@ package EmployeeModule.BusinessLayer;
 import EmployeeModule.InterfaceLayer.ILEmployee;
 import EmployeeModule.InterfaceLayer.ILShift;
 import EmployeeModule.InterfaceLayer.Service;
+import EmployeeModule.Pair;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 public class mainBL {
     public Map<Integer, Employee> employeeMap = new HashMap<>();
-    public Map<Integer, Shift> shiftHistory = new HashMap<>();
+    public Map<String, Shift> shiftHistory = new HashMap<>();
+
 
     public void createEmployee(ILEmployee employee){
         employeeMap.put(employee.getId(), new Employee(employee.getId(),
@@ -18,7 +22,7 @@ public class mainBL {
     }
 
     public void createShift(ILShift shift){
-        shiftHistory.put(shift.getShiftId(), new Shift(shift.getDate(),
+        shiftHistory.put(shift.getShiftKey(), new Shift(shift.getDate(),
                 shift.getTime(), shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees()));
     }
 
@@ -39,10 +43,14 @@ public class mainBL {
     public void removeEmployee(int id){
         this.employeeMap.remove(id);
     }
-    public boolean searchShift(int id, Service service){
-        if(!this.shiftHistory.containsKey(id))
+
+    public boolean searchShift(String key, Service service, boolean flag){
+        if(!this.shiftHistory.containsKey(key) && flag)
             send("Error: Shift doesn't exist in the system", service);
-        return this.shiftHistory.containsKey(id);
+        if(this.shiftHistory.containsKey(key) && !flag){
+            send("Error: Shift already exists in the system", service);
+        }
+        return this.shiftHistory.containsKey(key);
     }
 
     public boolean hasRole(int id, String role, Service service){
@@ -64,9 +72,23 @@ public class mainBL {
                 employee.getRoles(), employee.getFreeTime());
     }
 
-    public ILShift shiftInfo(int id){
-        Shift shift = shiftHistory.get(id);
+    public ILShift shiftInfo(String key){
+        Shift shift = shiftHistory.get(key);
         return new ILShift(shift.getDate(), shift.getTime(), shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees());
+    }
+
+    public boolean isEmployeeInShift(int id, String shiftTime, Service service){
+        if(searchShift(shiftTime, service, true)) {
+            for (Pair<Integer, String> p: shiftHistory.get(shiftTime).getEmployees()) {
+                if(p.getFirst() == id)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean[][] freeTime(int id){
+        return employeeMap.get(id).getFreeTime();
     }
 
     public void send(String message, Service service){

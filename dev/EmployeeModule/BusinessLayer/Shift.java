@@ -2,6 +2,8 @@ package EmployeeModule.BusinessLayer;
 
 import EmployeeModule.Pair;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -68,5 +70,11 @@ public class Shift {
 
     public void setEmployees(List<Pair<Integer, String>> employees) {
         this.employees = employees;
+    }
+
+    public String getShiftKey(){
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String strDate = dateFormat.format(this.date);
+        return strDate + " " + this.time;
     }
 }

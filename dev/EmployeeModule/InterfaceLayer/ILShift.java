@@ -2,6 +2,7 @@ package EmployeeModule.InterfaceLayer;
 
 import EmployeeModule.Pair;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -58,6 +59,12 @@ public class ILShift {
 
     public void setEmployees(List<Pair<Integer, String>> employees) {
         this.employees = employees;
+    }
+
+    public String getShiftKey(){
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String strDate = dateFormat.format(this.date);
+        return strDate + " " + this.time;
     }
 
     public String toString(){
