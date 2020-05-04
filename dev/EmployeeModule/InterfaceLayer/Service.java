@@ -12,7 +12,7 @@ public class Service {
 
     public static void main(String [] args){
         Service service = new Service();
-        EmployeeModule.BusinessLayer.mainBL mainBL = new mainBL();
+        EmployeeModule.BusinessLayer.mainBL mainBL = EmployeeModule.BusinessLayer.mainBL.getInstance();
         Scanner scanner = new Scanner(System.in);
         boolean quit = false;
         boolean flag = false;
@@ -355,7 +355,7 @@ public class Service {
         }
     }
 
-    public boolean isEmployeeInShift(int id, String shiftTime, mainBL mainBL){
+    public boolean isEmployeeInShift(int id, String shiftTime, EmployeeModule.BusinessLayer.mainBL mainBL){
         return mainBL.isEmployeeInShift(id, shiftTime,this);
     }
 

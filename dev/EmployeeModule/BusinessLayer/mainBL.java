@@ -3,15 +3,29 @@ package EmployeeModule.BusinessLayer;
 import EmployeeModule.InterfaceLayer.ILEmployee;
 import EmployeeModule.InterfaceLayer.ILShift;
 import EmployeeModule.InterfaceLayer.Service;
+import EmployeeModule.DataAccessLayer.mainData;
+
 import EmployeeModule.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class mainBL {
-    public Map<Integer, Employee> employeeMap = new HashMap<>();
-    public Map<String, Shift> shiftHistory = new HashMap<>();
-
+    private Map<Integer, Employee> employeeMap;
+    private Map<String, Shift> shiftHistory;
+    private EmployeeModule.DataAccessLayer.mainData mainData;
+    private static mainBL instance;
+    private mainBL(){
+        this.employeeMap = new HashMap<>();
+        this.shiftHistory = new HashMap<>();
+        this.mainData = EmployeeModule.DataAccessLayer.mainData.getInstance();
+        mainData.initialize();
+    }
+    public static mainBL getInstance(){
+        if(instance == null)
+            instance = new mainBL();
+        return instance;
+    }
 
     public void createEmployee(ILEmployee employee){
         employeeMap.put(employee.getId(), new Employee(employee.getId(),

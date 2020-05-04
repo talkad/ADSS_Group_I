@@ -72,7 +72,7 @@ public class employeeTest {
             out = new java.io.ByteArrayOutputStream();
             System.setOut(new java.io.PrintStream(out));
 
-            mainBL = new mainBL();
+            mainBL = EmployeeModule.BusinessLayer.mainBL.getInstance();
             service = new Service();
             inputEmployeeScanner = new Scanner("1234\nBob\nCohen\nBankDetails\n1000\nconditions\n22/03/2020\n" +
                     "cashier\nstop\n");
