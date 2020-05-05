@@ -1,9 +1,10 @@
 package EmployeeModule.BusinessLayer;
 
+import EmployeeModule.DataAccessLayer.DALEmployee;
+import EmployeeModule.DataAccessLayer.DALShift;
 import EmployeeModule.InterfaceLayer.ILEmployee;
 import EmployeeModule.InterfaceLayer.ILShift;
 import EmployeeModule.InterfaceLayer.Service;
-import EmployeeModule.DataAccessLayer.mainData;
 
 import EmployeeModule.Pair;
 
@@ -19,7 +20,7 @@ public class mainBL {
         this.employeeMap = new HashMap<>();
         this.shiftHistory = new HashMap<>();
         this.mainData = EmployeeModule.DataAccessLayer.mainData.getInstance();
-        mainData.initialize();
+        initialize();
     }
     public static mainBL getInstance(){
         if(instance == null)
@@ -27,23 +28,36 @@ public class mainBL {
         return instance;
     }
 
-    public void createEmployee(ILEmployee employee){
+    public void createEmployee(ILEmployee employee, boolean updateFlag){
         employeeMap.put(employee.getId(), new Employee(employee.getId(),
                 employee.getFirstName(), employee.getLastName(), employee.getBankDetails(),
                 employee.getWorkConditions(), employee.getStartTime(), employee.getSalary(), employee.getRoles()));
+
+        DALEmployee dalEmployee = new DALEmployee(employee.getId(),
+                employee.getFirstName(), employee.getLastName(), employee.getBankDetails(),
+                employee.getWorkConditions(), employee.getStartTime(), employee.getSalary(), employee.getRoles(), employee.getFreeTime());
+        if(!updateFlag)
+            mainData.writingEmployee(dalEmployee);
+        else
+            mainData.editEmployee(dalEmployee);
     }
 
     public void createShift(ILShift shift){
-        shiftHistory.put(shift.getShiftKey(), new Shift(shift.getDate(),
-                shift.getTime(), shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees()));
+        shiftHistory.put(shift.getShiftKey(), new Shift(shift.getDate(), shift.getTime(),
+                shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees()));
+
+        mainData.writingShift(new DALShift(shift.getDate(), shift.getTime(),
+                shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees()));
     }
 
     public void setFreeTime(int id, boolean[][] freeTime){
             employeeMap.get(id).setFreeTime(freeTime);
+            mainData.writeFreeTime(id, freeTime);
     }
 
     public void unFreeTime(int id, int period, int day){
         employeeMap.get(id).setUnFreeTime(period, day);
+        mainData.writeFreeTime(id, this.employeeMap.get(id).getFreeTime());
     }
 
     public boolean searchEmployee(int id, Service service, boolean flag){
@@ -105,5 +119,25 @@ public class mainBL {
 
     public void send(String message, Service service){
         service.send(message);
+    }
+
+    public void initializeEmployeeMap(){
+        for (DALEmployee employee: this.mainData.createEmployeeMap()) {
+            Employee e = new Employee(employee.getId(), employee.getFirstName(), employee.getLastName(), employee.getBankDetails(), employee.getWorkConditions(),
+                    employee.getStartTime(), employee.getSalary(), employee.getRoles());
+            this.employeeMap.put(employee.getId(), e);
+        }
+    }
+    public void initializeShiftMap(){
+        for (DALShift shift: this.mainData.createShiftMap()) {
+            Shift s = new Shift(shift.getDate(), shift.getTime(), shift.getBranch(),
+                    shift.getShiftId(), shift.getRoles(), shift.getEmployees());
+            this.shiftHistory.put(shift.getShiftKey(), s);
+        }
+    }
+
+    private void initialize(){
+        this.initializeEmployeeMap();
+        this.initializeShiftMap();
     }
 }

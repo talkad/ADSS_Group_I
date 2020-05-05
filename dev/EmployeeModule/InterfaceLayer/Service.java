@@ -125,7 +125,7 @@ public class Service {
                 ILEmployee employee = generateEmployee(scanner, id);
                 if(employee!=null){
                     System.out.println("Successfully added the employee");
-                    createEmployee(mainBL, employee);
+                    createEmployee(mainBL, employee, false);
                 }
             }
         }
@@ -143,7 +143,7 @@ public class Service {
                     boolean[][] ft = mainBL.freeTime(id);
                     mainBL.removeEmployee(id);
                     System.out.println("Successfully edited the employee's details");
-                    createEmployee(mainBL, employee);
+                    createEmployee(mainBL, employee, true);
                     mainBL.setFreeTime(id, ft);
                 }
             }
@@ -153,8 +153,8 @@ public class Service {
         }
     }
 
-    private void createEmployee(EmployeeModule.BusinessLayer.mainBL mainBL, ILEmployee employee){
-        mainBL.createEmployee(employee);
+    private void createEmployee(EmployeeModule.BusinessLayer.mainBL mainBL, ILEmployee employee, boolean updateFlag){
+        mainBL.createEmployee(employee, updateFlag);
     }
 
     public void insertShift(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL){
@@ -418,16 +418,16 @@ public class Service {
                     "required conditions?", emp9, 7000, roles1, freeTime1);
             ILEmployee employee10 = new ILEmployee(10, "Json", "Jr", "???",
                     "required conditions?", emp10, 6000, roles2, freeTime2);
-            mainBL.createEmployee(employee1);
-            mainBL.createEmployee(employee2);
-            mainBL.createEmployee(employee3);
-            mainBL.createEmployee(employee4);
-            mainBL.createEmployee(employee5);
-            mainBL.createEmployee(employee6);
-            mainBL.createEmployee(employee7);
-            mainBL.createEmployee(employee8);
-            mainBL.createEmployee(employee9);
-            mainBL.createEmployee(employee10);
+            mainBL.createEmployee(employee1, false);
+            mainBL.createEmployee(employee2, false);
+            mainBL.createEmployee(employee3, false);
+            mainBL.createEmployee(employee4, false);
+            mainBL.createEmployee(employee5, false);
+            mainBL.createEmployee(employee6, false);
+            mainBL.createEmployee(employee7, false);
+            mainBL.createEmployee(employee8, false);
+            mainBL.createEmployee(employee9, false);
+            mainBL.createEmployee(employee10, false);
             mainBL.setFreeTime(1, freeTime1);
             mainBL.setFreeTime(2, freeTime2);
             mainBL.setFreeTime(3, freeTime1);

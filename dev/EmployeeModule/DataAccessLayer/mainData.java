@@ -1,36 +1,54 @@
 package EmployeeModule.DataAccessLayer;
 
-import EmployeeModule.BusinessLayer.Employee;
-import EmployeeModule.BusinessLayer.mainBL;
-import EmployeeModule.InterfaceLayer.ILEmployee;
+import EmployeeModule.Pair;
 
 import java.sql.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class mainData {
     private EmployeeModule.BusinessLayer.mainBL mainBL;
     private static mainData instance;
+    private Connection conn;
+
 
     public static EmployeeModule.DataAccessLayer.mainData getInstance(){
-        if(instance == null)
+        if(instance == null) {
             instance = new mainData();
+            instance.conn = connect();
+        }
         return instance;
     }
 
-    private Connection connect() {
-        String url = "random.db";
+    private static Connection connect() {
         Connection conn = null;
         try {
-            conn = DriverManager.getConnection(url);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        // db parameters
+        String url = "jdbc:sqlite:Employees.db";
+        Class.forName("org.sqlite.JDBC");
+
+        // create a connection to the database
+        conn = DriverManager.getConnection(url);
+        conn.setAutoCommit(false);
+        } catch (SQLException | ClassNotFoundException e) {
+                System.err.println(e.getMessage());
+            } finally {
+                try {
+                    if (conn != null) {
+                        conn.close();
+                    }
+                } catch (SQLException ex) {
+                    System.err.println(ex.getMessage());
+                }
+            }
         return conn;
     }
+
     private boolean[][] generateFreeTime(int id){
-        boolean freeTime[][] = new boolean[2][7];
+        boolean[][] freeTime = new boolean[2][7];
         String sql = "SELECT * FROM FreeTime where id = " + id;
-        try (Connection conn = this.connect();
+        try (Connection conn = connect();
              Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
             for (int i = 0; i < freeTime[0].length; i++) {
@@ -43,28 +61,137 @@ public class mainData {
         return freeTime;
     }
 
-    public Map<Integer, ILEmployee> createEmployeeMap(){
+    public List<DALEmployee> createEmployeeMap(){
         String sql = "SELECT * FROM Employees";
-        Map<Integer, ILEmployee> empMap = new HashMap<>();
-        try (Connection conn = this.connect();
+        List<DALEmployee> empList = new LinkedList<>();
+        try (Connection conn = this.conn;
              Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
             // loop through the result set
             while (rs.next()) {
                 boolean[][] freeTime = generateFreeTime(rs.getInt("id"));
                 List<String> roles = Arrays.asList(rs.getString("roles").split(","));
-                ILEmployee employee = new ILEmployee(rs.getInt("id"), rs.getString("firstName"),
+                DALEmployee employee = new DALEmployee(rs.getInt("id"), rs.getString("firstName"),
                         rs.getString("lastName"), rs.getString("bankDetails"), rs.getString("workConditions"),
                         rs.getDate("startTime"), rs.getInt("salary"), roles, freeTime);
-                empMap.put(employee.getId(), employee);
+                empList.add(employee);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return empMap;
+        return empList;
     }
 
-    public void initialize(){
+    private List<Pair<Integer, String>> generateShiftEmployees(int shiftId){
+        List<Pair<Integer, String>> employees = new LinkedList<>();
+        String sql = "SELECT * FROM ShiftEmployees where shiftId = " + shiftId;
+        try (Connection conn = this.conn;
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                employees.add(new Pair<>(rs.getInt("employeeId"), rs.getString("role")));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return employees;
+    }
 
+    public List<DALShift> createShiftMap() {
+        String sql = "SELECT * FROM Shifts";
+        List<DALShift> shiftList = new LinkedList<>();
+        try (Connection conn = this.conn;
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            // loop through the result set
+            while (rs.next()) {
+                List<String> roles = Arrays.asList(rs.getString("roles").split(","));
+                List<Pair<Integer, String>> employees = generateShiftEmployees(rs.getInt("shiftId"));
+                DALShift shift = new DALShift(rs.getDate("date"), rs.getInt("time"),
+                        rs.getInt("branch"), rs.getInt("shiftId"), roles, employees);
+                shiftList.add(shift);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return shiftList;
+    }
+
+    public int writingEmployee(DALEmployee employee){
+        String INSERT_EMPLOYEE = "INSERT INTO Employees(id, firstName, lastName, bankDetails, workConditions, startTime, roles) VALUES(?, ?, ?, ?, ?, ?, ?)";
+        int numRowsInserted = 0;
+        try (Connection conn = this.conn;
+             PreparedStatement ps = conn.prepareStatement(INSERT_EMPLOYEE)) {
+            ps.setInt(1, employee.getId());
+            ps.setString(2, employee.getFirstName());
+            ps.setString(3, employee.getLastName());
+            ps.setString(4, employee.getBankDetails());
+            ps.setString(5, employee.getWorkConditions());
+            ps.setDate(6, (Date) employee.getStartTime());
+            ps.setInt(7, employee.getSalary());
+            ps.setString(8, employee.getRolesString());
+            numRowsInserted = ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return numRowsInserted;
+    }
+    public int writingShift(DALShift shift){
+        String INSERT_SHIFT = "INSERT INTO Shifts(date, time, branch, shiftId, roles) VALUES(?, ?, ?, ?, ?)";
+        int numRowsInserted = 0;
+        try (Connection conn = this.conn;
+             PreparedStatement ps = conn.prepareStatement(INSERT_SHIFT)) {
+            ps.setDate(1, (Date) shift.getDate());
+            ps.setInt(2, shift.getTime());
+            ps.setInt(3, shift.getBranch());
+            ps.setInt(4, shift.getShiftId());
+            ps.setString(5, shift.getRolesString());
+            numRowsInserted = ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return numRowsInserted;
+    }
+
+    public int editEmployee(DALEmployee employee) {
+        String INSERT_EMPLOYEE = "UPDATE Employees SET firstName = ?, lastName = ?, bankDetails = ?, " +
+                "workConditions = ?, startTime = ?, roles = ? WHERE id = ?";
+        int numRowsInserted = 0;
+        try (Connection conn = this.conn;
+             PreparedStatement ps = conn.prepareStatement(INSERT_EMPLOYEE)) {
+            ps.setString(1, employee.getFirstName());
+            ps.setString(2, employee.getLastName());
+            ps.setString(3, employee.getBankDetails());
+            ps.setString(4, employee.getWorkConditions());
+            ps.setDate(5, (Date) employee.getStartTime());
+            ps.setInt(6, employee.getSalary());
+            ps.setString(7, employee.getRolesString());
+            ps.setInt(8, employee.getId());
+            numRowsInserted = ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return numRowsInserted;
+    }
+
+    public int writeFreeTime(int id, boolean[][] freeTime) {
+        String REPLACE_FREETIME = "INSERT OR REPLACE INTO FreeTime (employeeId, day1, day2, day3, day4, day5, day6, day7, " +
+                "night1, night2, night3, night4, night5, night6, night7) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        int numRowsInserted = 0;
+        try (Connection conn = this.conn;
+             PreparedStatement ps = conn.prepareStatement(REPLACE_FREETIME)) {
+            ps.setInt(1, id);
+            int sum = 2;
+            for (int i = 0; i < freeTime.length; i++) {
+                for (int j = 0; j < freeTime[i].length; j++) {
+                    ps.setBoolean(sum, freeTime[i][j]);
+                    sum++;
+                }
+            }
+            numRowsInserted = ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return numRowsInserted;
     }
 }
