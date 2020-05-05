@@ -1,17 +1,21 @@
 package DataAccessLayer;
 
+import BusinessLayer.Item;
 import BusinessLayer.Result;
 import DTO.ItemDTO;
 
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.util.Map;
 
 
 public class ItemMapper {
 
-    private Connection conn = Connector.getInstance().getConnection();
+    private Connection conn = DatabaseManager.getInstance().getConnection();
 
+    //this map manages all the instances of items. The identifier is the id
+    private Map<Integer,Item> identityItemMap;
 
     /**
      * Insert a given item to DB
@@ -22,6 +26,7 @@ public class ItemMapper {
      */
     public Result insert(ItemDTO itemDTO, String productName, String productManufacturer){
         Result result = new Result();
+        boolean isSucceed;
         String insertCommand = "INSERT INTO Item(id, isDefect, expiryDate, location, productName, productManufacturer)" +
                                 "VALUES(?,?,?,?,?,?)";
 
@@ -37,7 +42,11 @@ public class ItemMapper {
             statement.executeBatch();
 
             conn.commit();
-            result.successful();
+            isSucceed = statement.execute();
+            if(isSucceed)
+                result.successful();
+            else
+                result.failure("Failed to create a statement");
 
         }catch (java.sql.SQLException e){
             result.failure("Failed to create a statement");
@@ -62,4 +71,9 @@ public class ItemMapper {
 
         return result;
     }*/
+
+
+    public static void main(String[] args){
+        System.out.println(DatabaseManager.getInstance()==null);
+    }
 }
