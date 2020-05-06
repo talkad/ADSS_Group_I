@@ -48,6 +48,7 @@ public class mainBL {
 
         mainData.writingShift(new DALShift(shift.getDate(), shift.getTime(),
                 shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees()));
+        mainData.writeShiftEmployees(shift.getShiftId(), shift.getEmployees());
     }
 
     public void setFreeTime(int id, boolean[][] freeTime){
@@ -125,6 +126,7 @@ public class mainBL {
         for (DALEmployee employee: this.mainData.createEmployeeMap()) {
             Employee e = new Employee(employee.getId(), employee.getFirstName(), employee.getLastName(), employee.getBankDetails(), employee.getWorkConditions(),
                     employee.getStartTime(), employee.getSalary(), employee.getRoles());
+            e.setFreeTime(employee.getFreeTime());
             this.employeeMap.put(employee.getId(), e);
         }
     }
