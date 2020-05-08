@@ -7,6 +7,7 @@ import Initialize.HardCodeInitializer;
 import java.util.LinkedList;
 import java.util.List;
 
+//TODO: change the methods which were affected by the change in Product and Item
 /**
  * a singleton class
  */

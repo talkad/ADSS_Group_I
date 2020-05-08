@@ -4,33 +4,36 @@ import java.util.Date;
 
 import DTO.ItemDTO;
 
+//TODO: change the methods which were affected by the change here
 public class Item {
-    private int id;
-    private boolean isDefect;
+    private int orderId;
+    private int count;
+    private int numOfDefects;
     private Date expiryDate;
     private String location;
 
     public Item(ItemDTO itemDTO){
-        this.id = itemDTO.getId();
-        this.isDefect = itemDTO.isDefect();
+        this.orderId = itemDTO.getOrderId();
+        this.count = itemDTO.getCount();
+        this.numOfDefects = itemDTO.getNumOfDefects();
         this.expiryDate = itemDTO.getExpiryDate();
         this.location = itemDTO.getLocation();
     }
 
     public int getId() {
-        return id;
+        return orderId;
     }
 
     public void setId(int id) {
-        this.id = id;
+        this.orderId = id;
     }
 
-    public boolean isDefect() {
-        return isDefect;
+    public int isDefect() {
+        return numOfDefects;
     }
 
-    public void setDefect(boolean isDefect) {
-        this.isDefect = isDefect;
+    public void setDefect(int isDefect) {
+        this.numOfDefects = isDefect;
     }
 
     public Date getExpiryDate() {
@@ -99,4 +102,11 @@ public class Item {
         return toString;
     }
 
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
 }

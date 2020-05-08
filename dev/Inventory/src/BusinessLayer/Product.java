@@ -5,24 +5,29 @@ import java.util.List;
 
 import DTO.ProductDTO;
 
+//TODO: change the methods which were affected by the change here
 public class Product {
 
+    private int id;
     private String name;
     private String manufacturer;
     private int minCapacity;
     private int buyingPrice;
     private int sellingPrice;
+    private double weight; // the weight is in kilograms
     private int inventoryCapacity; // by inventory capacity we mean the amount of items of the current product currently physically in the store's inventory
     private int storeCapacity; // by store capacity we mean the amount of items of the current product currently physically in the store
     private List<String> categories;
     private List<Item> items;
 
     public Product(ProductDTO productDTO) {
+        this.id = productDTO.getId();
         this.name = productDTO.getName();
         this.manufacturer = productDTO.getManufacturer();
         this.minCapacity = productDTO.getMinCapacity();
         this.buyingPrice = productDTO.getBuyingPrice();
         this.sellingPrice = productDTO.getSellingPrice();
+        this.weight = productDTO.getWeight();
         this.inventoryCapacity = productDTO.getInventoryCapacity();
         this.storeCapacity = productDTO.getStoreCapacity();
         this.categories = productDTO.getCategories();
@@ -133,6 +138,22 @@ public class Product {
         }
 
         return defectsInfo;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 
     public String getName() {
