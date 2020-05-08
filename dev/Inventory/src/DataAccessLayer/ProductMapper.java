@@ -1,46 +1,45 @@
 package DataAccessLayer;
 
+import BusinessLayer.Pair;
 import BusinessLayer.Result;
 import DTO.ProductDTO;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+
+import java.sql.*;
+import java.util.Map;
 
 public class ProductMapper {
 
     private static Connection conn = DatabaseManager.getInstance().getConnection();
 
+    //this map manages all the instances of Product. The identifier are its name and manufacturer
+    private Map<Pair<String,String>,ProductDTO> identityProductMap;
+
     /**
-     * This function inserts a new category to the categories relation.
-     * @param category is one of the product categories
-     * @param name is the product name
-     * @param productManufacturer is the product manufacturer
-     * @return true if the insertion succeeded, false otherwise.
+     * initiate the product list with the data in DB when the system starts
      */
-    private static boolean insertCategory(String category, String name, String productManufacturer){
-        boolean isSucceed;
-        String insertCategory = "INSERT INTO Categories(category, productName, productManufacturer)" +
-                "VALUES(?,?,?)";
-
+    public void initProductMap(){
+        String sql = "SELECT * FROM Product";
         try {
-            PreparedStatement categoryStatement = conn.prepareStatement(insertCategory);
-            categoryStatement.setString(1, category);
-            categoryStatement.setString(2, name);
-            categoryStatement.setString(3, productManufacturer);
-            categoryStatement.addBatch(); // Adds a set of parameters to this PreparedStatement object's batch of commands
 
-            categoryStatement.executeBatch();
-            conn.commit();
-            isSucceed = categoryStatement.execute();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
 
-            }catch (java.sql.SQLException e){
-                return false;
-         }
+            // loop through the result set
+            while (rs.next()) {
+                ProductDTO dto = new ProductDTO(rs.getString("name"), rs.getString("manufacturer"),
+                        rs.getInt("minCapacity"), rs.getInt("buyingPrice"), rs.getInt("sellingPrice"),
+                        rs.getInt("inventoryCapacity"), rs.getInt("storeCapacity"),
+                        CategoryMapper.getInstance().getCategories(rs.getString("name"), rs.getString("manufacturer")),
+                        null);
 
-        return isSucceed;
+                identityProductMap.put(new Pair(dto.getName(), dto.getManufacturer()), dto);
+
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
+
 
 
     /**
@@ -50,6 +49,8 @@ public class ProductMapper {
      */
     public static Result insert(ProductDTO productDTO){
         Result result = new Result();
+        int numRowsInserted;
+
         String insertCommand = "INSERT INTO Product(name, manufacturer, minCapacity, buyingPrice, sellingPrice, " +
                 "inventoryCapacity, storeCapacity)" +
                 "VALUES(?,?,?,?,?,?,?)";
@@ -64,13 +65,15 @@ public class ProductMapper {
             statement.setDouble(5, productDTO.getSellingPrice());
             statement.setInt(6, productDTO.getInventoryCapacity());
             statement.setInt(7, productDTO.getStoreCapacity());
-            statement.addBatch(); // Adds a set of parameters to this PreparedStatement object's batch of commands
+            numRowsInserted = statement.executeUpdate();
 
-            statement.executeBatch();
-            conn.commit();
+            if(numRowsInserted == 1)
+                result.successful();
+            else
+                result.failure("Failed to update Product");
 
             for(String category: productDTO.getCategories()){
-                if(! insertCategory(category, productDTO.getName(), productDTO.getManufacturer()))
+                if(! CategoryMapper.getInstance().insertCategory(category, productDTO.getName(), productDTO.getManufacturer()))
                     break;
             }
 
@@ -84,32 +87,76 @@ public class ProductMapper {
     }
 
 
-    /*  irrelevant functions for this class
-
-    public Result update(ItemDTO itemDTO, String productName, String productManufacturer){
+    /**
+     * Update all fields of a given product in DB
+     * @param productDTO is the product to be updated
+     * @return  a Result object with information about the result of the operation
+     */
+    public Result update(ProductDTO productDTO){
         Result result = new Result();
+        int numRowsUpdated;
+        String updateCommand = "UPDATE Product SET minCapacity = ?, buyingPrice = ?, sellingPrice = ?, inventoryCapacity = ?,"+
+                "storeCapacity = ? WHERE name = ? AND manufacturer = ?";
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(updateCommand);
+            statement.setInt(1, productDTO.getMinCapacity());
+            statement.setDouble(2, productDTO.getBuyingPrice());
+            statement.setDouble(3, productDTO.getSellingPrice());
+            statement.setInt(4, productDTO.getInventoryCapacity());
+            statement.setInt(5, productDTO.getStoreCapacity());
+            statement.setString(6, productDTO.getName());
+            statement.setString(7, productDTO.getManufacturer());
+
+            numRowsUpdated = statement.executeUpdate();
+
+            if(numRowsUpdated == 1)
+                result.successful();
+            else
+                result.failure("Failed to update Product");
+
+        }catch (java.sql.SQLException e){
+            result.failure("Failed to create a statement");
+        }
 
         return result;
     }
 
 
 
-    public Result delete(ItemDTO itemDTO, String productName, String productManufacturer){
+
+    /**
+     * Delete a given product from DB
+     * @param productDTO is the product to be deleted
+     * @return  a Result object with information about the result of the operation
+     */
+    public Result delete(ProductDTO productDTO){
         Result result = new Result();
+        int numRowsDeleted;
+        String deleteCommand = "DELETE FROM Product WHERE name = ? AND manufacturer = ?";
+
+        // delete the product only if there are no items belong to this product
+        if(ItemMapper.getInstance().countItems(productDTO.getName(), productDTO.getManufacturer()) == 0) {
+            try {
+                PreparedStatement statement = conn.prepareStatement(deleteCommand);
+                statement.setString(1, productDTO.getName());
+                statement.setString(2, productDTO.getManufacturer());
+
+                numRowsDeleted = statement.executeUpdate();
+
+                if (numRowsDeleted > 0)
+                    result.successful();
+                else
+                    result.failure("Failed to delete Product");
+
+            } catch (java.sql.SQLException e) {
+                result.failure("Failed to create a statement");
+            }
+        }
+        else
+            result.failure("Deletion failed- There are items belong to the given product");
 
         return result;
-    }*/
-
-
-    public static void main(String[] args){
-
-        List<String> milkCategories= new LinkedList<>(Arrays.asList("milky","500ml"));
-        ProductDTO milk= new ProductDTO("milk","Tnuva",3, 10,15,
-                0,0,milkCategories,new LinkedList<>());
-
-        Result result = insert(milk);
-        System.out.println(result.getErrorMsg()); // still not working
-
     }
 
 }

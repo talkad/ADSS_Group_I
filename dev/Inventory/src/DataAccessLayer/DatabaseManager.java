@@ -6,7 +6,7 @@ import java.sql.*;
 public class DatabaseManager {
 
     private Connection conn;
-    public static DatabaseManager connector =null;
+    private static DatabaseManager connector =null;
 
     public DatabaseManager(){
         connect();
@@ -32,13 +32,11 @@ public class DatabaseManager {
         try {
             // db parameters
             String url = "jdbc:sqlite:StorageDB";
-            Class.forName("org.sqlite.JDBC");
 
             // create a connection to the database
             conn = DriverManager.getConnection(url);
-            conn.setAutoCommit(false);
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             System.err.println(e.getMessage());
         } finally {
             try {
@@ -65,23 +63,6 @@ public class DatabaseManager {
         }
     }
 
-    /**
-     * This function execute a select query
-     * @param query is an SQLite legal query
-     * @return the result of the select query
-     */
-    public ResultSet executeQuerySelect(String query) {
-        ResultSet resultSet = null;
-        if (conn != null) {
-            try {
-                Statement sqlStatement = conn.createStatement();
-                resultSet = sqlStatement.executeQuery(query);
-            } catch (SQLException e) {
-                System.err.println(e.getMessage());
-            }
-        }
-        return resultSet;
-    }
 
     public Connection getConnection() {
         return conn;
