@@ -17,7 +17,7 @@ public class ProductDTO {
     private List<ItemDTO> itemDTOs;
 
     public ProductDTO(int id, String name, String manufacturer, int minCapacity, int buyingPrice, int sellingPrice,
-                      int weight, int inventoryCapacity, int storeCapacity, List<String> categories, List<ItemDTO> itemDTOs) {
+                      double weight, int inventoryCapacity, int storeCapacity, List<String> categories, List<ItemDTO> itemDTOs) {
         this.id = id;
         this.name = name;
         this.manufacturer = manufacturer;

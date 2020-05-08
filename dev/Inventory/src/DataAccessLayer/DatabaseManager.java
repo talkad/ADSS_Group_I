@@ -31,7 +31,7 @@ public class DatabaseManager {
 
         try {
             // db parameters
-            String url = "jdbc:sqlite:StorageDB";
+            String url = "jdbc:sqlite:Storage";
 
             // create a connection to the database
             conn = DriverManager.getConnection(url);

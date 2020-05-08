@@ -1,6 +1,5 @@
 package DataAccessLayer;
 
-import BusinessLayer.Pair;
 import BusinessLayer.Result;
 import DTO.ItemDTO;
 
@@ -13,7 +12,7 @@ public class ItemMapper {
     private Connection conn = DatabaseManager.getInstance().getConnection();
 
     //this map manages all the instances of items. The identifier is the name and manufacturer of product
-    private Map<Pair<String, String>,ItemDTO> identityItemMap;
+    private Map<Integer,ItemDTO> identityItemMap;
 
     private static ItemMapper instance;
 
@@ -24,29 +23,12 @@ public class ItemMapper {
         return instance;
     }
 
-    /**
-     * check the quantity of items which belongs to a specific product
-     * @param productName is the product name
-     * @param productManufacturer is the manufacturer of the product
-     * @return the quantity of items that belong to the given product details
-     */
-    public int countItems(String productName, String productManufacturer){
-        int counter = 0;
-
-        for(Pair pair : identityItemMap.keySet()){
-            if(pair.getFirst().equals(productName) &&  pair.getSecond().equals(productManufacturer))
-                counter++;
-        }
-
-        return counter;
-    }
-
 
     /**
-     * initiate the item list with the data in DB when the system starts
+     * Add to identity map specific items which belong to product
      */
-    public void initItemMap(){
-        String sql = "SELECT * FROM Item";
+    public void initItemMap(String productName, String productManufacturer){
+        String sql = "SELECT * FROM Item productName = "+productName+" AND productManufacturer = "+productManufacturer;
         try {
 
             Statement stmt = conn.createStatement();
@@ -54,10 +36,10 @@ public class ItemMapper {
 
             // loop through the result set
             while (rs.next()) {
-                ItemDTO dto = new ItemDTO(rs.getInt("id"), rs.getBoolean("isDefect"),
+                ItemDTO dto = new ItemDTO(rs.getInt("orderId"), rs.getInt("count"), rs.getInt("numOfDefects"),
                         rs.getDate("expiryDate"), rs.getString("location"));
 
-                identityItemMap.put(new Pair<>(rs.getString("productName"), rs.getString("productManufacturer")), dto);
+                identityItemMap.put(rs.getInt("orderId"), dto);
 
             }
         } catch (SQLException e) {
@@ -75,17 +57,18 @@ public class ItemMapper {
     public Result insert(ItemDTO itemDTO, String productName, String productManufacturer){
         Result result = new Result();
         int numRowsInserted;
-        String insertCommand = "INSERT INTO Item(id, isDefect, expiryDate, location, productName, productManufacturer)" +
-                                "VALUES(?,?,?,?,?,?)";
+        String insertCommand = "INSERT INTO Item(orderId, count, numOfDefects, expiryDate, location, productName, productManufacturer)" +
+                                "VALUES(?,?,?,?,?,?,?)";
 
         try {
             PreparedStatement statement = conn.prepareStatement(insertCommand);
-            statement.setInt(1, itemDTO.getId());
-            statement.setBoolean(2, itemDTO.isDefect());
-            statement.setDate(3, new Date(itemDTO.getExpiryDate().getTime()));
-            statement.setString(4, itemDTO.getLocation());
-            statement.setString(5, productName);
-            statement.setString(6, productManufacturer);
+            statement.setInt(1, itemDTO.getOrderId());
+            statement.setInt(2, itemDTO.getCount());
+            statement.setInt(3, itemDTO.getNumOfDefects());
+            statement.setDate(4, new Date(itemDTO.getExpiryDate().getTime()));
+            statement.setString(5, itemDTO.getLocation());
+            statement.setString(6, productName);
+            statement.setString(7, productManufacturer);
             numRowsInserted = statement.executeUpdate();
 
             if(numRowsInserted == 1)
@@ -109,15 +92,16 @@ public class ItemMapper {
     public Result update(ItemDTO itemDTO){
         Result result = new Result();
         int numRowsUpdated;
-        String updateCommand = "UPDATE Item SET isDefect = ?, expiryDate = ?, location = ?,"+
-                "WHERE id = ?";
+        String updateCommand = "UPDATE Item SET count = ?, numOfDefects = ?, expiryDate = ?, location = ?"+
+                "WHERE orderId = ?";
 
         try {
             PreparedStatement statement = conn.prepareStatement(updateCommand);
-            statement.setBoolean(1, itemDTO.isDefect());
-            statement.setDate(2, new Date(itemDTO.getExpiryDate().getTime()));
-            statement.setString(3, itemDTO.getLocation());
-            statement.setInt(4, itemDTO.getId());
+            statement.setInt(1, itemDTO.getCount());
+            statement.setInt(2, itemDTO.getNumOfDefects());
+            statement.setDate(3, new Date(itemDTO.getExpiryDate().getTime()));
+            statement.setString(4, itemDTO.getLocation());
+            statement.setInt(5, itemDTO.getOrderId());
 
 
             numRowsUpdated = statement.executeUpdate();
@@ -147,7 +131,7 @@ public class ItemMapper {
 
         try {
             PreparedStatement statement = conn.prepareStatement(deleteCommand);
-            statement.setInt(1, itemDTO.getId());
+            statement.setInt(1, itemDTO.getOrderId());
 
             numRowsDeleted = statement.executeUpdate();
 
