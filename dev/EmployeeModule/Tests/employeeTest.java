@@ -1,21 +1,24 @@
 package EmployeeModule.Tests;
 
-import EmployeeModule.BusinessLayer.mainBL;
+import EmployeeModule.DataAccessLayer.DALShift;
 import EmployeeModule.InterfaceLayer.ILEmployee;
 import EmployeeModule.InterfaceLayer.ILShift;
 import EmployeeModule.InterfaceLayer.Service;
 import EmployeeModule.Pair;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import org.junit.runner.JUnitCore;
+import org.omg.CORBA.portable.ApplicationException;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -47,6 +50,7 @@ public class employeeTest {
     private ILEmployee employee9;
     private ILEmployee employee10;
     private EmployeeModule.InterfaceLayer.Service service;
+    private EmployeeModule.DataAccessLayer.mainData mainData;
     private ILShift ilShift1;
     private ILShift ilShift2;
     private ILShift ilShift3;
@@ -73,6 +77,7 @@ public class employeeTest {
             System.setOut(new java.io.PrintStream(out));
 
             mainBL = EmployeeModule.BusinessLayer.mainBL.getInstance();
+            mainData = EmployeeModule.DataAccessLayer.mainData.getInstance();
             service = new Service();
             inputEmployeeScanner = new Scanner("1234\nBob\nCohen\nBankDetails\n1000\nconditions\n22/03/2020\n" +
                     "cashier\nstop\n");
@@ -213,6 +218,24 @@ public class employeeTest {
         } catch (ParseException ignored){}
     }
 
+    /*@After
+    public void DeleteDataBase(){
+        String sql = "DROP TABLE IF EXISTS FreeTime;\n" +
+                "DROP TABLE IF EXISTS ShiftEmployees;\n" +
+                "DROP TABLE IF EXISTS Employees;\n" +
+                "DROP TABLE IF EXISTS Shifts;";
+        try (Connection conn = mainData.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            // loop through the result set
+            while (rs.next()) {
+
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }*/
+
     @Test
     public void displayEmployeeTest(){
         service.displayEmployee(7,mainBL);
@@ -248,10 +271,10 @@ public class employeeTest {
     3. Checks that the system now contains an employee with the id 1234
     */
     @Test
-    public void insertEmployeeTest(){
-        assertFalse(mainBL.searchEmployee(1234, service, false)); // employee has not been added with given id
+    public void insertEmployeeTest() throws ApplicationException {
+        assertFalse(mainBL.searchEmployee(1234, false)); // employee has not been added with given id
         service.insertEmployee(inputEmployeeScanner,mainBL);
-        assertTrue(mainBL.searchEmployee(1234, service, false)); // an employee has been added with given id
+        assertTrue(mainBL.searchEmployee(1234, false)); // an employee has been added with given id
     }
 
     /*
@@ -291,10 +314,10 @@ public class employeeTest {
     3. Checks that the system now contains a shift with the id 4
     */
     @Test
-    public void insertShiftTest(){
-        assertFalse(mainBL.searchShift("12/04/2021 1", service, true)); // shift not yet added
+    public void insertShiftTest() throws ApplicationException {
+        assertFalse(mainBL.searchShift("12/04/2021 1", true)); // shift not yet added
         service.insertShift(legalShiftScanner,mainBL);
-        assertTrue(mainBL.searchShift("12/04/2021 1", service, true)); // shift added
+        assertTrue(mainBL.searchShift("12/04/2021 1", true)); // shift added
     }
 
     /*
@@ -303,11 +326,11 @@ public class employeeTest {
     3. Ensures that the shift was indeed not added to the system
     */
     @Test
-    public void insertShiftIllegalDateTest(){
+    public void insertShiftIllegalDateTest() throws ApplicationException {
         service.insertShift(shiftBadDateScanner,mainBL);
         assertEquals(out.toString(), "Insert shift's date in the format <dd/MM/yyyy>: " + System.getProperty("line.separator") +
                 "Invalid date, date must be at least 1 day ahead of current date"+System.getProperty("line.separator"));
-        assertFalse(mainBL.searchShift("22/03/2020 2", service, true)); // shift not added
+        assertFalse(mainBL.searchShift("22/03/2020 2", true)); // shift not added
     }
 
     /*
@@ -316,7 +339,7 @@ public class employeeTest {
     3. Ensures that the shift was indeed not added to the system
     */
     @Test
-    public void insertShiftEmployeeNotQualifiedTest(){
+    public void insertShiftEmployeeNotQualifiedTest() throws ApplicationException {
         service.insertShift(shiftBadQualificationScanner,mainBL);
         assertEquals(out.toString(), "Insert shift's date in the format <dd/MM/yyyy>: " + System.getProperty("line.separator") +
                 "Insert shift's period - 1 is day, 2 is night: " + System.getProperty("line.separator") +
@@ -325,7 +348,7 @@ public class employeeTest {
                 "Insert role: Insert amount: Insert role: Insert employees id followed by their required role for the shift. type 'stop' to stop adding employees" + System.getProperty("line.separator") +
                 "Insert employee's id for the shift: Insert employee's required role for the shift: Error: Employee isn't qualified for the role" + System.getProperty("line.separator") +
                 "Insert employee's id for the shift: Insert employee's required role for the shift: Insert employee's id for the shift: Missing roles for shift, shift cannot be assigned"+System.getProperty("line.separator"));
-        assertFalse(mainBL.searchShift("12/04/2021 1", service, true)); // shift not added
+        assertFalse(mainBL.searchShift("12/04/2021 1", true)); // shift not added
     }
 
     /*
@@ -334,7 +357,7 @@ public class employeeTest {
     3. Ensures that the shift was indeed not added to the system
     */
     @Test
-    public void insertShiftNoManagerTest(){
+    public void insertShiftNoManagerTest() throws ApplicationException {
         service.insertShift(noManagerShiftScanner,mainBL);
         assertEquals(out.toString(), "Insert shift's date in the format <dd/MM/yyyy>: " +System.getProperty("line.separator")+
                 "Insert shift's period - 1 is day, 2 is night: " +System.getProperty("line.separator")+
@@ -342,7 +365,7 @@ public class employeeTest {
                 "Insert shift's required role and after that the role's amount, to stop inserting roles type 'stop'" +System.getProperty("line.separator")+
                 "Insert role: Insert amount: Insert role: Insert employees id followed by their required role for the shift. type 'stop' to stop adding employees" +System.getProperty("line.separator")+
                 "Insert employee's id for the shift: Insert employee's required role for the shift: Insert employee's id for the shift: Missing roles for shift, shift cannot be assigned"+System.getProperty("line.separator"));
-        assertFalse(mainBL.searchShift("12/04/2021 1", service, true)); // shift not added
+        assertFalse(mainBL.searchShift("12/04/2021 1", true)); // shift not added
     }
 
     /*
@@ -351,7 +374,7 @@ public class employeeTest {
     3. Ensures that the shift was indeed not added to the system
     */
     @Test
-    public void insertShiftEmployeeNotAvailableTest(){
+    public void insertShiftEmployeeNotAvailableTest() throws ApplicationException {
         service.insertShift(noTimeShiftScanner,mainBL);
         assertEquals(out.toString(), "Insert shift's date in the format <dd/MM/yyyy>: " +System.getProperty("line.separator")+
                 "Insert shift's period - 1 is day, 2 is night: " +System.getProperty("line.separator")+
@@ -360,6 +383,6 @@ public class employeeTest {
                 "Insert role: Insert amount: Insert role: Insert employees id followed by their required role for the shift. type 'stop' to stop adding employees" +System.getProperty("line.separator")+
                 "Insert employee's id for the shift: Insert employee's required role for the shift: Error: Employee isn't free during that time" +System.getProperty("line.separator")+
                 "Insert employee's id for the shift: Insert employee's required role for the shift: Insert employee's id for the shift: Missing roles for shift, shift cannot be assigned"+System.getProperty("line.separator"));
-        assertFalse(mainBL.searchShift("12/04/2021 1", service, true)); // shift not added
+        assertFalse(mainBL.searchShift("12/04/2021 1", true)); // shift not added
     }
 }

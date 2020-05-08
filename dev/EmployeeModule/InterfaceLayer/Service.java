@@ -2,6 +2,7 @@ package EmployeeModule.InterfaceLayer;
 
 import EmployeeModule.BusinessLayer.mainBL;
 import EmployeeModule.Pair;
+import org.omg.CORBA.portable.ApplicationException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -116,40 +117,46 @@ public class Service {
     }
 
     public void insertEmployee(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL) {
-        System.out.print("Insert employee's id: ");
-        int id = isNumeric(scanner.nextLine());
-        if(id != -1){
-            if(mainBL.searchEmployee(id, this, false))
-                System.out.print("Employee already exists in the system");
-            else{
-                ILEmployee employee = generateEmployee(scanner, id);
-                if(employee!=null){
-                    System.out.println("Successfully added the employee");
-                    createEmployee(mainBL, employee, false);
+        try {
+            System.out.print("Insert employee's id: ");
+            int id = isNumeric(scanner.nextLine());
+            if (id != -1) {
+                if (mainBL.searchEmployee(id, false))
+                    System.out.print("Employee already exists in the system");
+                else {
+                    ILEmployee employee = generateEmployee(scanner, id);
+                    if (employee != null) {
+                        System.out.println("Successfully added the employee");
+                        createEmployee(mainBL, employee, false);
+                    }
                 }
-            }
+            } else
+                System.out.println("Invalid id, must be an integer");
+        } catch (ApplicationException e){
+            System.out.println(e.getMessage());
         }
-        else
-            System.out.println("Invalid id, must be an integer");
     }
 
     public void editEmployee(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL){
-        System.out.print("Insert the id of the employee you wish to edit: ");
-        int id = isNumeric(scanner.nextLine());
-        if(id != -1){
-            if(mainBL.searchEmployee(id, this, true)){
-                ILEmployee employee = generateEmployee(scanner, id);
-                if(employee!=null){
-                    boolean[][] ft = mainBL.freeTime(id);
-                    mainBL.removeEmployee(id);
-                    System.out.println("Successfully edited the employee's details");
-                    createEmployee(mainBL, employee, true);
-                    mainBL.setFreeTime(id, ft);
+        try {
+            System.out.print("Insert the id of the employee you wish to edit: ");
+            int id = isNumeric(scanner.nextLine());
+            if (id != -1) {
+                if (mainBL.searchEmployee(id, true)) {
+                    ILEmployee employee = generateEmployee(scanner, id);
+                    if (employee != null) {
+                        boolean[][] ft = mainBL.freeTime(id);
+                        mainBL.removeEmployee(id);
+                        System.out.println("Successfully edited the employee's details");
+                        createEmployee(mainBL, employee, true);
+                        mainBL.setFreeTime(id, ft);
+                    }
                 }
+            } else {
+                System.out.println("Id must be an integer");
             }
-        }
-        else{
-            System.out.println("Id must be an integer");
+        } catch (ApplicationException e){
+            System.out.println(e.getMessage());
         }
     }
 
@@ -158,72 +165,74 @@ public class Service {
     }
 
     public void insertShift(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL){
-        System.out.println("Insert shift's date in the format <dd/MM/yyyy>: ");
-        String shiftDateStr = scanner.nextLine();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         try {
-            Date shiftDate = formatter.parse(shiftDateStr);
-            Date currDate = new Date();
-            if(currDate.before(shiftDate)){
-                System.out.println("Insert shift's period - 1 is day, 2 is night: ");
-                int shiftTime = isNumeric(scanner.nextLine());
-                if(shiftTime != -1){
-                    if((shiftTime==1) || (shiftTime == 2)){
-                        if(!mainBL.searchShift(shiftDateStr+ " " + shiftTime, this, false)){
-                            System.out.println("Insert shift's branch number: ");
-                            int branch = isNumeric(scanner.nextLine());
-                            if(branch != -1){
-                                String role;
-                                int amount;
-                                System.out.println("Insert shift's required role and after that the role's amount, " +
-                                        "to stop inserting roles type 'stop'");
-                                String inRole = "Insert role: ";
-                                String inAmount = "Insert amount: ";
-                                List<String> shiftRolesList = new LinkedList<>();
-                                shiftRolesList.add("shift manager");
-                                while(true){
-                                    System.out.print(inRole);
-                                    role = scanner.nextLine();
-                                    if(role.equals("stop"))
-                                        break;
-                                    else{
-                                        System.out.print(inAmount);
-                                        amount = isNumeric(scanner.nextLine());
-                                        while(amount == -1){
-                                            System.out.println("Invalid input, please insert a number: ");
+            System.out.println("Insert shift's date in the format <dd/MM/yyyy>: ");
+            String shiftDateStr = scanner.nextLine();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            try {
+                Date shiftDate = formatter.parse(shiftDateStr);
+                Date currDate = new Date();
+                if (currDate.before(shiftDate)) {
+                    System.out.println("Insert shift's period - 1 is day, 2 is night: ");
+                    int shiftTime = isNumeric(scanner.nextLine());
+                    if (shiftTime != -1) {
+                        if ((shiftTime == 1) || (shiftTime == 2)) {
+                            if (!mainBL.searchShift(shiftDateStr + " " + shiftTime, false)) {
+                                System.out.println("Insert shift's branch number: ");
+                                int branch = isNumeric(scanner.nextLine());
+                                if (branch != -1) {
+                                    String role;
+                                    int amount;
+                                    System.out.println("Insert shift's required role and after that the role's amount, " +
+                                            "to stop inserting roles type 'stop'");
+                                    String inRole = "Insert role: ";
+                                    String inAmount = "Insert amount: ";
+                                    List<String> shiftRolesList = new LinkedList<>();
+                                    shiftRolesList.add("shift manager");
+                                    while (true) {
+                                        System.out.print(inRole);
+                                        role = scanner.nextLine();
+                                        if (role.equals("stop"))
+                                            break;
+                                        else {
+                                            System.out.print(inAmount);
                                             amount = isNumeric(scanner.nextLine());
-                                        }
-                                        for (int i = 0; i<amount; i++){
-                                            shiftRolesList.add(role);
-                                            if(role.equals("driver"))
-                                                shiftRolesList.add("storekeeper");
+                                            while (amount == -1) {
+                                                System.out.println("Invalid input, please insert a number: ");
+                                                amount = isNumeric(scanner.nextLine());
+                                            }
+                                            for (int i = 0; i < amount; i++) {
+                                                shiftRolesList.add(role);
+                                                if (role.equals("driver"))
+                                                    shiftRolesList.add("storekeeper");
+                                            }
                                         }
                                     }
-                                }
-                                ILShift shift = new ILShift(shiftDate, shiftTime, branch, shiftCounter, shiftRolesList, new LinkedList<>());
-                                List<Pair<Integer, String>> addEmployees = addEmployeesToShift(scanner, shift.getRoles(), shift.getDate(), shift.getTime(), mainBL);
-                                if(addEmployees!=null) {
-                                    shift.setEmployees(addEmployees);
-                                    createShift(mainBL, shift);
+                                    ILShift shift = new ILShift(shiftDate, shiftTime, branch, shiftCounter, shiftRolesList, new LinkedList<>());
+                                    List<Pair<Integer, String>> addEmployees = addEmployeesToShift(scanner, shift.getRoles(), shift.getDate(), shift.getTime(), mainBL);
+                                    if (addEmployees != null) {
+                                        shift.setEmployees(addEmployees);
+                                        createShift(mainBL, shift);
+                                    }
+                                } else {
+                                    System.out.println("Branch id must be an integer");
                                 }
                             }
-                            else{
-                                System.out.println("Branch id must be an integer");
-                            }
+                        } else {
+                            System.out.println("Invalid shift period, must be 1 or 2");
                         }
+                    } else {
+                        System.out.println("Shift's period must be an integer");
                     }
-                    else{
-                        System.out.println("Invalid shift period, must be 1 or 2");
-                    }
+                } else {
+                    System.out.println("Invalid date, date must be at least 1 day ahead of current date");
                 }
-                else{
-                    System.out.println("Shift's period must be an integer");
-                }
+            } catch (ParseException e) {
+                System.out.println("Invalid date format");
             }
-            else{
-                System.out.println("Invalid date, date must be at least 1 day ahead of current date");
-            }
-        } catch (ParseException e) {System.out.println("Invalid date format");}
+        } catch (ApplicationException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     private void createShift(EmployeeModule.BusinessLayer.mainBL mainBL, ILShift shift){
@@ -233,99 +242,97 @@ public class Service {
     }
 
     public void editFreeTime(Scanner scanner, int id, EmployeeModule.BusinessLayer.mainBL mainBL){
-        if(mainBL.searchEmployee(id, this, true)){
-            boolean[][] freeTime = new boolean[2][7];
-            String valueStr;
-            String day = "Sunday";
-            boolean legal = true;
-            System.out.println("Insert 'true' or 'false' according to the employee's availability:");
-            for (int i = 0; i < freeTime[0].length && legal; i++) {
-                if(i==0){
-                    day = "Sunday";
-                }
-                else if(i == 1){
-                    day = "Monday";
-                }
-                else if(i == 2){
-                    day = "Tuesday";
-                }
-                else if(i == 3){
-                    day = "Wednesday";
-                }
-                else if(i == 4){
-                    day = "Thursday";
-                }
-                else if(i == 5){
-                    day = "Friday";
-                }
-                else if(i == 6){
-                    day = "Saturday";
-                }
-                System.out.print(day + " day shift: ");
-                valueStr = scanner.nextLine();
-                if(isBoolean(valueStr)){
-                    freeTime[0][i] = Boolean.parseBoolean(valueStr);
-                    System.out.print(day + " night shift: ");
-                    valueStr = scanner.nextLine();
-                    if(isBoolean(valueStr)){
-                        freeTime[1][i] = Boolean.parseBoolean(valueStr);
+        try {
+            if (mainBL.searchEmployee(id, true)) {
+                boolean[][] freeTime = new boolean[2][7];
+                String valueStr;
+                String day = "Sunday";
+                boolean legal = true;
+                System.out.println("Insert 'true' or 'false' according to the employee's availability:");
+                for (int i = 0; i < freeTime[0].length && legal; i++) {
+                    if (i == 0) {
+                        day = "Sunday";
+                    } else if (i == 1) {
+                        day = "Monday";
+                    } else if (i == 2) {
+                        day = "Tuesday";
+                    } else if (i == 3) {
+                        day = "Wednesday";
+                    } else if (i == 4) {
+                        day = "Thursday";
+                    } else if (i == 5) {
+                        day = "Friday";
+                    } else if (i == 6) {
+                        day = "Saturday";
                     }
-                    else {
+                    System.out.print(day + " day shift: ");
+                    valueStr = scanner.nextLine();
+                    if (isBoolean(valueStr)) {
+                        freeTime[0][i] = Boolean.parseBoolean(valueStr);
+                        System.out.print(day + " night shift: ");
+                        valueStr = scanner.nextLine();
+                        if (isBoolean(valueStr)) {
+                            freeTime[1][i] = Boolean.parseBoolean(valueStr);
+                        } else {
+                            System.out.println("Input must be a boolean, cannot assign the employee's free time");
+                            legal = false;
+                        }
+                    } else {
                         System.out.println("Input must be a boolean, cannot assign the employee's free time");
                         legal = false;
                     }
                 }
-                else {
-                    System.out.println("Input must be a boolean, cannot assign the employee's free time");
-                    legal = false;
+                if (legal) {
+                    mainBL.setFreeTime(id, freeTime);
+                    System.out.println("Successfully edited the employee's free time");
                 }
             }
-            if(legal){
-                mainBL.setFreeTime(id, freeTime);
-                System.out.println("Successfully edited the employee's free time");
-            }
+        } catch (ApplicationException e){
+            System.out.println(e.getMessage());
         }
     }
 
     private List<Pair<Integer, String>> addEmployeesToShift(Scanner scanner, List<String> roles, Date date, int time, EmployeeModule.BusinessLayer.mainBL mainBL){
-        List<Pair<Integer, String>> shiftList = new LinkedList<>();
-        List<String> checkRoles = new LinkedList<>(roles);
-        Calendar c = Calendar.getInstance();
-        c.setTime(date);
-        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-        System.out.println("Insert employees id followed by their required role for the shift. type 'stop' to stop adding employees");
-        while(true) {
-            System.out.print("Insert employee's id for the shift: ");
-            String empIdStr = scanner.nextLine();
-            int empId = isNumeric(empIdStr);
-            if(empIdStr.equals("stop"))
-                break;
-            if(empId != -1){
-                System.out.print("Insert employee's required role for the shift: ");
-                String empRole = scanner.nextLine();
-                if (mainBL.searchEmployee(empId, this, true)) {
-                    if(mainBL.isFree(empId, dayOfWeek-1, time-1, this)) {
-                        if (mainBL.hasRole(empId, empRole, this)) {
-                            checkRoles.remove(empRole);
-                            shiftList.add(new Pair<>(empId, empRole));
+        try {
+            List<Pair<Integer, String>> shiftList = new LinkedList<>();
+            List<String> checkRoles = new LinkedList<>(roles);
+            Calendar c = Calendar.getInstance();
+            c.setTime(date);
+            int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+            System.out.println("Insert employees id followed by their required role for the shift. type 'stop' to stop adding employees");
+            while (true) {
+                System.out.print("Insert employee's id for the shift: ");
+                String empIdStr = scanner.nextLine();
+                int empId = isNumeric(empIdStr);
+                if (empIdStr.equals("stop"))
+                    break;
+                if (empId != -1) {
+                    System.out.print("Insert employee's required role for the shift: ");
+                    String empRole = scanner.nextLine();
+                    if (mainBL.searchEmployee(empId, true)) {
+                        if (mainBL.isFree(empId, dayOfWeek - 1, time - 1)) {
+                            if (mainBL.hasRole(empId, empRole)) {
+                                checkRoles.remove(empRole);
+                                shiftList.add(new Pair<>(empId, empRole));
+                            }
                         }
                     }
+                } else {
+                    System.out.println("Invalid id, must be a number");
                 }
             }
-            else{
-                System.out.println("Invalid id, must be a number");
+            if (checkRoles.isEmpty()) {
+                for (Pair<Integer, String> p : shiftList) {
+                    mainBL.unFreeTime(p.getFirst(), time - 1, dayOfWeek - 1);
+                }
+                return shiftList;
+            } else {
+                System.out.println("Missing roles for shift, shift cannot be assigned");
             }
+        } catch (ApplicationException e){
+            System.out.println(e.getMessage());
         }
-        if(checkRoles.isEmpty()){
-            for (Pair<Integer,String> p: shiftList) {
-                mainBL.unFreeTime(p.getFirst(), time-1, dayOfWeek-1);
-            }
-            return shiftList;
-        }
-        else{
-            System.out.println("Missing roles for shift, shift cannot be assigned");
-            return null;
-        }
+        return null;
     }
 
     public static int isNumeric(String str) {
@@ -341,26 +348,36 @@ public class Service {
     }
 
     public void displayEmployee(int id, mainBL mainBL){
-        if(mainBL.searchEmployee(id, this, true)){
-            System.out.println(mainBL.employeeInfo(id).toString());
+        try{
+            if(mainBL.searchEmployee(id,true)){
+                System.out.println(mainBL.employeeInfo(id).toString());
+            }
+        }
+        catch (ApplicationException e){
+            System.out.println(e.getMessage());
         }
     }
 
     private void displayShift(Scanner scanner, mainBL mainBL) {
-        System.out.print("Please insert the shift's date in the format <dd/MM/yyyy> " +
-                "followed by a space and time of the shift (1 for day and 2 for night):\n");
-        String shiftTime = scanner.nextLine();
-        if(mainBL.searchShift(shiftTime, this, true)){
-            System.out.println(mainBL.shiftInfo(shiftTime).toString());
+        try {
+            System.out.print("Please insert the shift's date in the format <dd/MM/yyyy> " +
+                    "followed by a space and time of the shift (1 for day and 2 for night):\n");
+            String shiftTime = scanner.nextLine();
+            if (mainBL.searchShift(shiftTime, true)) {
+                System.out.println(mainBL.shiftInfo(shiftTime).toString());
+            }
+        } catch (ApplicationException e){
+            System.out.println(e.getMessage());
         }
     }
 
     public boolean isEmployeeInShift(int id, String shiftTime, EmployeeModule.BusinessLayer.mainBL mainBL){
-        return mainBL.isEmployeeInShift(id, shiftTime,this);
-    }
-
-    public void send(String message){
-        System.out.println(message);
+        try{
+            return mainBL.isEmployeeInShift(id, shiftTime);
+        } catch (ApplicationException e){
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
 
     private void dataLoad(EmployeeModule.BusinessLayer.mainBL mainBL){

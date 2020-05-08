@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class mainData {
-    private EmployeeModule.BusinessLayer.mainBL mainBL;
     private static mainData instance;
 
 

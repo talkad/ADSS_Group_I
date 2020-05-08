@@ -1,13 +1,15 @@
 package EmployeeModule.BusinessLayer;
 
+import DeliveryModule.InterfaceLayer.DoThinks;
 import EmployeeModule.DataAccessLayer.DALEmployee;
 import EmployeeModule.DataAccessLayer.DALShift;
 import EmployeeModule.InterfaceLayer.ILEmployee;
 import EmployeeModule.InterfaceLayer.ILShift;
-import EmployeeModule.InterfaceLayer.Service;
 
 import EmployeeModule.Pair;
+import org.omg.CORBA.portable.ApplicationException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,9 +31,20 @@ public class mainBL {
     }
 
     public void createEmployee(ILEmployee employee, boolean updateFlag){
-        employeeMap.put(employee.getId(), new Employee(employee.getId(),
+        Employee newEmp = new Employee(employee.getId(),
                 employee.getFirstName(), employee.getLastName(), employee.getBankDetails(),
-                employee.getWorkConditions(), employee.getStartTime(), employee.getSalary(), employee.getRoles()));
+                employee.getWorkConditions(), employee.getStartTime(), employee.getSalary(), employee.getRoles());
+        employeeMap.put(newEmp.getId(), newEmp);
+        if(!updateFlag && employee.getRoles().contains("driver"))
+        {
+                DoThinks.addDriver(newEmp, new ArrayList<>());
+        }
+        else if(employee.getRoles().contains("driver")) {
+            DoThinks.AddOrEditDriver(newEmp.getId(), newEmp);
+        }
+        else {
+            DoThinks.RemoveDriver(employee.getId());
+        }
 
         DALEmployee dalEmployee = new DALEmployee(employee.getId(),
                 employee.getFirstName(), employee.getLastName(), employee.getBankDetails(),
@@ -61,9 +74,9 @@ public class mainBL {
         mainData.writeFreeTime(id, this.employeeMap.get(id).getFreeTime());
     }
 
-    public boolean searchEmployee(int id, Service service, boolean flag){
+    public boolean searchEmployee(int id, boolean flag) throws ApplicationException {
         if(flag && !this.employeeMap.containsKey(id))
-            send("Error: Employee doesn't exist in the system", service);
+            send("Error: Employee doesn't exist in the system");
         return this.employeeMap.containsKey(id);
     }
 
@@ -71,24 +84,24 @@ public class mainBL {
         this.employeeMap.remove(id);
     }
 
-    public boolean searchShift(String key, Service service, boolean flag){
+    public boolean searchShift(String key, boolean flag) throws ApplicationException {
         if(!this.shiftHistory.containsKey(key) && flag)
-            send("Error: Shift doesn't exist in the system", service);
+            send("Error: Shift doesn't exist in the system");
         if(this.shiftHistory.containsKey(key) && !flag){
-            send("Error: Shift already exists in the system", service);
+            send("Error: Shift already exists in the system");
         }
         return this.shiftHistory.containsKey(key);
     }
 
-    public boolean hasRole(int id, String role, Service service){
+    public boolean hasRole(int id, String role) throws ApplicationException {
         if(!this.employeeMap.get(id).getRoles().contains(role))
-            send("Error: Employee isn't qualified for the role", service);
+            send("Error: Employee isn't qualified for the role");
         return this.employeeMap.get(id).getRoles().contains(role);
     }
 
-    public boolean isFree(int id, int day, int period, Service service){
+    public boolean isFree(int id, int day, int period) throws ApplicationException {
         if(!employeeMap.get(id).getFreeTime()[period][day])
-            send("Error: Employee isn't free during that time", service);
+           send("Error: Employee isn't free during that time");
         return employeeMap.get(id).getFreeTime()[period][day];
     }
 
@@ -104,8 +117,8 @@ public class mainBL {
         return new ILShift(shift.getDate(), shift.getTime(), shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees());
     }
 
-    public boolean isEmployeeInShift(int id, String shiftTime, Service service){
-        if(searchShift(shiftTime, service, true)) {
+    public boolean isEmployeeInShift(int id, String shiftTime) throws ApplicationException {
+        if(searchShift(shiftTime, true)) {
             for (Pair<Integer, String> p: shiftHistory.get(shiftTime).getEmployees()) {
                 if(p.getFirst() == id)
                     return true;
@@ -118,10 +131,6 @@ public class mainBL {
         return employeeMap.get(id).getFreeTime();
     }
 
-    public void send(String message, Service service){
-        service.send(message);
-    }
-
     public void initializeEmployeeMap(){
         for (DALEmployee employee: this.mainData.createEmployeeMap()) {
             Employee e = new Employee(employee.getId(), employee.getFirstName(), employee.getLastName(), employee.getBankDetails(), employee.getWorkConditions(),
@@ -130,6 +139,7 @@ public class mainBL {
             this.employeeMap.put(employee.getId(), e);
         }
     }
+
     public void initializeShiftMap(){
         for (DALShift shift: this.mainData.createShiftMap()) {
             Shift s = new Shift(shift.getDate(), shift.getTime(), shift.getBranch(),
@@ -141,5 +151,9 @@ public class mainBL {
     private void initialize(){
         this.initializeEmployeeMap();
         this.initializeShiftMap();
+    }
+
+    private void send(String msg) throws ApplicationException {
+        throw new ApplicationException(msg, null);
     }
 }
