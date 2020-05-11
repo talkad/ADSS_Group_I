@@ -5,7 +5,6 @@ import java.util.List;
 
 import DTO.ProductDTO;
 
-//TODO: change the methods which were affected by the change here
 public class Product {
 
     private int id;
@@ -39,6 +38,7 @@ public class Product {
      * @param item the item to add
      */
     public void addItem(Item item){
+        //TODO: make the product give the new item the id?
         items.add(item);
         if(item.getLocation().equals("Store") || item.getLocation().equals("store") ){// if the item was added to the store then we'll update the amount of items in the store accordingly
             this.storeCapacity++;
@@ -65,12 +65,12 @@ public class Product {
 
     /**
      * gets an item with the given id
-     * @param id the id of the item
+     * @param itemId the id of the item
      * @return an item with an id {@code id}, null if there is no such item
      */
-    public Item getItem(int id){
+    public Item getItem(int itemId){
         for(Item item: items){
-            if(item.getId() == id){
+            if(item.getId() == itemId){
                 return item;
             }
         }
@@ -100,7 +100,7 @@ public class Product {
      * @param category the catagory to check
      * @return if the current product is in category {@code category}
      */
-    public boolean isInCatagory(String category){
+    public boolean isInCategory(String category){
         return categories.contains(category);
     }
 
@@ -126,7 +126,7 @@ public class Product {
     public String productDefects(){
         String defectsInfo = "Name: " + this.name + "\n";
         defectsInfo += "Manufacturer: " + this.manufacturer + "\n";
-        defectsInfo += "Catagories: " + categories.toString() + "\n";
+        defectsInfo += "Categories: " + categories.toString() + "\n";
         defectsInfo += "Defect items:\n";
 
         for(Item item: items){

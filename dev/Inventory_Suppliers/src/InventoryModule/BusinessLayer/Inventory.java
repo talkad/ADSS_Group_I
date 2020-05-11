@@ -2,18 +2,26 @@ package BusinessLayer;
 
 import DTO.ItemDTO;
 import DTO.ProductDTO;
-import Initialize.HardCodeInitializer;
+import DataAccessLayer.CategoryMapper;
+import DataAccessLayer.ItemMapper;
+import DataAccessLayer.ProductMapper;
+//import Initialize.HardCodeInitializer; TODO: ask tal if he deleted this class
 
 import java.util.LinkedList;
 import java.util.List;
 
-//TODO: change the methods which were affected by the change in Product and Item
+//TODO: add calls to the function of the db
+//TODO: implement the periodic order
 /**
  * a singleton class
  */
 public class Inventory {
 
     private List<Product> productsList;
+
+    private ProductMapper productMapper = ProductMapper.getInstance();
+    private ItemMapper itemMapper = ItemMapper.getInstance();
+    private CategoryMapper categoryMapper = CategoryMapper.getInstance();
 
     public static Inventory instance = null;
     
@@ -33,12 +41,12 @@ public class Inventory {
 
 
 
-    /**
-     * Initialize the system with hardcoded products and items
-     */
-    public void initialize(){
-        HardCodeInitializer.getInstance().initialize();
-    }
+//    /**
+//     * Initialize the system with hardcoded products and items
+//     */
+//    public void initialize(){
+//        HardCodeInitializer.getInstance().initialize();
+//    }
 
 
     /**
@@ -62,6 +70,7 @@ public class Inventory {
     }
 
 
+    //TODO: if the getProduct function will be sufficient then delete this
     /**
      * @param productToCheck the product to check
      * @return if {@code productToCheck} already exists in the inventory
@@ -188,10 +197,22 @@ public class Inventory {
      */
     public String minQuantityNotification(Product product){
         if(product.hasMinQuantityReached()){
+            makeLackOrder(product);
+
             return "Minimum quantity for product " + product.getName() + " by " + product.getManufacturer() + " reached!";
         }
 
         return null;
+    }
+
+    //TODO: this
+    public void makeLackOrder(Product product){
+
+    }
+
+    //TODO: figure out how to do this thing
+    public void periodicOrder(){
+
     }
 
     /**
@@ -359,7 +380,7 @@ public class Inventory {
         for(Product product: productsList){
             for(List<String> category: categories){
                 for(String categoryName: category){
-                    isInAllCategories = isInAllCategories && product.isInCatagory(categoryName); // needs to be in all of the subcategories
+                    isInAllCategories = isInAllCategories && product.isInCategory(categoryName); // needs to be in all of the subcategories
                 }
                 isIncluded = isIncluded || isInAllCategories; // has to be in only one of the "main" categories asked for
                 isInAllCategories = true;

@@ -166,6 +166,17 @@ public class ProductMapper {
         return result;
     }
 
+    //TODO: a function which returns a product. call it getProduct and it gets an int which is the product id. getProduct(int productID)
+    //TODO: return it with the list of itemDTOs which are related to it
+    /**
+     * given a productID, returns a productDTO with id {@code productID}
+     * @param productID the id of the product
+     * @return productDTO with id {@code productID}. or null if no such entry exists
+     */
+    public ProductDTO getProduct(int productID){
+        return null;
+    }
+
 
 
     public static void main(String[] args) {

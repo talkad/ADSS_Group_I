@@ -4,36 +4,33 @@ import java.util.Date;
 
 import DTO.ItemDTO;
 
-//TODO: change the methods which were affected by the change here
 public class Item {
-    private int orderId;
-    private int count;
-    private int numOfDefects;
+    private int id;
+    private boolean isDefect;
     private Date expiryDate;
     private String location;
 
     public Item(ItemDTO itemDTO){
-        this.orderId = itemDTO.getOrderId();
-        this.count = itemDTO.getCount();
-        this.numOfDefects = itemDTO.getNumOfDefects();
+        this.id = itemDTO.getId();
+        this.isDefect = itemDTO.isDefect();
         this.expiryDate = itemDTO.getExpiryDate();
         this.location = itemDTO.getLocation();
     }
 
     public int getId() {
-        return orderId;
+        return id;
     }
 
     public void setId(int id) {
-        this.orderId = id;
+        this.id = id;
     }
 
-    public int isDefect() {
-        return numOfDefects;
+    public boolean isDefect() {
+        return isDefect;
     }
 
-    public void setDefect(int isDefect) {
-        this.numOfDefects = isDefect;
+    public void setDefect(boolean isDefect) {
+        this.isDefect = isDefect;
     }
 
     public Date getExpiryDate() {
@@ -61,14 +58,14 @@ public class Item {
 
         if(this.isDefect || expiryDate.compareTo(currentDate) == -1){
             String info = "Item ID: " + this.id + "\n";
-            info += "Experation date: " + this.expiryDate + "\n";
+            info += "Expiration date: " + this.expiryDate + "\n";
 
             info += "Status: ";
             if(this.isDefect){
                 info += "Defect";
 
                 if(expiryDate.compareTo(currentDate) == -1){
-                    info += ", Exipred";
+                    info += ", Expired";
                 }
 
                 info += "\n";
@@ -96,17 +93,9 @@ public class Item {
             toString += "Status: Not defect\n";
         }
 
-        toString += "Experation date: " + this.expiryDate + "\n";
+        toString += "Expiration date: " + this.expiryDate + "\n";
         toString += "Located in: " + this.location + "\n";
         
         return toString;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
     }
 }
