@@ -77,4 +77,17 @@ public class Shift {
         String strDate = dateFormat.format(this.date);
         return strDate + " " + this.time;
     }
+
+    public String toString(){
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        String period = "day";
+        if(this.time==2)
+            period = "night";
+        return "Shift date: " + formatter.format(this.date) + "\n" +
+                "Shift period: " + period  + "\n" +
+                "Shift branch number: " + this.branch + "\n" +
+                "Shift id: " + this.shiftId + "\n" +
+                "Shift required roles: " + this.roles.toString() + "\n" +
+                "Shift assigned employees: " + this.employees.toString() + "\n";
+    }
 }

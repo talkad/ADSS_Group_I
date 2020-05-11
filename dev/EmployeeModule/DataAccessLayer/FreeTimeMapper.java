@@ -1,0 +1,128 @@
+package EmployeeModule.DataAccessLayer;
+
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+
+public class FreeTimeMapper {
+    private static FreeTimeMapper instance;
+    private static mainData dataInstance;
+    private Map<Integer, boolean[][]> freeTimeMap;
+
+    public static EmployeeModule.DataAccessLayer.FreeTimeMapper getInstance(){
+        if(instance == null) {
+            instance = new FreeTimeMapper();
+            dataInstance = mainData.getInstance();
+            instance.freeTimeMap = new HashMap<>();
+        }
+        return instance;
+    }
+
+    protected boolean[][] generateFreeTime(int id){//todo don't think this is needed
+        boolean[][] freeTime = new boolean[2][7];
+        String sql = "SELECT * FROM FreeTime where employeeId = " + id;
+        try (Connection conn = dataInstance.connect();
+            Statement stmt  = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql)){
+            for (int i = 0; i < freeTime[0].length; i++) {
+                freeTime[0][i] = (rs.getInt("day" + (i + 1)) == 1);
+                freeTime[1][i] = (rs.getInt("night" + (i + 1)) == 1);
+            }
+            freeTimeMap.put(id, freeTime);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return freeTime;
+    }
+
+    public void writeFreeTime(int id, boolean[][] freeTime) {
+        String REPLACE_FREE_TIME = "INSERT OR REPLACE INTO FreeTime (employeeId, day1, day2, day3, day4, day5, day6, day7, " +
+                "night1, night2, night3, night4, night5, night6, night7) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = dataInstance.connect();
+             PreparedStatement ps = conn.prepareStatement(REPLACE_FREE_TIME)) {
+            ps.setInt(1, id);
+            int sum = 2;
+            int val;
+            for (int i = 0; i < freeTime.length; i++) {
+                for (int j = 0; j < freeTime[i].length; j++) {
+                    if(freeTime[i][j])
+                        val = 1;
+                    else
+                        val = 0;
+                    ps.setInt(sum, val);
+                    sum++;
+                }
+            }
+            ps.executeUpdate();
+            freeTimeMap.remove(id);// remove prev if exists and put the new values
+            freeTimeMap.put(id, freeTime);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isFree(int id, int day, int period) {
+        if(freeTimeMap.containsKey(id))
+            return freeTimeMap.get(id)[period][day];
+        else {
+            if (searchFreeTime(id)) {
+                return freeTimeMap.get(id)[period][day];
+            }
+            return false;
+        }
+    }
+
+    public boolean searchFreeTime(int id){
+        String sql = "SELECT * FROM FreeTime where employeeId = " + id;
+        try (Connection conn = dataInstance.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+            if(rs != null) {
+                createFreeTime(rs);
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return false; //todo weird return is irrelevant
+    }
+
+    public void createFreeTime(ResultSet rs) throws SQLException {
+        boolean[][] freeTime = new boolean[2][7];
+        for (int i = 0; i < freeTime[0].length; i++) {
+            freeTime[0][i] = (rs.getInt("day" + (i + 1)) == 1);
+            freeTime[1][i] = (rs.getInt("night" + (i + 1)) == 1);
+        }
+        freeTimeMap.put(rs.getInt("employeeId"), freeTime);
+    }
+
+    public void writeUnFreeTime(int id, int period, int day) {
+        String time = "day";
+        if(period == 1)
+            time = "night";
+        time = time+(day+1);
+        String UN_FREE_TIME = "UPDATE FreeTime SET " + time + " = 0" +   " WHERE employeeId = " + id;
+        try (Connection conn = dataInstance.connect();
+             PreparedStatement ps = conn.prepareStatement(UN_FREE_TIME)) {
+            ps.executeUpdate();
+            freeTimeMap.get(id)[period][day] = false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String toStringFreeTime(int id){
+        StringBuilder str = new StringBuilder();
+        if(searchFreeTime(id)){
+            boolean[][] freeTime = this.freeTimeMap.get(id);
+            for (int i = 0; i<freeTime.length; i++){
+                for (int j = 0; j<freeTime[i].length;j++){
+                    str.append("Shift period: ").append(i + 1).append(", Day: ").append(j + 1).append(" availability: ").append(freeTime[i][j]).append("\n");
+                }
+            }
+        }
+        return str.toString();
+    }
+
+}

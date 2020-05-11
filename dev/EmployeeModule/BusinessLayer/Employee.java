@@ -11,7 +11,7 @@ public class Employee {
     private String workConditions;
     private Date startTime;
     private int salary;
-    private boolean[][] freeTime;
+    //private boolean[][] freeTime;
     private List<String> roles;
 
     public Employee(int id, String firstName, String lastName, String bankDetails, String workConditions, Date startTime, int salary, List<String> roles) {
@@ -22,13 +22,13 @@ public class Employee {
         this.workConditions = workConditions;
         this.startTime = startTime;
         this.salary = salary;
-        this.freeTime = new boolean[2][7];
+        //this.freeTime = new boolean[2][7];
         this.roles = roles;
     }
 
-    public void setFreeTime(boolean[][] freeTime){
-        this.freeTime = freeTime;
-    }
+    //public void setFreeTime(boolean[][] freeTime){
+    //    this.freeTime = freeTime;
+    //}
 
     public int getId() {
         return id;
@@ -58,15 +58,15 @@ public class Employee {
         return salary;
     }
 
-    public boolean[][] getFreeTime() {
-        return freeTime;
-    }
+    //public boolean[][] getFreeTime() {
+    //    return freeTime;
+    //}
 
     public List<String> getRoles() {
         return roles;
     }
 
-    public void setUnFreeTime(int period, int day){
-        this.freeTime[period][day] = false;
-    }
+    //public void setUnFreeTime(int period, int day){
+     //   this.freeTime[period][day] = false;
+    //}
 }
