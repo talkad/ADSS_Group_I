@@ -10,12 +10,11 @@ import java.util.Date;
 
 public class ShiftMapper {
     private static ShiftMapper instance;
-    private static mainData dataInstance;
+    private static mainData dataInstance = mainData.getInstance();
     private static ShiftEmployeesMapper shiftEmployeesInstance;
     private Map<String, DALShift> shiftMap;
 
     private ShiftMapper(){
-        dataInstance = mainData.getInstance();
         shiftEmployeesInstance = ShiftEmployeesMapper.getInstance();
         shiftMap = new HashMap<>();
     }

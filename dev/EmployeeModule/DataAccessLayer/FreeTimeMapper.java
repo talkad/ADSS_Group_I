@@ -6,11 +6,10 @@ import java.util.Map;
 
 public class FreeTimeMapper {
     private static FreeTimeMapper instance;
-    private static mainData dataInstance;
+    private static mainData dataInstance = mainData.getInstance();
     private Map<Integer, boolean[][]> freeTimeMap;
 
     private FreeTimeMapper(){
-        dataInstance = mainData.getInstance();
         freeTimeMap = new HashMap<>();
     }
 

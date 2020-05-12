@@ -10,16 +10,10 @@ import java.util.*;
 
 public class mainBL {
     private static mainBL instance;
-    private static EmployeeMapper employeeMapperInstance;//todo needs to be static?
-    private static ShiftMapper shiftMapperInstance;
-    private static ShiftEmployeesMapper shiftEmployeesMapperInstance;
-    private static FreeTimeMapper freeTimeMapperInstance;
+    private static mainData mainDataInstance;
 
     private mainBL(){
-        employeeMapperInstance = EmployeeModule.DataAccessLayer.EmployeeMapper.getInstance();
-        shiftMapperInstance = EmployeeModule.DataAccessLayer.ShiftMapper.getInstance();
-        shiftEmployeesMapperInstance = EmployeeModule.DataAccessLayer.ShiftEmployeesMapper.getInstance();
-        freeTimeMapperInstance = EmployeeModule.DataAccessLayer.FreeTimeMapper.getInstance();
+        mainDataInstance = EmployeeModule.DataAccessLayer.mainData.getInstance();
     }
     public static mainBL getInstance(){
         if(instance == null)
@@ -42,20 +36,20 @@ public class mainBL {
 
         DALEmployee dalEmployee = new DALEmployee(id, firstName, lastName, bankDetails, workConditions, startTime, salary, roles);
         if(!updateFlag) {
-            employeeMapperInstance.writingEmployee(dalEmployee);
-            freeTimeMapperInstance.writeFreeTime(id, new boolean[2][7]);
+            mainDataInstance.writeEmployee(dalEmployee);
+            mainDataInstance.writeFreeTime(id, new boolean[2][7]);
         }
         else
-            employeeMapperInstance.editEmployee(dalEmployee);
+            mainDataInstance.editEmployee(dalEmployee);
     }
 
     public void createShift(Date date, int time, int branch, int shiftId, List<String> roles, List<Pair<Integer, String>> employees){
-        shiftMapperInstance.writingShift(new DALShift(date, time, branch, shiftId, roles, employees));
-        shiftEmployeesMapperInstance.writeShiftEmployees(shiftId, employees);
+        mainDataInstance.writingShift(new DALShift(date, time, branch, shiftId, roles, employees));
+        mainDataInstance.writeShiftEmployees(shiftId, employees);
     }
 
     public boolean searchEmployee(int id, boolean flag) throws ApplicationException {
-        boolean found = mainBL.employeeMapperInstance.searchEmployee(id);
+        boolean found = mainBL.mainDataInstance.searchEmployee(id);
         if(flag && !found) {
             send("Error: Employee doesn't exist in the system");
             return false;
@@ -65,15 +59,14 @@ public class mainBL {
 
     public void removeEmployee(int id) throws ApplicationException {
         if(searchEmployee(id, true)) {
-            employeeMapperInstance.removeEmployee(id);
-            freeTimeMapperInstance.removeEmployeeFreeTime(id);
+            mainDataInstance.removeEmployee(id);
         }
         else
             send("Error: Employee doesn't exist in the system");
     }
 
     public boolean searchShift(String key, boolean flag) throws ApplicationException {
-        boolean found = shiftMapperInstance.searchShift(key);
+        boolean found = mainDataInstance.searchShift(key);
         if(!found && flag)
             send("Error: Shift doesn't exist in the system");
         if(found && !flag){
@@ -83,7 +76,7 @@ public class mainBL {
     }
 
     public boolean hasRole(int id, String role) throws ApplicationException {
-        boolean found = employeeMapperInstance.hasRole(id, role);
+        boolean found = mainDataInstance.hasRole(id, role);
         if(!found) {
             send("Error: Employee isn't qualified for the role");
         }
@@ -91,45 +84,39 @@ public class mainBL {
     }
 
     public boolean isFree(int id, int day, int period) throws ApplicationException {
-        boolean free = freeTimeMapperInstance.isFree(id, day, period);
+        boolean free = mainDataInstance.isFree(id, day, period);
         if(!free)
            send("Error: Employee isn't free during that time");
         return free;
     }
 
     public void setFreeTime(int id, boolean[][] freeTime){
-        freeTimeMapperInstance.writeFreeTime(id, freeTime);
+        mainDataInstance.writeFreeTime(id, freeTime);
     }
 
     public void unFreeTime(int id, int period, int day){
-        freeTimeMapperInstance.writeUnFreeTime(id, period, day);
+        mainDataInstance.writeUnFreeTime(id, period, day);
     }
 
-
     public String employeeInfo(int id){
-        String display = employeeMapperInstance.getEmployee(id).toString();
-        display += freeTimeMapperInstance.toStringFreeTime(id);
+        String display = mainDataInstance.getEmployee(id);
+        display += mainDataInstance.toStringFreeTime(id);
         return display;
     }
 
     public String displayAllEmployees(){
-        employeeMapperInstance.createEmployeeMap();
-        freeTimeMapperInstance.createFreeTimeMap();
-        StringBuilder display = new StringBuilder();
-        for (int id: employeeMapperInstance.employeesKeys()) {
-            display.append(employeeMapperInstance.getEmployee(id).toString());
-            display.append(freeTimeMapperInstance.toStringFreeTime(id));
-        }
-        return display.toString();
+        mainDataInstance.createEmployeeMap();
+        mainDataInstance.createFreeTimeMap();
+        return mainDataInstance.displayAllEmployees();
     }
 
     public String shiftInfo(String key){
-        return shiftMapperInstance.getShift(key).toString();
+        return mainDataInstance.getShift(key);
     }
 
     public boolean isEmployeeInShift(int id, String shiftTime) throws ApplicationException {
         if(searchShift(shiftTime, true)) {
-            return shiftMapperInstance.isEmployeeInShift(id, shiftTime);
+            return mainDataInstance.isEmployeeInShift(id, shiftTime);
         }
         return false;
     }

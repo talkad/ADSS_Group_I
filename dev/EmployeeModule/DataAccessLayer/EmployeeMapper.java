@@ -5,11 +5,10 @@ import java.util.*;
 
 public class EmployeeMapper {
     private static EmployeeMapper instance;
-    private static mainData dataInstance;
+    private static mainData dataInstance = mainData.getInstance();
     private Map<Integer, DALEmployee> employeeMap;
 
     private EmployeeMapper(){
-        dataInstance = mainData.getInstance();
         employeeMap = new HashMap<>();
     }
 

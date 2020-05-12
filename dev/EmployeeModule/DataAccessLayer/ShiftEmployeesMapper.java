@@ -3,20 +3,14 @@ package EmployeeModule.DataAccessLayer;
 import EmployeeModule.Pair;
 
 import java.sql.*;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class ShiftEmployeesMapper {
     private static ShiftEmployeesMapper instance;
-    private static mainData dataInstance;
-    //private Map<Pair<Integer, Integer>, String> shiftEmployeesMap;//todo remove map probably
+    private static mainData dataInstance = mainData.getInstance();
 
-    private ShiftEmployeesMapper(){
-        dataInstance = mainData.getInstance();
-        //shiftEmployeesMap = new HashMap<>();
-    }
+    private ShiftEmployeesMapper(){}
 
     public static ShiftEmployeesMapper getInstance(){
         if(instance == null) {
@@ -33,7 +27,6 @@ public class ShiftEmployeesMapper {
              ResultSet rs    = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 employees.add(new Pair<>(rs.getInt("employeeId"), rs.getString("role")));
-                //shiftEmployeesMap.put(new Pair<>(shiftId, rs.getInt("employeeId")), rs.getString("role"));//add to this map type
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -50,7 +43,6 @@ public class ShiftEmployeesMapper {
                 ps.setInt(2, p.getFirst());
                 ps.setString(3, p.getSecond());
                 ps.executeUpdate();
-                //shiftEmployeesMap.put(new Pair<>(shiftId, p.getFirst()), p.getSecond());//inserting values into shiftEmployeesMap
             }
         } catch (SQLException e) {
             e.printStackTrace();
