@@ -14,7 +14,6 @@ public class DTOEmployee {
     private Date startTime;
     private int salary;
     private List<String> roles;
-    //private boolean[][] freeTime;
 
     public DTOEmployee(int id, String firstName, String lastName, String bankDetails, String workConditions, Date startTime, int salary, List<String> roles) {
         this.id = id;
@@ -25,7 +24,6 @@ public class DTOEmployee {
         this.startTime = startTime;
         this.salary = salary;
         this.roles = roles;
-        //this.freeTime = freeTime;
     }
 
     public int getId() {
@@ -60,24 +58,6 @@ public class DTOEmployee {
         return new LinkedList<>(roles);
     }
 
-    //public boolean[][] getFreeTime() {
-    //    return freeTime;
-    //}
-
-    //public void setFreeTime(boolean[][] freeTime) {
-    //    this.freeTime = freeTime;
-    //}
-
-    /*public String toStringFreeTime(){
-        StringBuilder str = new StringBuilder();
-        for (int i = 0; i<this.freeTime.length; i++){
-            for (int j = 0; j<freeTime[i].length;j++){
-                str.append("Shift period: ").append(i + 1).append(", Day: ").append(j + 1).append(" availability: ").append(freeTime[i][j]).append("\n");
-            }
-        }
-        return str.toString();
-    }*/
-
     public String getRolesString(){
         StringBuilder str = new StringBuilder();
         for (int i = 0; i < this.roles.size(); i++) {
@@ -95,6 +75,6 @@ public class DTOEmployee {
                 "last name: " + lastName + "\n" + "bank details: " + bankDetails + "\n" +
                 "work conditions: " + workConditions + "\n" +"started working on: " + formatter.format(this.startTime) + "\n" +
                 "salary: " + salary + "\n" + "roles: " + this.roles.toString() + "\n"
-                + "free time:\n"; //+ toStringFreeTime();
+                + "free time:\n";
     }
 }

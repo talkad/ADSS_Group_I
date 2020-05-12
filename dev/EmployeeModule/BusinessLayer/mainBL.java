@@ -2,7 +2,6 @@ package EmployeeModule.BusinessLayer;
 
 import DeliveryModule.InterfaceLayer.DoThinks;
 import EmployeeModule.DataAccessLayer.*;
-import EmployeeModule.InterfaceLayer.ILShift;
 
 import EmployeeModule.Pair;
 import org.omg.CORBA.portable.ApplicationException;
@@ -58,15 +57,20 @@ public class mainBL {
     public boolean searchEmployee(int id, boolean flag) throws ApplicationException {
         boolean found = mainBL.employeeMapperInstance.searchEmployee(id);
         if(flag && !found) {
-            send("Error: Employee doesn't exist in the system");//todo send might mess up return values
+            send("Error: Employee doesn't exist in the system");
             return false;
         }
         return found;
     }
 
-    //public void removeEmployee(int id){
-    //    this.employeeMap.remove(id);//todo add employee removal
-    //}
+    public void removeEmployee(int id) throws ApplicationException {
+        if(searchEmployee(id, true)) {
+            employeeMapperInstance.removeEmployee(id);
+            freeTimeMapperInstance.removeEmployeeFreeTime(id);
+        }
+        else
+            send("Error: Employee doesn't exist in the system");
+    }
 
     public boolean searchShift(String key, boolean flag) throws ApplicationException {
         boolean found = shiftMapperInstance.searchShift(key);
@@ -83,14 +87,14 @@ public class mainBL {
         if(!found) {
             send("Error: Employee isn't qualified for the role");
         }
-        return found;//TODO WHY THE FUCK IS IT ALWAYS TRUE
+        return found;
     }
 
     public boolean isFree(int id, int day, int period) throws ApplicationException {
         boolean free = freeTimeMapperInstance.isFree(id, day, period);
         if(!free)
            send("Error: Employee isn't free during that time");
-        return free;//todo does throw exception bypasses return
+        return free;
     }
 
     public void setFreeTime(int id, boolean[][] freeTime){
@@ -106,6 +110,17 @@ public class mainBL {
         String display = employeeMapperInstance.getEmployee(id).toString();
         display += freeTimeMapperInstance.toStringFreeTime(id);
         return display;
+    }
+
+    public String displayAllEmployees(){
+        employeeMapperInstance.createEmployeeMap();
+        freeTimeMapperInstance.createFreeTimeMap();
+        StringBuilder display = new StringBuilder();
+        for (int id: employeeMapperInstance.employeesKeys()) {
+            display.append(employeeMapperInstance.getEmployee(id).toString());
+            display.append(freeTimeMapperInstance.toStringFreeTime(id));
+        }
+        return display.toString();
     }
 
     public String shiftInfo(String key){

@@ -3,7 +3,10 @@ package EmployeeModule.DataAccessLayer;
 import EmployeeModule.Pair;
 
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 public class ShiftMapper {
     private static ShiftMapper instance;
@@ -11,12 +14,15 @@ public class ShiftMapper {
     private static ShiftEmployeesMapper shiftEmployeesInstance;
     private Map<String, DALShift> shiftMap;
 
-    public static EmployeeModule.DataAccessLayer.ShiftMapper getInstance(){
+    private ShiftMapper(){
+        dataInstance = mainData.getInstance();
+        shiftEmployeesInstance = ShiftEmployeesMapper.getInstance();
+        shiftMap = new HashMap<>();
+    }
+
+    public static ShiftMapper getInstance(){
         if(instance == null) {
             instance = new ShiftMapper();
-            dataInstance = mainData.getInstance();
-            shiftEmployeesInstance = ShiftEmployeesMapper.getInstance();
-            instance.shiftMap = new HashMap<>();
         }
         return instance;
     }
@@ -33,31 +39,40 @@ public class ShiftMapper {
             ps.executeUpdate();
             shiftMap.put(shift.getShiftKey(), shift);
         } catch (SQLException e) {
-            e.printStackTrace();//TODO ADD TO MAP PROPERLY
+            e.printStackTrace();
         }
     }
 
-    public boolean searchShift(String key)  {
+    public boolean searchShift(String key) {
         if(!shiftMap.containsKey(key)) {
             String[] arr = key.split(" ");
-            String shiftDate = arr[0];
-            int shiftTime = Integer.parseInt(arr[1]);
-            String sql = "SELECT * FROM Shifts where date = " + shiftDate + " AND time = " + shiftTime;//todo this may be wrong date sql and date java are problematic, PROBABLY NEED TO BE JAVA BUT CURRENTLY SQL
-            try (Connection conn = dataInstance.connect();
-                 Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery(sql)) {
-                if (rs != null) {
-                    List<String> roles = Arrays.asList(rs.getString("roles").split(","));
-                    List<Pair<Integer, String>> employees = shiftEmployeesInstance.generateShiftEmployees(rs.getInt("shiftId"));
-                    DALShift shift = new DALShift(rs.getDate("date"), rs.getInt("time"),
-                            rs.getInt("branch"), rs.getInt("shiftId"), roles, employees);
-                    shiftMap.put(shift.getShiftKey(), shift);
-                    return true;
+            if (arr.length == 2) {
+                String shiftDate = arr[0];
+                String shiftTime = arr[1];
+                String sql = "SELECT * FROM Shifts where date = " + "'" + shiftDate + "'" + " AND time = " + shiftTime;
+                try (Connection conn = dataInstance.connect();
+                     Statement stmt = conn.createStatement();
+                     ResultSet rs = stmt.executeQuery(sql)) {
+                    if (rs.next()) {
+                        List<String> roles = Arrays.asList(rs.getString("roles").split(","));
+                        List<Pair<Integer, String>> employees = shiftEmployeesInstance.generateShiftEmployees(rs.getInt("shiftId"));
+                        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                        try {
+                            Date date = formatter.parse(rs.getString("date"));
+                            DALShift shift = new DALShift((date), rs.getInt("time"),
+                                    rs.getInt("branch"), rs.getInt("shiftId"), roles, employees);
+                            shiftMap.put(shift.getShiftKey(), shift);
+                            return true;
+                        } catch (ParseException e) {
+                            System.out.println("Invalid date format");
+                        }
+                    }
+                    return false;
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
                 }
-                return false;
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
             }
+            else return false;
         }
         return true;
     }
@@ -65,7 +80,7 @@ public class ShiftMapper {
     public DALShift getShift(String key)  {
         if(shiftMap.containsKey(key))
             return shiftMap.get(key);
-        else if(searchShift(key)){
+        else if(searchShift(key)){ //check if shift is in the database and hasn't been loaded yet
             return shiftMap.get(key);
         }
         else return null;

@@ -9,30 +9,16 @@ public class FreeTimeMapper {
     private static mainData dataInstance;
     private Map<Integer, boolean[][]> freeTimeMap;
 
-    public static EmployeeModule.DataAccessLayer.FreeTimeMapper getInstance(){
-        if(instance == null) {
-            instance = new FreeTimeMapper();
-            dataInstance = mainData.getInstance();
-            instance.freeTimeMap = new HashMap<>();
-        }
-        return instance;
+    private FreeTimeMapper(){
+        dataInstance = mainData.getInstance();
+        freeTimeMap = new HashMap<>();
     }
 
-    protected boolean[][] generateFreeTime(int id){//todo don't think this is needed
-        boolean[][] freeTime = new boolean[2][7];
-        String sql = "SELECT * FROM FreeTime where employeeId = " + id;
-        try (Connection conn = dataInstance.connect();
-            Statement stmt  = conn.createStatement();
-            ResultSet rs    = stmt.executeQuery(sql)){
-            for (int i = 0; i < freeTime[0].length; i++) {
-                freeTime[0][i] = (rs.getInt("day" + (i + 1)) == 1);
-                freeTime[1][i] = (rs.getInt("night" + (i + 1)) == 1);
-            }
-            freeTimeMap.put(id, freeTime);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+    public static FreeTimeMapper getInstance(){
+        if(instance == null) {
+            instance = new FreeTimeMapper();
         }
-        return freeTime;
+        return instance;
     }
 
     public void writeFreeTime(int id, boolean[][] freeTime) {
@@ -77,7 +63,7 @@ public class FreeTimeMapper {
         try (Connection conn = dataInstance.connect();
              Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
-            if(rs != null) {
+            if(rs.next()) {
                 createFreeTime(rs);
                 return true;
             }
@@ -116,8 +102,8 @@ public class FreeTimeMapper {
         StringBuilder str = new StringBuilder();
         if(searchFreeTime(id)){
             boolean[][] freeTime = this.freeTimeMap.get(id);
-            for (int i = 0; i<freeTime.length; i++){
-                for (int j = 0; j<freeTime[i].length;j++){
+            for (int i = 0; i < freeTime.length; i++){
+                for (int j = 0; j < freeTime[i].length;j++){
                     str.append("Shift period: ").append(i + 1).append(", Day: ").append(j + 1).append(" availability: ").append(freeTime[i][j]).append("\n");
                 }
             }
@@ -125,4 +111,26 @@ public class FreeTimeMapper {
         return str.toString();
     }
 
+    public void createFreeTimeMap(){
+        String sql = "SELECT * FROM FreeTime";
+        try (Connection conn = dataInstance.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+            // loop through the result set
+            while (rs.next()) {
+                createFreeTime(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void removeEmployeeFreeTime(int id) {
+        String REMOVE_EMPLOYEE_FREE_TIME = "DELETE FROM FreeTime WHERE employeeId = " + id;
+        try (Connection conn = dataInstance.connect();
+             PreparedStatement ps = conn.prepareStatement(REMOVE_EMPLOYEE_FREE_TIME)) {
+            ps.executeUpdate();
+            freeTimeMap.remove(id);
+        } catch (SQLException e) {e.printStackTrace();}
+    }
 }

@@ -8,25 +8,26 @@ public class EmployeeMapper {
     private static mainData dataInstance;
     private Map<Integer, DALEmployee> employeeMap;
 
-    public static EmployeeModule.DataAccessLayer.EmployeeMapper getInstance(){
+    private EmployeeMapper(){
+        dataInstance = mainData.getInstance();
+        employeeMap = new HashMap<>();
+    }
+
+    public static EmployeeMapper getInstance(){
         if(instance == null) {
             instance = new EmployeeMapper();
-            dataInstance = mainData.getInstance();
-            instance.employeeMap = new HashMap<>();
         }
         return instance;
     }
 
-    public void createEmployeeMap(){//todo make all
+    public void createEmployeeMap(){
         String sql = "SELECT * FROM Employees";
         try (Connection conn = dataInstance.connect();
              Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
             // loop through the result set
-            if(rs != null){
-                while (rs.next()) {
-                    createEmployee(rs);//todo in while?
-                }
+            while (rs.next()) {
+                createEmployee(rs);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -69,7 +70,7 @@ public class EmployeeMapper {
             employeeMap.remove(employee.getId());
             employeeMap.put(employee.getId(), employee);
         } catch (SQLException e) {
-            e.printStackTrace();//TODO UPDATE THE MAP
+            e.printStackTrace();
         }
     }
 
@@ -80,13 +81,13 @@ public class EmployeeMapper {
                  Statement stmt  = conn.createStatement();
                  ResultSet rs    = stmt.executeQuery(SEARCH_EMPLOYEE)) {
                 if(rs.next()){
-                    rs.beforeFirst();
-                    System.out.println();
                     createEmployee(rs);
                     return true;
                 }
                 else return false;
-            } catch (SQLException e) {}
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return true;
     }
@@ -112,5 +113,18 @@ public class EmployeeMapper {
 
     public boolean hasRole(int id, String role) {
         return this.employeeMap.get(id).getRoles().contains(role);
+    }
+
+    public Set<Integer> employeesKeys(){
+        return employeeMap.keySet();
+    }
+
+    public void removeEmployee(int id) {
+        String REMOVE_EMPLOYEE = "DELETE FROM Employees WHERE id = " + id;
+        try (Connection conn = dataInstance.connect();
+             PreparedStatement ps = conn.prepareStatement(REMOVE_EMPLOYEE)) {
+            ps.executeUpdate();
+            employeeMap.remove(id);
+        } catch (SQLException e) {e.printStackTrace();}
     }
 }

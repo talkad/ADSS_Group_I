@@ -11,7 +11,7 @@ import java.util.*;
 public class Service {
     public static int shiftCounter = 1;
 
-    public static void main(String [] args){
+    public static void main(String [] args) {
         Service service = new Service();
         EmployeeModule.BusinessLayer.mainBL mainBL = EmployeeModule.BusinessLayer.mainBL.getInstance();
         Scanner scanner = new Scanner(System.in);
@@ -20,7 +20,8 @@ public class Service {
         String menu = "choose action:\n" + "1) Add employee\n" +
                 "2) Edit employee free time\n" + "3) Add shift\n" +
                 "4) Get shift history\n" + "5) Get employee details\n"
-                + "6) Quit\n" + "7) Load pre-made data\n" + "8) Edit employee's details\n";
+                + "6) Quit\n" + "7) Load pre-made data\n" + "8) Edit employee's details\n" +
+                "9) Display all employees\n" + "10) Remove employee\n";
         String input;
         while(!quit){
             System.out.print(menu);
@@ -76,9 +77,36 @@ public class Service {
                     flag = true;
                     service.editEmployee(scanner, mainBL);
                     break;
+                case ("9"):
+                    flag = true;
+                    service.displayAllEmployees(mainBL);
+                    break;
+                case ("10"):
+                    flag = true;
+                    System.out.print("Please insert the employee's id number: ");
+                    int empId = isNumeric(scanner.nextLine());
+                    if(empId != -1){
+                        service.removeEmployee(empId, mainBL);
+                    }
+                    else {
+                        System.out.println("Id must be an integer");
+                    }
+                    break;
             }
         }
     }
+
+    private void removeEmployee(int id, mainBL mainBL) {
+        try{
+            mainBL.removeEmployee(id);
+            System.out.println("Successfully removed employee");
+        } catch (ApplicationException e){ System.out.println(e.getId());}
+    }
+
+    private void displayAllEmployees(EmployeeModule.BusinessLayer.mainBL mainBL) {
+        System.out.println(mainBL.displayAllEmployees());
+    }
+
     public ILEmployee generateEmployee(Scanner scanner, int id){
         System.out.print("Insert employee's first name: ");
         String firstName = scanner.nextLine();
@@ -122,7 +150,7 @@ public class Service {
             int id = isNumeric(scanner.nextLine());
             if (id != -1) {
                 if (mainBL.searchEmployee(id, false))
-                    System.out.print("Employee already exists in the system");
+                    System.out.println("Employee already exists in the system");
                 else {
                     ILEmployee employee = generateEmployee(scanner, id);
                     if (employee != null) {
@@ -345,9 +373,8 @@ public class Service {
     }
 
     public void displayEmployee(int id, mainBL mainBL){
-        boolean b;
         try{
-            b = mainBL.searchEmployee(id,true);
+            mainBL.searchEmployee(id,true);
                 System.out.println(mainBL.employeeInfo(id));
             } catch (ApplicationException e) {
             System.out.println(e.getId());
