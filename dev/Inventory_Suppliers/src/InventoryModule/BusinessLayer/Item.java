@@ -5,32 +5,42 @@ import java.util.Date;
 import DTO.ItemDTO;
 
 public class Item {
-    private int id;
-    private boolean isDefect;
+    private int orderID;
+    private int count;
+    private int numOfDefects;
     private Date expiryDate;
     private String location;
 
     public Item(ItemDTO itemDTO){
-        this.id = itemDTO.getId();
-        this.isDefect = itemDTO.isDefect();
+        this.orderID = itemDTO.getOrderID();
+        this.count = itemDTO.getCount();
+        this.numOfDefects = itemDTO.getNumOfDefects();
         this.expiryDate = itemDTO.getExpiryDate();
         this.location = itemDTO.getLocation();
     }
 
-    public int getId() {
-        return id;
+    public int getOrderID() {
+        return orderID;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setOrderID(int orderID) {
+        this.orderID = orderID;
     }
 
-    public boolean isDefect() {
-        return isDefect;
+    public int getCount() {
+        return count;
     }
 
-    public void setDefect(boolean isDefect) {
-        this.isDefect = isDefect;
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public int getNumOfDefects() {
+        return numOfDefects;
+    }
+
+    public void setNumOfDefects(int numOfDefects) {
+        this.numOfDefects = numOfDefects;
     }
 
     public Date getExpiryDate() {
@@ -50,28 +60,46 @@ public class Item {
     }
 
     /**
+     * subtracts 1 from count
+     * @return if count is 0 after the operation
+     */
+    public boolean removeOne(){
+        this.count--;
+
+        return this.count == 0;
+    }
+
+    /**
+     *
+     * @return a DTO representation of the Item
+     */
+    public ItemDTO getDTORepresentation(){
+        return null; //TODO: implement this thingy
+    }
+
+    /**
      * 
      * @return an information about the item if it's defected or expired, otherwise returns null
      */
     public String defectInfo(){
         Date currentDate = new Date(); // creates a Date object with the current date
 
-        if(this.isDefect || expiryDate.compareTo(currentDate) == -1){
-            String info = "Item ID: " + this.id + "\n";
+        if(this.numOfDefects > 0 || expiryDate.compareTo(currentDate) == -1){
+            String info = "Items order ID: " + this.orderID + "\n";
             info += "Expiration date: " + this.expiryDate + "\n";
 
             info += "Status: ";
-            if(this.isDefect){
-                info += "Defect";
+            if(this.numOfDefects > 0){
+                info += "There are " + this.numOfDefects +" Defected Items";
 
                 if(expiryDate.compareTo(currentDate) == -1){
-                    info += ", Expired";
+                    info += ", items are expired";
                 }
 
                 info += "\n";
             }
             else{
-                info += "Expired\n";
+                info += "Items are expired\n";
             }
          
             info += "Located in: " + this.location + "\n";
@@ -84,13 +112,13 @@ public class Item {
 
     @Override
     public String toString(){
-        String toString = "Item ID: " + this.id + "\n";
+        String toString = "Item order ID: " + this.orderID + "\n";
 
-        if(this.isDefect){
-            toString += "Status: Defect\n";
+        if(this.numOfDefects > 0){
+            toString += "Status: There are " + this.numOfDefects + " Defected items\n";
         }
         else{
-            toString += "Status: Not defect\n";
+            toString += "Status: Non are defected\n";
         }
 
         toString += "Expiration date: " + this.expiryDate + "\n";
@@ -98,4 +126,6 @@ public class Item {
         
         return toString;
     }
+
+
 }

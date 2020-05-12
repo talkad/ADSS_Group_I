@@ -3,32 +3,43 @@ package DTO;
 import java.util.Date;
 
 public class ItemDTO {
-    private int id;
-    private boolean isDefect;
+    private int orderID;
+    private int count;
+    private int numOfDefects;
     private Date expiryDate;
     private String location;
 
-    public ItemDTO(int orderId, boolean isDefect, Date expiryDate, String location) {
-        this.id = orderId;
-        this.isDefect = isDefect;
+
+    public ItemDTO(int orderID, int count, int numOfDefects, Date expiryDate, String location) {
+        this.orderID = orderID;
+        this.count = count;
+        this.numOfDefects = numOfDefects;
         this.expiryDate = expiryDate;
         this.location = location;
     }
 
-    public int getId() {
-        return id;
+    public int getOrderID() {
+        return orderID;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setOrderID(int orderID) {
+        this.orderID = orderID;
     }
 
-    public boolean isDefect() {
-        return isDefect;
+    public int getCount() {
+        return count;
     }
 
-    public void setDefect(boolean isDefect) {
-        this.isDefect = isDefect;
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public int getNumOfDefects() {
+        return numOfDefects;
+    }
+
+    public void setNumOfDefects(int numOfDefects) {
+        this.numOfDefects = numOfDefects;
     }
 
     public Date getExpiryDate() {

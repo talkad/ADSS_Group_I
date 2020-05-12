@@ -38,13 +38,12 @@ public class Product {
      * @param item the item to add
      */
     public void addItem(Item item){
-        //TODO: make the product give the new item the id?
         items.add(item);
         if(item.getLocation().equals("Store") || item.getLocation().equals("store") ){// if the item was added to the store then we'll update the amount of items in the store accordingly
-            this.storeCapacity++;
+            this.storeCapacity += item.getCount();
         }
         else{ // else the item is about ot be added to the store's inventory
-            this.inventoryCapacity++;
+            this.inventoryCapacity += item.getCount();
         }
     }
 
@@ -52,8 +51,8 @@ public class Product {
      * removes an item from type product from the inventory
      * @param item the item to remove
      */
+    //TODO: not sure if i delete here all of them or just one
     public void removeItem(Item item){
-        items.remove(item);
 
         if(item.getLocation().equals("Store") || item.getLocation().equals("store")){// if the item was in the store then we'll update the amount of items in the store accordingly
             this.storeCapacity--;
@@ -61,16 +60,20 @@ public class Product {
         else{ // else the item is in the store's inventory
             this.inventoryCapacity--;
         }
+
+        if(item.removeOne()){ // checks if the count of the item is 0
+            items.remove(item); // is so, removes the item from the list
+        }
     }
 
     /**
      * gets an item with the given id
-     * @param itemId the id of the item
+     * @param itemOrderId the id of the item
      * @return an item with an id {@code id}, null if there is no such item
      */
-    public Item getItem(int itemId){
+    public Item getItem(int itemOrderId){
         for(Item item: items){
-            if(item.getId() == itemId){
+            if(item.getOrderID() == itemOrderId){
                 return item;
             }
         }
@@ -81,19 +84,20 @@ public class Product {
     /**
      * @return if the minimum quantity set for the product is reached
      */
+    //TODO: ask them if defected or expired do not count
     public boolean hasMinQuantityReached(){
-        return items.size() <= minCapacity;
+        return inventoryCapacity + storeCapacity <= minCapacity;
     }
 
-    /**
-     * checks if the given name and manufacturer represnt the current product
-     * @param name the name of the product
-     * @param manufacturer the manufacturer of the product
-     * @return whether the given name and manufacturer represnt the current product
-     */
-    public boolean isRepresentedProduct(String name, String manufacturer){
-        return (this.name.compareTo(name) == 0) && (this.manufacturer.compareTo(manufacturer) == 0);
-    }
+//    /**
+//     * checks if the given name and manufacturer represnt the current product
+//     * @param name the name of the product
+//     * @param manufacturer the manufacturer of the product
+//     * @return whether the given name and manufacturer represnt the current product
+//     */
+//    public boolean isRepresentedProduct(String name, String manufacturer){
+//        return (this.name.compareTo(name) == 0) && (this.manufacturer.compareTo(manufacturer) == 0);
+//    }
 
     /**
      *
@@ -104,25 +108,26 @@ public class Product {
         return categories.contains(category);
     }
 
-    /**
-     * given an id, the function returns whether there is an item from this product with the id.
-     * @param id the id to check
-     * @return whether there is an item with id {@code id}
-     */
-    public boolean hasAnItemWithID(int id){
-        for(Item item: items){
-            if(item.getId() == id){
-                return true;
-            }
-        }
-
-        return false;
-    }
+//    /**
+//     * given an id, the function returns whether there is an item from this product with the id.
+//     * @param itemOrderID the id to check
+//     * @return whether there is an item with id {@code id}
+//     */
+//    public boolean hasAnItemWithID(int itemOrderID){
+//        for(Item item: items){
+//            if(item.getOrderID() == id){
+//                return true;
+//            }
+//        }
+//
+//        return false;
+//    }
 
     /**
      *
      * @return information about all the defected or expired items of the current product
      */
+    //TODO: give more info?
     public String productDefects(){
         String defectsInfo = "Name: " + this.name + "\n";
         defectsInfo += "Manufacturer: " + this.manufacturer + "\n";
@@ -138,6 +143,14 @@ public class Product {
         }
 
         return defectsInfo;
+    }
+
+    /**
+     *
+     * @return a DTO representation of the current Product
+     */
+    public ProductDTO getDTORepresentation(){
+        return null; //TODO: implement this thingy
     }
 
     public int getId() {
@@ -240,14 +253,16 @@ public class Product {
 
     @Override
     public String toString(){
-        String toString = "Name: " + this.name + "\n";
+        String toString = "Product ID: " + this.id + "\n";
+        toString += "Name: " + this.name + "\n";
         toString += "Manufacturer: " + this.manufacturer + "\n";
         toString += "Minimum capacity: " + this.minCapacity + "\n";
         toString += "Buying price: " + this.buyingPrice + "\n";
         toString += "Selling price: " + this.sellingPrice + "\n";
+        toString += "weight: " + this.weight + "\n";
         toString += "Quantity in inventory: " + this.inventoryCapacity + "\n";
         toString += "Quantity in store: " + this.storeCapacity + "\n";
-        toString += "Catagories: " + categories.toString() + "\n";
+        toString += "Categories: " + categories.toString() + "\n";
         toString += "Items: " + items.toString() + "\n";
 
         return toString;

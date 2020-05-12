@@ -177,6 +177,24 @@ public class ProductMapper {
         return null;
     }
 
+    /**
+     * checks whether there's already a product with the same name and manufacturer name
+     * @param name the product's name
+     * @param manufacturer the manufacturer's name
+     * @return whether there's already a product with the same name and manufacturer name
+     */
+    public boolean doesProductExist(String name, String manufacturer){
+        return true;
+    }
+
+    /**
+     *
+     * @return all of the records in a List
+     */
+    public List<ProductDTO> getAll(){
+        return null;
+    }
+
 
 
     public static void main(String[] args) {
