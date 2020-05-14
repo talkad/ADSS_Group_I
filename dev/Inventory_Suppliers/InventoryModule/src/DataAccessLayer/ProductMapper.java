@@ -8,6 +8,7 @@ import DAL_Connector.DatabaseManager;
 import java.sql.*;
 import java.util.*;
 
+
 public class ProductMapper {
 
     private static Connection conn = DatabaseManager.getInstance().getConnection();

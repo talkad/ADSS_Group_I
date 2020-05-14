@@ -9,10 +9,7 @@ import DataAccessLayer.ProductMapper;
 import java.util.LinkedList;
 import java.util.List;
 
-//import Initialize.HardCodeInitializer; TODO: ask tal if he deleted this class
-
 //TODO: add calls to the function of the db
-//TODO: implement the periodic order
 /**
  * a singleton class
  */
@@ -51,11 +48,11 @@ public class Inventory {
         Result result = new Result();
         Product newProduct = new Product(productDTO);
 
-        //TODO: generate an id for the product?
+        //TODO: generate an id for the product? yes
 
         if(productMapper.getProduct(newProduct.getId()) != null) { // checking if there's already a product with the same id
             if (productMapper.doesProductExist(newProduct.getName(), newProduct.getManufacturer())) {//checks if the product already exists
-                productMapper.insert(productDTO);
+                productMapper.insert(newProduct);
                 //productsList.add(newProduct);
                 result.successful();
             } else {
@@ -135,16 +132,15 @@ public class Inventory {
     public Result addItem(int productID, ItemDTO itemDTO){
         Result result = new Result();
 
-        ProductDTO productDTO = productMapper.getProduct(productID);
+        Product productToAddTo = productMapper.getProduct(productID);
 
-        if(productDTO != null){// if productToAddTo is null then there is no such product in the inventory
-            Product productToAddTo = new Product(productDTO);
+        if(productToAddTo != null){// if productToAddTo is null then there is no such product in the inventory
             Item itemToAdd = new Item(itemDTO);
 
             productToAddTo.addItem(itemToAdd);
 
 
-            productMapper.update(productToAddTo.getDTORepresentation());
+            productMapper.update(productToAddTo);
 
             result.successful();
         }
@@ -164,16 +160,15 @@ public class Inventory {
     public Result removeOneItem(int productID, int itemID){
         Result result = new Result();
 
-        ProductDTO productDTO = productMapper.getProduct(productID);
+        Product productToRemoveFrom = productMapper.getProduct(productID);
 
-        if(productDTO != null){
-            Product productToRemoveFrom = new Product(productDTO);
+        if(productToRemoveFrom != null){
             Item itemToRemove = productToRemoveFrom.getItem(itemID);
 
             if(itemToRemove != null){// if itemToRemove is null the item does not exist
                 productToRemoveFrom.removeItem(itemToRemove);
 
-                productMapper.update(productToRemoveFrom.getDTORepresentation());
+                productMapper.update(productToRemoveFrom);
 
                 String quantityMessage = minQuantityNotification(productToRemoveFrom);
 
@@ -203,7 +198,7 @@ public class Inventory {
         return null;
     }
 
-    //TODO: this
+    //TODO: need to add their implementation to lack order
     public String sendLackOrder(Product product){
 
         if(stamFunction() != -1){
@@ -235,7 +230,7 @@ public class Inventory {
     public Result updateMinQuantity(int productID, int newMinQuantity){
         Result result = new Result();
 
-        ProductDTO product = productMapper.getProduct(productID);
+        Product product = productMapper.getProduct(productID);
 
         if(product != null){
             product.setMinCapacity(newMinQuantity);
@@ -261,7 +256,7 @@ public class Inventory {
     public Result updateSellingPrice(int productID, int newSellingPrice){
         Result result = new Result();
 
-        ProductDTO product = productMapper.getProduct(productID);
+        Product product = productMapper.getProduct(productID);
 
         if(product != null){
             product.setSellingPrice(newSellingPrice);
@@ -286,7 +281,7 @@ public class Inventory {
     public Result updateBuyingPrice(int productID, int newBuyingPrice){
         Result result = new Result();
 
-        ProductDTO product = productMapper.getProduct(productID);
+        Product product = productMapper.getProduct(productID);
 
         if(product != null){
             product.setBuyingPrice(newBuyingPrice);
@@ -312,10 +307,9 @@ public class Inventory {
     public Result setDefect(int productID, int itemId, int numOfDefects){
         Result result = new Result();
 
-        ProductDTO productDTO = productMapper.getProduct(productID);
+        Product productToSetDefectFrom = productMapper.getProduct(productID);
 
-        if(productDTO != null) { // if productToSetDefectFrom is null then it means he does not exist
-            Product productToSetDefectFrom = new Product(productDTO);
+        if(productToSetDefectFrom != null) { // if productToSetDefectFrom is null then it means he does not exist
 
             Item itemToSetDefectTo = productToSetDefectFrom.getItem(itemId);
 
@@ -324,7 +318,7 @@ public class Inventory {
                 if(numOfDefects < itemToSetDefectTo.getCount()) {
                     itemToSetDefectTo.setNumOfDefects(numOfDefects);
 
-                    productMapper.update(productToSetDefectFrom.getDTORepresentation());
+                    productMapper.update(productToSetDefectFrom);
 
                     result.successful();
                 }
@@ -352,10 +346,9 @@ public class Inventory {
     public Result updateItemLocation(int productID, int itemId, String location){
         Result result = new Result();
 
-        ProductDTO productDTO = productMapper.getProduct(productID);
+        Product productToSetLocationFrom = productMapper.getProduct(productID);
 
-        if(productDTO != null) {// if productToSetLocationFrom is null then it means he does not exist
-            Product productToSetLocationFrom = new Product(productDTO);
+        if(productToSetLocationFrom != null) {// if productToSetLocationFrom is null then it means he does not exist
             Item itemToSetNewLocationTo = productToSetLocationFrom.getItem(itemId);
 
             if (itemToSetNewLocationTo != null) {// if itemToSetNewLocationTo is null the item does not exist
@@ -376,7 +369,7 @@ public class Inventory {
 
                     itemToSetNewLocationTo.setLocation(location);
 
-                    productMapper.update(productToSetLocationFrom.getDTORepresentation());
+                    productMapper.update(productToSetLocationFrom);
 
                     result.successful();
                 }
@@ -400,11 +393,8 @@ public class Inventory {
      * @return an inventory report according to the given {@code catagories} 
      */
     public String getCategoriesReport(List<List<String>> categories){
-        //getting and arranging the products from the db
-        List<Product> productsList = new LinkedList<>();
-        for(ProductDTO productDTO: productMapper.getAll()){
-            productsList.add(new Product(productDTO));
-        }
+        //getting all the products from the db
+        List<Product> productsList = productMapper.getAll();
 
 
         String categoriesReport = "Categories Report:\n";
@@ -439,11 +429,8 @@ public class Inventory {
      * @return a report listing all the defected and expired items in the inventory
      */
     public String getDefectsReports(){
-        //getting and arranging the products from the db
-        List<Product> productsList = new LinkedList<>();
-        for(ProductDTO productDTO: productMapper.getAll()){
-            productsList.add(new Product(productDTO));
-        }
+        //getting all the products from the db
+        List<Product> productsList = productMapper.getAll();
 
         String defectsReport = "Defects or Expired Report:\n\n";
 
