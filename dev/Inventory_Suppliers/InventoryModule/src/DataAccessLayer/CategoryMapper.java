@@ -63,7 +63,7 @@ public class CategoryMapper {
      */
     public boolean insertCategory(String category, int id){
         int numRowsInserted;
-        String insertCategory = "INSERT INTO Categories(category, id)" +
+        String insertCategory = "INSERT INTO Categories(category, productID)" +
                 "VALUES(?,?)";
 
         try {
@@ -89,7 +89,7 @@ public class CategoryMapper {
     public Result deleteCategories(int id){
         Result result = new Result();
         int numRowsDeleted;
-        String deleteCommand = "DELETE FROM Categories WHERE id= ?";
+        String deleteCommand = "DELETE FROM Categories WHERE productID= ?";
 
         try {
             PreparedStatement statement = conn.prepareStatement(deleteCommand);

@@ -6,14 +6,13 @@ import BusinessLayer.Result;
 import DAL_Connector.DatabaseManager;
 
 import java.sql.*;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 public class ProductMapper {
 
     private static Connection conn = DatabaseManager.getInstance().getConnection();
 
-    //this map manages all the instances of Product. The identifier are its name and manufacturer
+    //this map manages all the instances of Product. The identifier is the product id
     private Map<Integer, Product> identityProductMap;
 
     private static ProductMapper instance;
@@ -28,9 +27,11 @@ public class ProductMapper {
         return instance;
     }
 
+    // ------ insert - update - delete ----------
 
     /**
      * initiate the product list with the data in DB when the system starts
+     * doesn't import items into the system
      */
     private void initProductMap(){
         String sql = "SELECT * FROM Product";
@@ -61,7 +62,7 @@ public class ProductMapper {
      * @param product is the product to be stored in DB
      * @return  a Result object with information about the result of the operation
      */
-    public Result insert(Product product){
+    private Result insert(Product product){
         Result result = new Result();
         int numRowsInserted;
 
@@ -111,7 +112,7 @@ public class ProductMapper {
      * @param product is the product to be updated
      * @return  a Result object with information about the result of the operation
      */
-    public Result update(Product product){
+    private Result update(Product product){
         Result result = new Result();
         int numRowsUpdated;
         String updateCommand = "UPDATE Product SET minCapacity = ?, buyingPrice = ?, sellingPrice = ?, weight = ?" +
@@ -148,10 +149,10 @@ public class ProductMapper {
 
     /**
      * Delete a given product from DB
-     * @param product is the product to be deleted
+     * @param productID is the product identifier
      * @return  a Result object with information about the result of the operation
      */
-    public Result delete(Product product){
+    private Result delete(int productID){
         Result result = new Result();
         int numRowsDeleted;
         String deleteCommand = "DELETE FROM Product WHERE id = ?";
@@ -159,11 +160,7 @@ public class ProductMapper {
         // delete the product only if there are no items belong to this product
         try {
             PreparedStatement statement = conn.prepareStatement(deleteCommand);
-            statement.setInt(1, product.getId());
-
-            for(Item item: product.getItems()){ // delete items
-                ItemMapper.getInstance().deleteMapper(product.getId(), item.getOrderID());
-            }
+            statement.setInt(1, productID);
 
             numRowsDeleted = statement.executeUpdate();
 
@@ -180,38 +177,109 @@ public class ProductMapper {
         return result;
     }
 
-    //TODO: a function which returns a product. call it getProduct and it gets an int which is the product id. getProduct(int productID)
-    //TODO: return it with the list of itemDTOs which are related to it
+
+    // -------- mapper functionality ---------------
+
+
     /**
      * given a productID, returns a productDTO with id {@param productID}
      * @param productID the id of the product
      * @return productDTO with id {@param productID}. or null if no such entry exists
      */
-    public ProductDTO getProduct(int productID){
-        // check if map empty - if so try to init
-        // if id exists in map return the product with its items
-        // if not return null
-        return null;
+    public Product getProduct(int productID){
+
+        Product product = null;
+
+        if(identityProductMap.size() == 0)
+            initProductMap();
+
+        if(identityProductMap.containsKey(productID))
+        {
+            product = identityProductMap.get(productID);
+            product.setItems(ItemMapper.getInstance().getItems(productID));
+        }
+
+        return product;
     }
 
     /**
      * checks whether there's already a product with the same name and manufacturer name
-     * @param name the product's name
-     * @param manufacturer the manufacturer's name
+     * @param productID is the product id
      * @return whether there's already a product with the same name and manufacturer name
      */
-    public boolean doesProductExist(String name, String manufacturer){
-        // if map empty - try an init
-        // check if the product exists in map
-        return true;
+    public boolean doesProductExist(int productID){
+
+        if(identityProductMap.size() == 0)
+            initProductMap();
+
+        if(identityProductMap.containsKey(productID))
+            return true;
+
+        return false;
     }
 
     /**
      *
      * @return all of the records in a List
      */
-    public List<ProductDTO> getAll(){
-        return null;
+    public List<Product> getAll(){
+
+        Collection collection = identityProductMap.values();
+        List<Product> list = new LinkedList<>();
+
+        list.addAll(collection);
+
+        return list;
+    }
+
+
+    /**
+     * Add a given item from DB
+     * @param product is the product to be inserted
+     * @return  a Result object with information about the result of the operation
+     */
+    public Result addMapper(Product product){
+
+        Result result = insert(product);
+
+        if(result.isSuccessful())
+            identityProductMap.put(product.getId(), product);
+
+        return result;
+    }
+
+    /**
+     * Update a given product from DB
+     * @param product is the product to be updated
+     * @return  a Result object with information about the result of the operation
+     */
+    public Result updateMapper(Product product){
+
+        Result result = update(product);
+
+        if(result.isSuccessful()){
+            identityProductMap.remove(product.getId());
+            identityProductMap.put(product.getId(), product);
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Delete a given product from DB
+     * @param productID is the product identifier
+     * @return  a Result object with information about the result of the operation
+     */
+    public Result deleteMapper(int productID){
+
+        Result result = delete(productID);
+
+        if(result.isSuccessful()){
+            identityProductMap.remove(productID);
+        }
+
+        return result;
     }
 
 }

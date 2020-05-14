@@ -7,6 +7,8 @@ import DAL_Connector.DatabaseManager;
 
 import java.sql.*;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class ItemMapper {
@@ -64,17 +66,17 @@ public class ItemMapper {
     private Result insert(Item item, int productID){
         Result result = new Result();
         int numRowsInserted;
-        String insertCommand = "INSERT INTO Item(orderId, count, numOfDefects, expiryDate, location, productID)" +
+        String insertCommand = "INSERT INTO Item(orderId, productID, count, numOfDefects, expiryDate, location)" +
                                 "VALUES(?,?,?,?,?,?)";
 
         try {
             PreparedStatement statement = conn.prepareStatement(insertCommand);
             statement.setInt(1, item.getOrderID());
-            statement.setInt(2, item.getCount());
-            statement.setInt(3, item.getNumOfDefects());
-            statement.setDate(4, new Date(item.getExpiryDate().getTime()));
-            statement.setString(5, item.getLocation());
-            statement.setInt(6, productID);
+            statement.setInt(2, productID);
+            statement.setInt(3, item.getCount());
+            statement.setInt(4, item.getNumOfDefects());
+            statement.setDate(5, new Date(item.getExpiryDate().getTime()));
+            statement.setString(6, item.getLocation());
             numRowsInserted = statement.executeUpdate();
 
             if(numRowsInserted == 1)
@@ -139,8 +141,8 @@ public class ItemMapper {
 
         try {
             PreparedStatement statement = conn.prepareStatement(deleteCommand);
-            statement.setInt(1, productID);
             statement.setInt(1, orderID);
+            statement.setInt(2, productID);
 
             numRowsDeleted = statement.executeUpdate();
 
@@ -157,7 +159,24 @@ public class ItemMapper {
     }
 
 
-    // -------- mapper functionality---------------
+    // -------- mapper functionality ---------------
+
+    /**
+     * Get items of certain product
+     * @param productID is the product id
+     * @return list of items that belongs to {@param productID}
+     */
+    public List<Item>  getItems(int productID){
+        List<Item> items = new LinkedList<>();
+
+        for(Pair<Integer,Integer> pair: identityItemMap.keySet()){
+            if(pair.getFirst() == productID)
+                items.add(identityItemMap.get(pair));
+        }
+
+        return items;
+    }
+
 
     /**
      * Add a given item from DB

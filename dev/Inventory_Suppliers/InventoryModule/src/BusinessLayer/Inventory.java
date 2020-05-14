@@ -25,7 +25,7 @@ public class Inventory {
     private CategoryMapper categoryMapper = CategoryMapper.getInstance();
 
     public static Inventory instance = null;
-    
+
     private Inventory(){
         //productsList = new LinkedList<>();
     }
@@ -40,14 +40,6 @@ public class Inventory {
         return instance;
     }
 
-
-
-//    /**
-//     * Initialize the system with hardcoded products and items
-//     */
-//    public void initialize(){
-//        HardCodeInitializer.getInstance().initialize();
-//    }
 
 
     /**
@@ -101,7 +93,7 @@ public class Inventory {
     public Result removeProduct(int productID){
         Result result = new Result();
     
-        ProductDTO toRemove = productMapper.getProduct(productID);
+        Product toRemove = productMapper.getProduct(productID);
 
 
         if(toRemove != null){ //if toRemove is null then the product does not exist in the inventory
