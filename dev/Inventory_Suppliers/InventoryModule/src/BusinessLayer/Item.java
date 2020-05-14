@@ -74,15 +74,11 @@ public class Item {
     public boolean removeOne(){
         this.count--;
 
-        return this.count == 0;
-    }
+        if(this.numOfDefects > 0){
+            this.numOfDefects--;
+        }
 
-    /**
-     *
-     * @return a DTO representation of the Item
-     */
-    public ItemDTO getDTORepresentation(){
-        return null; //TODO: implement this thingy
+        return this.count == 0;
     }
 
     /**

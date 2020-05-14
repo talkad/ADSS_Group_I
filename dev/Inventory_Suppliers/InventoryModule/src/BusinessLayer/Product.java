@@ -65,7 +65,6 @@ public class Product {
      * removes an item from type product from the inventory
      * @param item the item to remove
      */
-    //TODO: not sure if i delete here all of them or just one
     public void removeItem(Item item){
 
         if(item.getLocation().equals("Store") || item.getLocation().equals("store")){// if the item was in the store then we'll update the amount of items in the store accordingly
@@ -98,7 +97,6 @@ public class Product {
     /**
      * @return if the minimum quantity set for the product is reached
      */
-    //TODO: ask them if defected or expired do not count
     public boolean hasMinQuantityReached(){
         return inventoryCapacity + storeCapacity <= minCapacity;
     }
@@ -141,9 +139,9 @@ public class Product {
      *
      * @return information about all the defected or expired items of the current product
      */
-    //TODO: give more info?
     public String productDefects(){
-        String defectsInfo = "Name: " + this.name + "\n";
+        String defectsInfo = "Product ID: " + this.id + "\n";
+        defectsInfo += "Name: " + this.name + "\n";
         defectsInfo += "Manufacturer: " + this.manufacturer + "\n";
         defectsInfo += "Categories: " + categories.toString() + "\n";
         defectsInfo += "Defect items:\n";
@@ -159,13 +157,6 @@ public class Product {
         return defectsInfo;
     }
 
-    /**
-     *
-     * @return a DTO representation of the current Product
-     */
-    public ProductDTO getDTORepresentation(){
-        return null; //TODO: implement this thingy
-    }
 
     public int getId() {
         return id;
