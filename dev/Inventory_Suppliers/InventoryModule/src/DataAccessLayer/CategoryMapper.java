@@ -2,7 +2,6 @@ package DataAccessLayer;
 
 import BusinessLayer.Result;
 import DAL_Connector.DatabaseManager;
-import DTO.ProductDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

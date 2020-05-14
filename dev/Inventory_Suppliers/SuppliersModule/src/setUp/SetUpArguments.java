@@ -1,7 +1,9 @@
 package setUp;
+
 import Buisness.Item;
 import Buisness.SuperLi;
 import Buisness.SupplierCard;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +14,7 @@ public class SetUpArguments {
 
     public static void setup() {
         SupplierCard sup1 = new SupplierCard("sup1", "man1", 111, 123456789, "none", "FIXED", false);
-        SuperLi.addSupplier(sup1);
+       // SuperLi.addSupplier(sup1);
 
         Item item1 = new Item(12, 12, "milk", 111);
         Item item2 = new Item(13, 13, "sugar", 111);
@@ -44,7 +46,7 @@ public class SetUpArguments {
 
 
         SupplierCard sup2 = new SupplierCard("sup2", "man2", 112, 987654321, "some", "SINGLE", true);
-        SuperLi.addSupplier(sup2);
+       // SuperLi.addSupplier(sup2);
 
 
 //        HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();

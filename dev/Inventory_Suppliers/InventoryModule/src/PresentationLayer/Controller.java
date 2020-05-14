@@ -4,7 +4,6 @@ import BusinessLayer.Inventory;
 import BusinessLayer.Result;
 import DTO.ItemDTO;
 import DTO.ProductDTO;
-import com.sun.xml.internal.bind.v2.runtime.output.StAXExStreamWriterOutput;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,7 +27,7 @@ public class Controller{
         return controller;
     }
 
-    
+
     /**
      * This function takes care over illegal date inputs
      * @param date is a string which have to be in the pre-defined format
