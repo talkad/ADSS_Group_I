@@ -7,6 +7,7 @@ import DAL_Connector.DatabaseManager;
 
 import java.sql.*;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 public class ProductMapper {
@@ -187,7 +188,7 @@ public class ProductMapper {
      * @param productID the id of the product
      * @return productDTO with id {@param productID}. or null if no such entry exists
      */
-    public ProductDTO getProduct(int productID){
+    public Product getProduct(int productID){
         // check if map empty - if so try to init
         // if id exists in map return the product with its items
         // if not return null
@@ -210,7 +211,7 @@ public class ProductMapper {
      *
      * @return all of the records in a List
      */
-    public List<ProductDTO> getAll(){
+    public List<Product> getAll(){
         return null;
     }
 
