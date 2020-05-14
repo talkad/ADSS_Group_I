@@ -1,4 +1,4 @@
-package Buisness;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,5 +41,17 @@ public class QuantityAgreement {
             output += "\n";
         }
         return output;
+    }
+
+    public double checkDiscount(int itemID,int amount){
+        double discount = -1;
+        if (!_discounts.containsKey(itemID)){
+            return -1;
+        }
+        for(int step:_discounts.get(itemID).keySet()){
+            if (step < amount)
+                discount = _discounts.get(itemID).get(step);
+        }
+        return discount;
     }
 }

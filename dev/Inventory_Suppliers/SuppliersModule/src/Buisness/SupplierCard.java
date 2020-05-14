@@ -1,5 +1,3 @@
-package Buisness;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +13,6 @@ public class SupplierCard {
     private Arrangement _arrangement;
     private ArrayList<ContactPerson> _contacts;
     private Map<Integer,Order> _orders;
-    private int _orderNumIncrement = 1;
 
     public SupplierCard(String name, String manufacturer, int companyId, int bankAccount, String paymentConditions, String arrangementType, boolean selfPickup){
         _name = name;
@@ -104,10 +101,10 @@ public class SupplierCard {
             if (!_arrangement.getItems().containsKey(item))
                 return false;
         }
-        Order order = new Order(_orderNumIncrement,date, "Pending", items);
-        _orders.put(_orderNumIncrement,order);
+        Order order = new Order(SuperLi.get_orderNumIncrement(),date, "Pending", items);
+        _orders.put(SuperLi.get_orderNumIncrement(),order);
         _arrangement.get_deliveryDates().getDates().put(date, false);
-        _orderNumIncrement++;
+        SuperLi.incrementOrderNum();
         return true;
     }
 

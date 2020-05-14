@@ -7,7 +7,7 @@ public class Menu {
     /**
      * This function displays the menu to the standard output stream
      */
-    public static void displayMenu(String[] options){
+    private void displayMenu(String[] options){
         System.out.println("\nMenu- choose an index:");
         for(int i=0; i<options.length; i++)
             System.out.println((i+1) +". "+ options[i]);
@@ -20,7 +20,7 @@ public class Menu {
      * @param in get an input stream
      * @return the input number. return 0 if the input wasn't a number.
      */
-    public static int getInputIndex(Scanner in){
+    private int getInputIndex(Scanner in){
         int input=0;
         try{
             input= in.nextInt();
@@ -30,20 +30,8 @@ public class Menu {
         return input;
     }
 
-    /**
-     * This function initialize the system with the hard coded items.
-     * @param in get an input stream
-     */
-    public static void initialize(Scanner in){
-        char answer;
-        System.out.print("Would you like to initialize the system? [y/n] ");
-        answer=in.next().charAt(0);
-        if(answer=='y' || answer=='Y')
-            Controller.getInstance().initialize();
-    }
 
-    public static void main(String [] args){
-        Scanner in= new Scanner(System.in);
+    public void display(Scanner in){
         String[] options=new String[]
                 {"Add a new product", "Remove a product", "Add a new item", "Remove an item",
                         "Update minimum quantity", "Update selling price", "Update buying price", "Set defect",
@@ -51,8 +39,6 @@ public class Menu {
 
         boolean shouldTerminate=false;
         int input;
-
-        initialize(in);
 
         while(!shouldTerminate){
             displayMenu(options);

@@ -1,9 +1,9 @@
 package BusinessLayer;
 
+import DTO.ProductDTO;
+
 import java.util.LinkedList;
 import java.util.List;
-
-import DTO.ProductDTO;
 
 public class Product {
 
@@ -31,6 +31,20 @@ public class Product {
         this.storeCapacity = productDTO.getStoreCapacity();
         this.categories = productDTO.getCategories();
         this.items = new LinkedList<>();
+    }
+
+    public Product(int id, String name, String manufacturer, int minCapacity, int buyingPrice, int sellingPrice, double weight, int inventoryCapacity, int storeCapacity, List<String> categories, List<Item> items) {
+        this.id = id;
+        this.name = name;
+        this.manufacturer = manufacturer;
+        this.minCapacity = minCapacity;
+        this.buyingPrice = buyingPrice;
+        this.sellingPrice = sellingPrice;
+        this.weight = weight;
+        this.inventoryCapacity = inventoryCapacity;
+        this.storeCapacity = storeCapacity;
+        this.categories = categories;
+        this.items = items;
     }
 
     /**

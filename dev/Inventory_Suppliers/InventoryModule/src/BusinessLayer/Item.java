@@ -1,8 +1,8 @@
 package BusinessLayer;
 
-import java.util.Date;
-
 import DTO.ItemDTO;
+
+import java.util.Date;
 
 public class Item {
     private int orderID;
@@ -17,6 +17,14 @@ public class Item {
         this.numOfDefects = itemDTO.getNumOfDefects();
         this.expiryDate = itemDTO.getExpiryDate();
         this.location = itemDTO.getLocation();
+    }
+
+    public Item(int orderID, int count, int numOfDefects, Date expiryDate, String location) {
+        this.orderID = orderID;
+        this.count = count;
+        this.numOfDefects = numOfDefects;
+        this.expiryDate = expiryDate;
+        this.location = location;
     }
 
     public int getOrderID() {

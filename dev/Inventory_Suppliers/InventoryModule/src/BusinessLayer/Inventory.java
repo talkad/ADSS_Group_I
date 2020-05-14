@@ -5,10 +5,11 @@ import DTO.ProductDTO;
 import DataAccessLayer.CategoryMapper;
 import DataAccessLayer.ItemMapper;
 import DataAccessLayer.ProductMapper;
-//import Initialize.HardCodeInitializer; TODO: ask tal if he deleted this class
 
 import java.util.LinkedList;
 import java.util.List;
+
+//import Initialize.HardCodeInitializer; TODO: ask tal if he deleted this class
 
 //TODO: add calls to the function of the db
 //TODO: implement the periodic order

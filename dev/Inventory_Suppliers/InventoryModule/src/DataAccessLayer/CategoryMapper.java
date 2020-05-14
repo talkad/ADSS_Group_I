@@ -1,11 +1,16 @@
 package DataAccessLayer;
 
 import BusinessLayer.Result;
+import DAL_Connector.DatabaseManager;
 import DTO.ProductDTO;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+
 
 public class CategoryMapper {
 
@@ -20,21 +25,20 @@ public class CategoryMapper {
         return instance;
     }
 
+
     /**
      * Get a List of product's categories
-     * @param productName is the product name
-     * @param productManufacturer is the product manufacturer
+     * @param id is the product id
      * @return List of categories belong to a specific product
      */
-    public List<String> getCategories(String productName, String productManufacturer){
+    public List<String> getCategories(int id){
         List<String> categories = new LinkedList<>();
-        String sql = "SELECT * FROM Categories WHERE productName = ? AND productManufacturer = ? ";
+        String sql = "SELECT * FROM Categories WHERE id = ?";
 
         try {
 
             PreparedStatement categoryStatement = conn.prepareStatement(sql);
-            categoryStatement.setString(1, productName);
-            categoryStatement.setString(2, productManufacturer);
+            categoryStatement.setInt(1, id);
 
             ResultSet rs = categoryStatement.executeQuery(sql);
 
@@ -51,23 +55,22 @@ public class CategoryMapper {
     }
 
 
+
     /**
      * This function inserts a new category to the categories relation.
-     * @param category is one of the product categories
-     * @param productName is the product name
-     * @param productManufacturer is the product manufacturer
+     * @param category is one of the product categories.
+     * @param id is the product identifier.
      * @return true if the insertion succeeded, false otherwise.
      */
-    public boolean insertCategory(String category, String productName, String productManufacturer){
+    public boolean insertCategory(String category, int id){
         int numRowsInserted;
-        String insertCategory = "INSERT INTO Categories(category, productName, productManufacturer)" +
-                "VALUES(?,?,?)";
+        String insertCategory = "INSERT INTO Categories(category, id)" +
+                "VALUES(?,?)";
 
         try {
             PreparedStatement categoryStatement = conn.prepareStatement(insertCategory);
             categoryStatement.setString(1, category);
-            categoryStatement.setString(2, productName);
-            categoryStatement.setString(3, productManufacturer);
+            categoryStatement.setInt(2, id);
             numRowsInserted = categoryStatement.executeUpdate();
 
         }catch (java.sql.SQLException e){
@@ -78,20 +81,20 @@ public class CategoryMapper {
     }
 
 
+
     /**
      * Delete a given product categories from DB
-     * @param productDTO is the product that its categories will be deleted
+     * @param id is the product id
      * @return  a Result object with information about the result of the operation
      */
-    public Result deleteCategories(ProductDTO productDTO){
+    public Result deleteCategories(int id){
         Result result = new Result();
         int numRowsDeleted;
-        String deleteCommand = "DELETE FROM Categories WHERE name = ? AND manufacturer = ?";
+        String deleteCommand = "DELETE FROM Categories WHERE id= ?";
 
         try {
             PreparedStatement statement = conn.prepareStatement(deleteCommand);
-            statement.setString(1, productDTO.getName());
-            statement.setString(2, productDTO.getManufacturer());
+            statement.setInt(1, id);
 
             numRowsDeleted = statement.executeUpdate();
 

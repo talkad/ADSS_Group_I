@@ -1,4 +1,4 @@
-package DataAccessLayer;
+package DAL_Connector;
 
 
 import java.sql.*;

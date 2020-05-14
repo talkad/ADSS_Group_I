@@ -1,5 +1,3 @@
-package Buisness;
-
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -85,5 +83,9 @@ public class Order {
                 return false;
         }
         return true;
+    }
+
+    public boolean canbeUpdated(){
+        return (this._orderDate.isAfter(LocalDate.now().plusDays(1)));
     }
 }

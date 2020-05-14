@@ -27,12 +27,6 @@ public class Controller{
         return controller;
     }
 
-    /**
-     * Initialize the system with hardcoded products and items
-     */
-    public void initialize(){
-        Inventory.getInstance().initialize();
-    }
 
     /**
      * This function takes care over illegal date inputs
