@@ -4,6 +4,7 @@ import BusinessLayer.Inventory;
 import BusinessLayer.Result;
 import DTO.ItemDTO;
 import DTO.ProductDTO;
+import com.sun.xml.internal.bind.v2.runtime.output.StAXExStreamWriterOutput;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,13 +26,6 @@ public class Controller{
             controller = new Controller();
         }
         return controller;
-    }
-
-    /**
-     * Initialize the system with hardcoded products and items
-     */
-    public void initialize(){
-        Inventory.getInstance().initialize();
     }
 
     /**
@@ -81,29 +75,49 @@ public class Controller{
         return num;
     }
 
+    private double readDouble(Scanner in){
+        double num=0;
+        String input="";
+        boolean isLegal=false;
+
+        while (!isLegal){
+            try{
+                input=in.nextLine();
+                num= Double.parseDouble(input);
+                isLegal=true;
+            }catch (Exception e){
+                System.out.print("This is not a number, try again: ");
+            }
+        }
+
+        return num;
+    }
+
     /**
      * This function get input from the user and activates the addItem method in the Inventory.
      * @param in standard input stream
      */
     public void addItem(Scanner in){
-        int id;
+        int productId;
+        int orderId;
+        int count;
         Date expiryDate;
-        String productName, manufacturer;
+
         Result result;
 
-        System.out.print("insert the item name [String]: ");
-        productName= readLine(in);
+        System.out.println("insert the product id [number]: ");
+        productId = readInteger(in);
 
-        System.out.print("insert the item manufacturer name [String]: ");
-        manufacturer= readLine(in);
+        System.out.println("insert the order id [number]: ");
+        orderId = readInteger(in);
 
-        System.out.print("insert the item id [number]: ");
-        id= readInteger(in);
+        System.out.println("insert the item count that was delivered [number]: ");
+        count = readInteger(in);
 
-        System.out.print("insert the item expiry date [dd-mm-yyyy]: ");
+        System.out.print("insert the items expiry date [dd-mm-yyyy]: ");
         expiryDate=parseDate(in.next());
 
-        result= Inventory.getInstance().addItem(productName, manufacturer, new ItemDTO(id,false,expiryDate,"Inventory"));
+        result= Inventory.getInstance().addItem(productId, new ItemDTO(orderId, count, 0, expiryDate, "Inventory"));
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -113,20 +127,17 @@ public class Controller{
      * @param in  standard input stream
      */
     public void removeItem(Scanner in){
-        int id;
-        String productName, manufacturer;
+        int productId;
+        int itemId;
         Result result;
 
-        System.out.print("insert the item name [String]: ");
-        productName= readLine(in);
-
-        System.out.print("insert the item manufacturer name [String]: ");
-        manufacturer= readLine(in);
+        System.out.print("insert the product id [number]: ");
+        productId = readInteger(in);
 
         System.out.print("insert the item id [number]: ");
-        id= readInteger(in);
+        itemId = readInteger(in);
 
-        result= Inventory.getInstance().removeItem(productName,manufacturer,id);
+        result= Inventory.getInstance().removeOneItem(productId, itemId);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -136,10 +147,15 @@ public class Controller{
      * Add a new product to the inventory
      */
     public void addProduct(Scanner in){
+        int productId;
         String productName, manufacturer, categoriesSTR;
         int minCapacity, buyingPrice, sellingPrice;
+        double weight;
         List<String> categories;
         Result result;
+
+        System.out.print("insert the product id [number]: ");
+        productId = readInteger(in);
 
         System.out.print("insert the product name [String]: ");
         productName= readLine(in);
@@ -156,12 +172,15 @@ public class Controller{
         System.out.print("insert the selling price [number]: ");
         sellingPrice= readInteger(in);
 
+        System.out.print("insert the weight of the product (in Kg) [number]: ");
+        weight = readDouble(in);
+
         System.out.print("insert the categories the product belongs to separated by ','  [exp. milk, salty, 500ml]: ");
         categoriesSTR= readLine(in);
         categories= Arrays.asList(categoriesSTR.split(","));
 
-        result= Inventory.getInstance().addProduct(new ProductDTO(productName,manufacturer,minCapacity,buyingPrice,sellingPrice,
-                                          0,0, cleanList(categories), new LinkedList<>()));
+        result= Inventory.getInstance().addProduct(new ProductDTO(productId, productName, manufacturer, minCapacity,
+                buyingPrice,sellingPrice, weight, 0,0, cleanList(categories), new LinkedList<>()));
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -170,16 +189,13 @@ public class Controller{
      * Remove an exists product from the inventory
      */
     public void removeProduct(Scanner in){
-        String productName, manufacturer;
+        int productId;
         Result result;
 
-        System.out.print("insert the product name [String]: ");
-        productName= readLine(in);
+        System.out.print("insert the product id [number]: ");
+        productId = readInteger(in);
 
-        System.out.print("insert the manufacturer name [String]: ");
-        manufacturer= readLine(in);
-
-        result= Inventory.getInstance().removeProduct(productName,manufacturer);
+        result = Inventory.getInstance().removeProduct(productId);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -189,20 +205,17 @@ public class Controller{
      * @param in standard input stream
      */
     public void updateMinQuantity(Scanner in){
+        int productId;
         int minQuantity;
-        String productName, manufacturer;
         Result result;
 
-        System.out.print("insert the product name [String]: ");
-        productName= readLine(in);
-
-        System.out.print("insert the manufacturer name [String]: ");
-        manufacturer= readLine(in);
+        System.out.print("insert the product id [number]: ");
+        productId = readInteger(in);
 
         System.out.print("insert min quantity [number]: ");
         minQuantity= readInteger(in);
 
-        result= Inventory.getInstance().updateMinQuantity(productName,manufacturer,minQuantity);
+        result= Inventory.getInstance().updateMinQuantity(productId, minQuantity);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -213,20 +226,17 @@ public class Controller{
      * @param in standard input stream
      */
     public void updateSellingPrice(Scanner in){
-        int price;
-        String name, manufacturer;
+        int productId;
+        int sellingPrice;
         Result result;
 
-        System.out.print("insert the product name [String]: ");
-        manufacturer= readLine(in);
-
-        System.out.print("insert the manufacturer name [String]: ");
-        name= readLine(in);
+        System.out.print("insert the product id [number]: ");
+        productId = readInteger(in);
 
         System.out.print("insert new price [number]: ");
-        price= readInteger(in);
+        sellingPrice = readInteger(in);
 
-        result= Inventory.getInstance().updateSellingPrice(manufacturer,name,price);
+        result= Inventory.getInstance().updateSellingPrice(productId, sellingPrice);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -237,20 +247,17 @@ public class Controller{
      * @param in  standard input stream
      */
     public void updateBuyingPrice(Scanner in){
-        int price;
-        String productName, manufacturer;
+        int productId;
+        int buyingPrice;
         Result result;
 
-        System.out.print("insert the product name [String]: ");
-        productName= readLine(in);
-
-        System.out.print("insert the manufacturer name [String]: ");
-        manufacturer= readLine(in);
+        System.out.print("insert the product id [number]: ");
+        productId = readInteger(in);
 
         System.out.print("insert new price [number]: ");
-        price= readInteger(in);
+        buyingPrice = readInteger(in);
 
-        result= Inventory.getInstance().updateBuyingPrice(productName,manufacturer,price);
+        result= Inventory.getInstance().updateBuyingPrice(productId, buyingPrice);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -261,20 +268,21 @@ public class Controller{
      * @param in standard input stream
      */
     public void updateItemStatus(Scanner in){
-        int id;
-        String productName, manufacturer;
+        int productId;
+        int itemId;
+        int numOfDefects;
         Result result;
 
-        System.out.print("insert the product name [String]: ");
-        productName= readLine(in);
-
-        System.out.print("insert the manufacturer name [String]: ");
-        manufacturer= readLine(in);
+        System.out.print("insert the product id [number]: ");
+        productId = readInteger(in);
 
         System.out.print("insert the item id [number]: ");
-        id= readInteger(in);
+        itemId = readInteger(in);
 
-        result= Inventory.getInstance().setDefect(productName,manufacturer,id);
+        System.out.print("insert the number of defected items in the batch [number]: ");
+        numOfDefects = readInteger(in);
+
+        result= Inventory.getInstance().setDefect(productId, itemId, numOfDefects);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -284,23 +292,21 @@ public class Controller{
      * @param in standard input stream
      */
     public void updateItemLocation(Scanner in){
-        int id;
-        String location, productName, manufacturer;
+        int productId;
+        int itemId;
+        String location;
         Result result;
 
-        System.out.print("insert the product name [String]: ");
-        productName= readLine(in);;
-
-        System.out.print("insert the manufacturer name [String]: ");
-        manufacturer= readLine(in);;
+        System.out.print("insert the product id [number]: ");
+        productId = readInteger(in);
 
         System.out.print("insert the item id [number]: ");
-        id= readInteger(in);
+        itemId = readInteger(in);
 
         System.out.print("insert a new location [String]: ");
         location= readLine(in);;
 
-        result= Inventory.getInstance().updateItemLocation(productName,manufacturer,id,location);
+        result= Inventory.getInstance().updateItemLocation(productId, itemId, location);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }

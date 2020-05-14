@@ -58,6 +58,8 @@ public class Inventory {
         Result result = new Result();
         Product newProduct = new Product(productDTO);
 
+        //TODO: generate an id for the product?
+
         if(productMapper.getProduct(newProduct.getId()) != null) { // checking if there's already a product with the same id
             if (productMapper.doesProductExist(newProduct.getName(), newProduct.getManufacturer())) {//checks if the product already exists
                 productMapper.insert(productDTO);
@@ -202,17 +204,28 @@ public class Inventory {
      */
     public String minQuantityNotification(Product product){
         if(product.hasMinQuantityReached()){
-            sendLackOrder(product);
-
-            return "Minimum quantity for product " + product.getName() + " by " + product.getManufacturer() + " reached!";
+            return sendLackOrder(product);
         }
 
         return null;
     }
 
     //TODO: this
-    public void sendLackOrder(Product product){
+    public String sendLackOrder(Product product){
 
+        if(stamFunction() != -1){
+
+
+            return "Minimum quantity for product " + product.getName() + " by " + product.getManufacturer() + " reached!" +
+                    "Sent an order to fill the need!";
+        }
+
+        return "Minimum quantity for product " + product.getName() + " by " + product.getManufacturer() + " reached!" +
+                "Couldn't send an order to fill the lack cause there is no supplier to supply the need.";
+    }
+
+    private int stamFunction(){
+        return 0;
     }
 
     //TODO: figure out how to do this thing

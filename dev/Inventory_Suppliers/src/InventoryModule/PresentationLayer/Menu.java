@@ -30,17 +30,17 @@ public class Menu {
         return input;
     }
 
-    /**
-     * This function initialize the system with the hard coded items.
-     * @param in get an input stream
-     */
-    public static void initialize(Scanner in){
-        char answer;
-        System.out.print("Would you like to initialize the system? [y/n] ");
-        answer=in.next().charAt(0);
-        if(answer=='y' || answer=='Y')
-            Controller.getInstance().initialize();
-    }
+//    /**
+//     * This function initialize the system with the hard coded items.
+//     * @param in get an input stream
+//     */
+//    public static void initialize(Scanner in){
+//        char answer;
+//        System.out.print("Would you like to initialize the system? [y/n] ");
+//        answer=in.next().charAt(0);
+//        if(answer=='y' || answer=='Y')
+//            Controller.getInstance().initialize();
+//    }
 
     public static void main(String [] args){
         Scanner in= new Scanner(System.in);
@@ -52,7 +52,7 @@ public class Menu {
         boolean shouldTerminate=false;
         int input;
 
-        initialize(in);
+        //initialize(in);
 
         while(!shouldTerminate){
             displayMenu(options);
