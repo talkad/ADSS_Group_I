@@ -33,47 +33,15 @@ public class OrderMenu {
             return;
         }
 
-        System.out.println("Please choose a function:\n" +
-                "1.Place Order\n" +
-                "2.Modify Order\n" +
-                "3.Cancel Order\n" +
-                "4.Print Order History\n" +
-                "5.Print Order Details\n" +
-                "6.Return to Main Menu\n");
-        int choice;
-        try {
-            choice = scanner.nextInt();
-        }
-        catch (Exception e){
-            System.out.println("Please Enter a number Between 1 and 6");
-            runMenu();
-            return;
-        }
-        if (choice<1 || choice >5){
-            System.out.println("Please Enter a number Between 1 and 6");
-            runMenu();
-            return;
-        }
-        switch (choice){
-            case 1:
-                placeOrder(companyID);
-                break;
-            case 2:
-                runModifyOrderMenu(companyID);
-                break;
-            case 3:
-               cancelOrder(companyID);
-                break;
-            case 4:
-                printOrderHistory(companyID);
-                break;
-            case 5:
-                printOrderDetails(companyID);
-                break;
-            case 6:
-                Menu.runMenu();
-                break;
-        }
+        String [] commands = {"Please choose a function:\n" +
+                "1.Place Order",
+                "2.Modify Order",
+                "3.Cancel Order",
+                "4.Print Order History",
+                "5.Print Order Details",
+                "6.Return to Main Menu"};
+        MenuHandler.handleOrderMenu(commands, companyID);
+
     }
     public static void placeOrder(int companyID){
         SupplierCard supplier = SuperLi.getSuppliers().get(companyID);
@@ -171,41 +139,15 @@ public class OrderMenu {
             runMenu();
             return;
         }
-        System.out.println("Please choose a function:\n" +
-                "1.Change Order Date\n" +
-                "2.Add items to order\n" +
-                "3.Remove Items from order\n" +
-                "4.Return to Order Menu\n");
-        int choice;
-        try {
-            choice = scanner.nextInt();
-        }
-        catch (Exception e){
-            System.out.println("Please Enter a number Between 1 and 4");
-            runMenu();
-            return;
-        }
-        if (choice<1 || choice >4){
-            System.out.println("Please Enter a number Between 1 and 4");
-            runMenu();
-            return;
-        }
-        switch (choice){
-            case 1:
-                changeOrderDate(companyID, orderNumber);
-                break;
-            case 2:
-                addItems(companyID, orderNumber);
-                break;
-            case 3:
-                removeItems(companyID, orderNumber);
-                break;
-            case 4:
-                runMenu();
-                return;
-        }
 
+        String [] commands = {"Please choose a function:\n" +
+                "1.Change Order Date",
+                "2.Add items to order",
+                "3.Remove Items from order",
+                "4.Return to Order Menu"};
+        MenuHandler.handleModifyOrderMenu(commands, companyID, orderNumber);
     }
+
     public static void changeOrderDate(int companyID, int order){
         System.out.println("Please enter the new date in the following format: DD/MM/YYYY");
         String dateInput = scanner.nextLine();

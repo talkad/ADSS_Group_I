@@ -1,8 +1,6 @@
 package Interface;
-
 import Buisness.SuperLi;
 import Presentation.Menu;
-
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -10,42 +8,14 @@ public class SupplierMenu {
 
     static Scanner scanner = new Scanner(System.in);
 
-    public static void runMenu(){
-        System.out.println("=====Supplier-Menu=====\n" +
-                "Please choose a function:\n" +
-                "1.Add new Supplier\n" +
-                "2.Delete a Supplier card\n" +
-                "3.Edit a Supplier card\n" +
-                "4.Return to Main Menu\n");
-        Scanner scanner = new Scanner(System.in);
-        int choice;
-        try {
-            choice = scanner.nextInt();
-        }
-        catch (Exception e){
-            System.out.println("Please Enter a number Between 1 and 4");
-            runMenu();
-            return;
-        }
-        if (choice<1 || choice >4){
-            System.out.println("Please Enter a number Between 1 and 4");
-            runMenu();
-            return;
-        }
-        switch (choice){
-            case 1:
-                addSupplier();
-                break;
-            case 2:
-                deleteSupplier();
-                break;
-            case 3:
-                runEditSupplierMenu();
-                break;
-            case 4:
-                Menu.runMenu();
-                break;
-        }
+    public static void runMenu() {
+        String[] commands = {"=====Supplier-Menu=====",
+                "Please choose a function:",
+                "1.Add new Supplier",
+                "2.Delete a Supplier card",
+                "3.Edit a Supplier card",
+                "4.Return to Main Menu"};
+        MenuHandler.handleSupplierMenu(commands);
     }
 
     public static void addSupplier(){
@@ -98,9 +68,7 @@ public class SupplierMenu {
         System.out.println("Please enter the Company Id of the supplier you wish to edit:\n");
         String input = scanner.nextLine();
         int companyID;
-        try{
-            companyID=Integer.parseInt(input);
-        }
+        try { companyID=Integer.parseInt(input); }
         catch (Exception e){
             System.out.println("A Company ID is an integer\nReturning to Supplier Menu\n");
             runMenu();
@@ -109,46 +77,15 @@ public class SupplierMenu {
         if (!SuperLi.getSuppliers().containsKey(companyID)){
             System.out.println("error:404 - Supplier not found");
             runMenu();
-            return;
         }
-        System.out.println("Please choose a function:\n" +
-                "1.Add,Edit or Print a contact person\n" +
-                "2.Change payment conditions \n" +
-                "3.Change Supplier Bank account number\n" +
-                "4.Print Supplier card\n" +
-                "5.Return to Main Menu\n");
-        Scanner scanner = new Scanner(System.in);
-        int choice;
-        try {
-            choice = scanner.nextInt();
-        }
-        catch (Exception e){
-            System.out.println("Please Enter a number Between 1 and 5");
-            runMenu();
-            return;
-        }
-        if (choice<1 || choice >5){
-            System.out.println("Please Enter a number Between 1 and  5");
-            runMenu();
-            return;
-        }
-        switch (choice){
-            case 1:
-                runContactMenu(companyID);
-                break;
-            case 2:
-                changePayment(companyID);
-                break;
-            case 3:
-                changeBank(companyID);
-                break;
-            case 4:
-                System.out.println(SuperLi.getSuppliers().get(companyID).toString());
-                break;
-            case 5:
-                Menu.runMenu();
-                break;
-        }
+
+        String[] commands = {"Please choose a function:" ,
+                "1.Add,Edit or Print a contact person" ,
+                "2.Change payment conditions" ,
+                "3.Change Supplier Bank account number" ,
+                "4.Print Supplier card" ,
+                "5.Return to Main Menu"};
+        MenuHandler.handleEditSupplierMenu(commands,companyID);
     }
 
     public static void changePayment(int companyID){
@@ -181,44 +118,13 @@ public class SupplierMenu {
     }
 
     public static void runContactMenu(int companyID){
-        System.out.println("Please choose a function:\n" +
-                "1.Add new Contact Person\n" +
-                "2.Delete a Contact Person \n" +
-                "3.Edit a Contact Person\n" +
-                "4.Print all contacts\n" +
-                "5.Return to Main Menu\n");
-        Scanner scanner = new Scanner(System.in);
-        int choice;
-        try {
-            choice = scanner.nextInt();
-        }
-        catch (Exception e){
-            System.out.println("Please Enter a number Between 1 and 5");
-            runMenu();
-            return;
-        }
-        if (choice<1 || choice >5){
-            System.out.println("Please Enter a number Between 1 and  5");
-            runMenu();
-            return;
-        }
-        switch (choice){
-            case 1:
-                addContact(companyID);
-                break;
-            case 2:
-                deleteContact(companyID);
-                break;
-            case 3:
-                runEditContactMenu(companyID);
-                break;
-            case 4:
-                System.out.println(SuperLi.getSuppliers().get(companyID).contactsToString());
-                break;
-            case 5:
-                Menu.runMenu();
-                break;
-        }
+        String[] commands = {"Please choose a function:",
+                "1.Add new Contact Person",
+                "2.Delete a Contact Person",
+                "3.Edit a Contact Person",
+                "4.Print all contacts",
+                "5.Return to Main Menu"};
+        MenuHandler.handleContactMenu(commands,companyID);
     }
 
     public static void addContact(int companyID){
@@ -248,46 +154,20 @@ public class SupplierMenu {
 
     public static void runEditContactMenu(int companyID){
         System.out.println("Please enter the name of the contact person you would like to modify");
-        String contactName;
-        contactName = scanner.nextLine();
+        String contactName = scanner.nextLine();
 
         if (!SuperLi.getSuppliers().get(companyID).getContacts().contains(contactName)){
             System.out.println("error:404 - contact not found!");
             runMenu();
             return;
         }
-        System.out.println("Please choose a function:\n" +
-                "1.Add method to contact\n" +
-                "2.Delete method from contact\n" +
-                "3.Edit details of method\n" +
-                "4.Return to Contact Menu\n");
-        int choice;
-        try {
-            choice = scanner.nextInt();
-        }
-        catch (Exception e){
-            System.out.println("Please Enter a number Between 1 and 4");
-            runMenu();
-            return;
-        }
-        if (choice<1 || choice >4){
-            System.out.println("Please Enter a number Between 1 and 4");
-            runMenu();
-            return;
-        }
-        switch (choice){
-            case 1:
-                addMethod(companyID,contactName);
-                break;
-            case 2:
-                deleteMethod(companyID,contactName);
-                break;
-            case 3:
-                editMethod(companyID,contactName);
-                break;
-            case 4:
-                runContactMenu(companyID);
-        }
+
+        String[] commands = {"Please choose a function:",
+                "1.Add method to contact",
+                "2.Delete method from contact",
+                "3.Edit details of method",
+                "4.Return to Contact Menu"};
+        MenuHandler.handleEditContactMenu(commands,companyID,contactName);
     }
 
     public static void addMethod(int companyID, String contact){

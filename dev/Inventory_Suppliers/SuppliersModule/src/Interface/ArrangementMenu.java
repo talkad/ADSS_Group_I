@@ -34,83 +34,24 @@ public class ArrangementMenu {
             return;
         }
 
-        System.out.println("Please choose a function:\n" +
-                "1.Add or Edit Quantity Agreement\n" +
-                "2.Modify items\n" +
-                "3.Modify Delivery Dates\n" +
-                "4.Print Arrangement\n" +
-                "5.Return to Main Menu\n");
-        int choice;
-        try {
-            choice = scanner.nextInt();
-        }
-        catch (Exception e){
-            System.out.println("Please Enter a number Between 1 and 5");
-            runMenu();
-            return;
-        }
-        if (choice<1 || choice >5){
-            System.out.println("Please Enter a number Between 1 and 5");
-            runMenu();
-            return;
-        }
-        switch (choice){
-            case 1:
-                runQuantityAgreementMenu(companyID);
-                break;
-            case 2:
-                runItemMenu(companyID);
-                break;
-            case 3:
-                runDeliveryDateMenu(companyID);
-                break;
-            case 4:
-                System.out.println(SuperLi.getSuppliers().get(companyID).getArrangement().toString());
-                break;
-            case 5:
-                Menu.runMenu();
-                break;
-        }
+       String[] commands = {"Please choose a function:" ,
+                "1.Add or Edit Quantity Agreement",
+                "2.Modify items",
+                "3.Modify Delivery Dates",
+                "4.Print Arrangement",
+                "5.Return to Main Menu"};
+        MenuHandler.handleArrangementMenu(commands,companyID);
     }
     public static void runItemMenu(int companyID){
-        System.out.println("Please choose a function:\n" +
-                "1.Add items to the arrangement\n" +
-                "2.Remove items from the arrangement\n" +
-                "3.Change an item's price\n" +
-                "4.Return to Arrangement Menu\n");
-        int choice;
-        try {
-            choice = scanner.nextInt();
-        }
-        catch (Exception e){
-            System.out.flush();
-            System.out.println("Please Enter a number Between 1 and 4");
-            runMenu();
-            return;
-        }
-        if (choice<1 || choice >4){
-            System.out.flush();
-            System.out.println("Please Enter a number Between 1 and 4");
-            runMenu();
-            return;
-        }
-        switch (choice){
-            case 1:
-                addItems(companyID);
-                break;
-            case 2:
-                removeItems(companyID);
-                break;
-            case 3:
-                changePrice(companyID);
-                break;
-            case 4:
-                runMenu();
-                break;
-        }
+        String[] commands = {"Please choose a function:",
+                "1.Add items to the arrangement",
+                "2.Remove items from the arrangement",
+                "3.Change an item's price",
+                "4.Return to Arrangement Menu"};
+        MenuHandler.handleItemMenu(commands,companyID);
     }
 
-    private static void changePrice(int companyId) {
+    public static void changePrice(int companyId) {
         System.out.println("Please enter the items you wish to change their price in the arrangement in the following format:\n" +
                 "itemID-price:itemID-price:itemID-price:...");
         String input = scanner.next();
@@ -187,46 +128,13 @@ public class ArrangementMenu {
     }
 
     public static void runQuantityAgreementMenu(int companyID){
-        System.out.flush();
-        System.out.println("Please choose a function:\n" +
-                "1.Add a quantity agreement\n" +
-                "2.Add items' discounts to agreement\n" +
-                "3.Remove items from agreement\n" +
-                "4.Change items' discounts\n" +
-                "5.Return to Arrangement Menu\n");
-        int choice;
-        try {
-            choice = scanner.nextInt();
-        }
-        catch (Exception e){
-            System.out.flush();
-            System.out.println("Please Enter a number Between 1 and 5");
-            runMenu();
-            return;
-        }
-        if (choice<1 || choice >5){
-            System.out.flush();
-            System.out.println("Please Enter a number Between 1 and 5");
-            runMenu();
-            return;
-        }
-        switch (choice){
-            case 1:
-                addQuantityAgreement(companyID);
-                break;
-            case 2:
-                addItemsToQuantity(companyID);
-                break;
-            case 3:
-                removeItemsFromQuantity(companyID);
-                break;
-            case 4:
-                changePriceInAgreement(companyID);
-                break;
-            case 5:
-                runMenu();
-                break;
-        }
+        String [] commands = {"Please choose a function:" ,
+                "1.Add a quantity agreement",
+                "2.Add items' discounts to agreement",
+                "3.Remove items from agreement",
+                "4.Change items' discounts",
+                "5.Return to Arrangement Menu"};
+        MenuHandler.handleQuantityAgreementMenu(commands, companyID);
     }
     public static Map<Integer,Map<Integer,Double>> parseQuantity(String msg){
         System.out.println(msg+ " by this format:\n" +
@@ -325,40 +233,12 @@ public class ArrangementMenu {
     }
 
     public static void runDeliveryDateMenu(int companyID){
-        System.out.println("Please choose a function:\n" +
-                "1.Print past delivery dates\n" +
-                "2.Print future delivery dates\n" +
-                "3.Modify date\n" +
-                "4.Return to Arrangement Menu\n");
-        int choice;
-        try {
-            choice = scanner.nextInt();
-        }
-        catch (Exception e){
-            System.out.println("Please Enter a number Between 1 and 4");
-            runMenu();
-            return;
-        }
-        if (choice<1 || choice >4){
-            System.out.flush();
-            System.out.println("Please Enter a number Between 1 and 4");
-            runMenu();
-            return;
-        }
-        switch (choice){
-            case 1:
-                System.out.println(SuperLi.getSuppliers().get(companyID).getArrangement().pastDateToString());
-                break;
-            case 2:
-                System.out.println(SuperLi.getSuppliers().get(companyID).getArrangement().futureDateToString());
-                break;
-            case 3:
-                modifyDate(companyID);
-                break;
-            case 4:
-                runMenu();
-                break;
-        }
+        String [] commands = {"Please choose a function:",
+                "1.Print past delivery dates",
+                "2.Print future delivery dates",
+                "3.Modify date",
+                "4.Return to Arrangement Menu"};
+        MenuHandler.handleDeliverDateMenu(commands, companyID);
     }
 
     public static void modifyDate(int companyID){
