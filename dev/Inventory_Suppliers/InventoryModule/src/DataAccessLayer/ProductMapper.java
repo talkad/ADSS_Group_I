@@ -1,6 +1,7 @@
 package DataAccessLayer;
 
 import BusinessLayer.Item;
+import BusinessLayer.Pair;
 import BusinessLayer.Product;
 import BusinessLayer.Result;
 import DAL_Connector.DatabaseManager;
@@ -53,7 +54,7 @@ public class ProductMapper {
                 identityProductMap.put(product.getId(), product);
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage() + " is it here 1");
         }
     }
 
@@ -204,7 +205,9 @@ public class ProductMapper {
         if(identityProductMap.containsKey(productID))
         {
             product = identityProductMap.get(productID);
-            product.setItems(ItemMapper.getInstance().getItems(productID));
+            if(product.getItems() == null) {
+                product.setItems(ItemMapper.getInstance().getItems(productID));
+            }
         }
 
         return product;
@@ -240,10 +243,14 @@ public class ProductMapper {
         if(identityProductMap.size() == 0)
             initProductMap();
 
-        Collection collection = identityProductMap.values();
         List<Product> list = new LinkedList<>();
 
-        list.addAll(collection);
+        Iterator<Map.Entry<Integer, Product>> it = identityProductMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Integer, Product> e = it.next();
+            int id = e.getKey();
+            list.add(getProduct(id));
+        }
 
         return list;
     }

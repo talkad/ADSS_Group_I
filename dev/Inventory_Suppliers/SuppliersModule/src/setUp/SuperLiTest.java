@@ -4,7 +4,7 @@ import Buisness.FixedArrangement;
 import Buisness.Item;
 import Buisness.SuperLi;
 import org.junit.Test;
-import org.testng.annotations.AfterTest;
+//import org.testng.annotations.AfterTest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

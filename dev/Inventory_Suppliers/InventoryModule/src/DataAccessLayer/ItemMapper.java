@@ -6,27 +6,25 @@ import BusinessLayer.Result;
 import DAL_Connector.DatabaseManager;
 
 import java.sql.*;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.sql.Date;
+import java.util.*;
 
 public class ItemMapper {
 
     private Connection conn = DatabaseManager.getInstance().getConnection();
 
     //this map manages all the instances of items. The identifier is product_id + order_id
-    private Map<Pair<Integer,Integer>, Item> identityItemMap;
+    private Map<Pair<Integer, Integer>, Item> identityItemMap;
 
     private static ItemMapper instance;
 
 
-    public ItemMapper(){
+    public ItemMapper() {
         identityItemMap = new Hashtable<>();
     }
 
-    public static ItemMapper getInstance(){
-        if(instance == null)
+    public static ItemMapper getInstance() {
+        if (instance == null)
             instance = new ItemMapper();
         return instance;
     }
@@ -35,14 +33,18 @@ public class ItemMapper {
 
     /**
      * Add to identity map specific items which belong to product
+     *
      * @param productID is the id of the product
      */
-    private void initItemMap(int productID){
-        String sql = "SELECT * FROM Item productID = "+productID;
+    private void initItemMap(int productID) {
+        String sql = "SELECT * FROM Item WHERE productID = ?";
         try {
 
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+            PreparedStatement categoryStatement = conn.prepareStatement(sql);
+            categoryStatement.setInt(1, productID);
+
+            ResultSet rs = categoryStatement.executeQuery();
+
 
             // loop through the result set
             while (rs.next()) {
@@ -59,15 +61,16 @@ public class ItemMapper {
 
     /**
      * Insert a given item to DB
-     * @param item is the item to be stored in DB
+     *
+     * @param item      is the item to be stored in DB
      * @param productID is the product identifier
-     * @return  a Result object with information about the result of the operation
+     * @return a Result object with information about the result of the operation
      */
-    private Result insert(Item item, int productID){
+    private Result insert(Item item, int productID) {
         Result result = new Result();
         int numRowsInserted;
         String insertCommand = "INSERT INTO Item(productID, orderID, count, numOfDefects, expirationDate, location)" +
-                                "VALUES(?,?,?,?,?,?)";
+                "VALUES(?,?,?,?,?,?)";
 
         try {
             PreparedStatement statement = conn.prepareStatement(insertCommand);
@@ -79,12 +82,12 @@ public class ItemMapper {
             statement.setString(6, item.getLocation());
             numRowsInserted = statement.executeUpdate();
 
-            if(numRowsInserted == 1)
+            if (numRowsInserted == 1)
                 result.successful();
             else
                 result.failure("Failed to insert item");
 
-        }catch (java.sql.SQLException e){
+        } catch (java.sql.SQLException e) {
             result.failure("Failed to create a statement");
         }
 
@@ -94,14 +97,15 @@ public class ItemMapper {
 
     /**
      * Update all fields of a given item in DB
-     * @param item is the item to be updated
+     *
+     * @param item      is the item to be updated
      * @param productID is the product identifier
-     * @return  a Result object with information about the result of the operation
+     * @return a Result object with information about the result of the operation
      */
-    private Result update(Item item, int productID){
+    private Result update(Item item, int productID) {
         Result result = new Result();
         int numRowsUpdated;
-        String updateCommand = "UPDATE Item SET count = ?, numOfDefects = ?, expirationDate = ?, location = ?"+
+        String updateCommand = "UPDATE Item SET count = ?, numOfDefects = ?, expirationDate = ?, location = ?" +
                 "WHERE orderID = ? AND productID = ?";
 
         try {
@@ -115,12 +119,12 @@ public class ItemMapper {
 
             numRowsUpdated = statement.executeUpdate();
 
-            if(numRowsUpdated == 1)
+            if (numRowsUpdated == 1)
                 result.successful();
             else
                 result.failure("Failed to update Item");
 
-        }catch (java.sql.SQLException e){
+        } catch (java.sql.SQLException e) {
             result.failure("Failed to create a statement");
         }
 
@@ -130,11 +134,12 @@ public class ItemMapper {
 
     /**
      * Delete a given item from DB
+     *
      * @param productID is the product identifier
-     * @param orderID is the order identifier
-     * @return  a Result object with information about the result of the operation
+     * @param orderID   is the order identifier
+     * @return a Result object with information about the result of the operation
      */
-    private Result delete(int productID, int orderID){
+    private Result delete(int productID, int orderID) {
         Result result = new Result();
         int numRowsDeleted;
         String deleteCommand = "DELETE FROM Item WHERE orderID = ? AND productID = ?";
@@ -146,12 +151,12 @@ public class ItemMapper {
 
             numRowsDeleted = statement.executeUpdate();
 
-            if(numRowsDeleted == 1)
+            if (numRowsDeleted == 1)
                 result.successful();
             else
                 result.failure("Failed to delete Item");
 
-        }catch (java.sql.SQLException e){
+        } catch (java.sql.SQLException e) {
             result.failure("Failed to create a statement");
         }
 
@@ -163,16 +168,30 @@ public class ItemMapper {
 
     /**
      * Get items of certain product
+     *
      * @param productID is the product id
      * @return list of items that belongs to {@param productID}
      */
-    public List<Item>  getItems(int productID){
+    public List<Item> getItems(int productID) {
         List<Item> items = new LinkedList<>();
 
-        for(Pair<Integer,Integer> pair: identityItemMap.keySet()){
-            if(pair.getFirst() == productID)
-                items.add(identityItemMap.get(pair));
+
+        initItemMap(productID);
+
+
+        Iterator<Map.Entry<Pair<Integer, Integer>, Item>> it = identityItemMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Pair<Integer, Integer>, Item> e = it.next();
+            Pair<Integer, Integer> p = e.getKey();
+            if (p.getFirst() == productID) {
+                items.add(identityItemMap.get(p));
+            }
         }
+
+//        for (Pair<Integer, Integer> pair : identityItemMap.keySet()) {
+//            if (pair.getFirst() == productID)
+//                items.add(identityItemMap.get(pair));
+//        }
 
         return items;
     }
@@ -180,15 +199,16 @@ public class ItemMapper {
 
     /**
      * Add a given item from DB
+     *
      * @param productID is the product identifier
-     * @param item is the item to be inserted to db
-     * @return  a Result object with information about the result of the operation
+     * @param item      is the item to be inserted to db
+     * @return a Result object with information about the result of the operation
      */
-    public Result addMapper(Item item, int productID){
+    public Result addMapper(Item item, int productID) {
 
         Result result = insert(item, productID);
 
-        if(result.isSuccessful())
+        if (result.isSuccessful())
             identityItemMap.put(new Pair<>(productID, item.getOrderID()), item);
 
         return result;
@@ -196,21 +216,38 @@ public class ItemMapper {
 
     /**
      * Update a given item from DB
+     *
      * @param productID is the product identifier
-     * @param item is the item to be inserted to db
-     * @return  a Result object with information about the result of the operation
+     * @param item      is the item to be inserted to db
+     * @return a Result object with information about the result of the operation
      */
-    public Result updateMapper(Item item, int productID){
+    public Result updateMapper(Item item, int productID) {
 
         Result result = update(item, productID);
 
-        if(result.isSuccessful()){
-            for(Pair<Integer, Integer> p : identityItemMap.keySet()){
-                if(p.getFirst() == productID && p.getSecond() == item.getOrderID()){
-                    identityItemMap.remove(p);
-                    identityItemMap.put(new Pair<>(p.getFirst(), p.getSecond()), item);
+        if (identityItemMap.size() == 0) {
+            initItemMap(productID);
+        }
+
+        if (result.isSuccessful()) {
+
+
+            Iterator<Map.Entry<Pair<Integer, Integer>, Item>> it = identityItemMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<Pair<Integer, Integer>, Item> e = it.next();
+                Pair<Integer, Integer> p = e.getKey();
+                if (p.getFirst() == productID && p.getSecond() == item.getOrderID()) {
+                    e.setValue(item);
                 }
             }
+
+
+//            for(Pair<Integer, Integer> p : identityItemMap.keySet()){
+//                if(p.getFirst() == productID && p.getSecond() == item.getOrderID()){
+//                    identityItemMap.remove(p);
+//                    identityItemMap.put(new Pair<>(p.getFirst(), p.getSecond()), item);
+//                }
+//            }
         }
 
         return result;
@@ -218,23 +255,39 @@ public class ItemMapper {
 
     /**
      * Delete a given item from DB
+     *
      * @param productID is the product identifier
-     * @param orderID is the item to be inserted to db
-     * @return  a Result object with information about the result of the operation
+     * @param orderID   is the item to be inserted to db
+     * @return a Result object with information about the result of the operation
      */
-    public Result deleteMapper(int productID, int orderID){
+    public Result deleteMapper(int productID, int orderID) {
 
         Result result = delete(productID, orderID);
 
-        if(result.isSuccessful()){
-            for(Pair<Integer, Integer> p : identityItemMap.keySet()){
-                if(p.getFirst() == productID && p.getSecond() == orderID){
-                    identityItemMap.remove(p);
+        if (identityItemMap.size() == 0) {
+            initItemMap(productID);
+        }
+
+        if (result.isSuccessful()) {
+
+            Iterator<Map.Entry<Pair<Integer, Integer>, Item>> it = identityItemMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<Pair<Integer, Integer>, Item> e = it.next();
+                Pair<Integer, Integer> p = e.getKey();
+                if (p.getFirst() == productID && p.getSecond() == orderID) {
+                    it.remove();
                 }
+//            for(Pair<Integer, Integer> p : identityItemMap.keySet()){
+//                if(p.getFirst() == productID && p.getSecond() == orderID){
+//                    identityItemMap.remove(p);
+//                }
+//            }
             }
         }
 
         return result;
-    }
 
+    }
 }
+
+

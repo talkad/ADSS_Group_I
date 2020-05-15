@@ -9,7 +9,6 @@ import Bussiness_Connector.Connector;
 
 import java.util.*;
 
-//TODO: check the calls to the db
 /**
  * a singleton class
  */
@@ -24,7 +23,6 @@ public class Inventory {
     public static Inventory instance = null;
 
     private Inventory(){
-        //productsList = new LinkedList<>();
     }
 
     /**
@@ -66,22 +64,6 @@ public class Inventory {
 
         return result;
     }
-
-
-//    //TODO: if the getProduct function will be sufficient then delete this
-//    /**
-//     * @param productToCheck the product to check
-//     * @return if {@code productToCheck} already exists in the inventory
-//     */
-//    private boolean doesProductExist(Product productToCheck){
-//        for(Product product : productsList){
-//            if(product.equals(productToCheck)){
-//                return true;
-//            }
-//        }
-//
-//        return false;
-//    }
 
     /**
      * removes a product from the inventory
@@ -146,6 +128,7 @@ public class Inventory {
 
 
             itemMapper.addMapper(itemToAdd, productID);
+            productMapper.updateMapper(productToAddTo);
 
             result.successful();
         }
@@ -175,8 +158,10 @@ public class Inventory {
                     itemMapper.updateMapper(itemToRemove, productID);
                 }
                 else{
-                    itemMapper.deleteMapper(itemToRemove.getOrderID(), productID);
+                    itemMapper.deleteMapper(productID, itemToRemove.getOrderID());
                 }
+
+                productMapper.updateMapper(productToRemoveFrom);
 
                 String quantityMessage = minQuantityNotification(productToRemoveFrom);
 
@@ -421,6 +406,8 @@ public class Inventory {
 
                     itemToSetNewLocationTo.setLocation(location);
 
+                    productMapper.updateMapper(productToSetLocationFrom);
+
                     itemMapper.updateMapper(itemToSetNewLocationTo, productID);
 
                     result.successful();
@@ -470,7 +457,7 @@ public class Inventory {
             isIncluded = false;
         }
 
-        if(categoriesReport.compareTo("Catagories Report:\n") == 0){
+        if(categoriesReport.compareTo("Categories Report:\n") == 0){
             categoriesReport = "There are no products in the requested catagories";
         }
         return categoriesReport;
@@ -496,20 +483,4 @@ public class Inventory {
         }
         return defectsReport;
     }
-
-//    /**
-//     * given an id, the function checks if there is already an item with this id
-//     * @param id the id to check
-//     * @return whether there's already an item with id {@code id}
-//     */
-//    public boolean isIdUnique(int id){
-//        for(Product product: productsList){
-//            if(product.hasAnItemWithID(id)){
-//                return false;
-//            }
-//        }
-//
-//        return true;
-//    }
-    
 }

@@ -32,14 +32,14 @@ public class CategoryMapper {
      */
     public List<String> getCategories(int id){
         List<String> categories = new LinkedList<>();
-        String sql = "SELECT * FROM Categories WHERE id = ?";
+        String sql = "SELECT * FROM Categories WHERE productID = ?";
 
         try {
 
             PreparedStatement categoryStatement = conn.prepareStatement(sql);
             categoryStatement.setInt(1, id);
 
-            ResultSet rs = categoryStatement.executeQuery(sql);
+            ResultSet rs = categoryStatement.executeQuery();
 
             // loop through the result set
             while (rs.next()) {
@@ -47,7 +47,7 @@ public class CategoryMapper {
 
             }
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            System.err.println(e.getMessage() + " from here");
         }
 
         return categories;

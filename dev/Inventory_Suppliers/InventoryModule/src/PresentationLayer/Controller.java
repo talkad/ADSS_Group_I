@@ -64,7 +64,7 @@ public class Controller{
 
         while (!isLegal){
             try{
-                input=in.nextLine();
+                input=readLine(in);
                 num= Integer.parseInt(input);
                 isLegal=true;
             }catch (Exception e){
@@ -105,13 +105,13 @@ public class Controller{
 
         Result result;
 
-        System.out.println("insert the product id [number]: ");
+        System.out.print("insert the product id [number]: ");
         productId = readInteger(in);
 
-        System.out.println("insert the order id [number]: ");
+        System.out.print("insert the order id [number]: ");
         orderId = readInteger(in);
 
-        System.out.println("insert the item count that was delivered [number]: ");
+        System.out.print("insert the item count that was delivered [number]: ");
         count = readInteger(in);
 
         System.out.print("insert the items expiry date [dd-mm-yyyy]: ");
