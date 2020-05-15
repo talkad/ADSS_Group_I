@@ -52,7 +52,7 @@ public class Inventory {
 
         if(productMapper.getProduct(newProduct.getId()) != null) { // checking if there's already a product with the same id
             if (productMapper.doesProductExist(newProduct.getName(), newProduct.getManufacturer())) {//checks if the product already exists
-                productMapper.insert(newProduct);
+                productMapper.addMapper(newProduct);
                 //productsList.add(newProduct);
                 result.successful();
             } else {
@@ -94,7 +94,7 @@ public class Inventory {
 
 
         if(toRemove != null){ //if toRemove is null then the product does not exist in the inventory
-            productMapper.delete(toRemove);
+            productMapper.deleteMapper(toRemove.getId());
             //productsList.remove(toRemove);
 
             result.successful();
@@ -140,7 +140,7 @@ public class Inventory {
             productToAddTo.addItem(itemToAdd);
 
 
-            productMapper.update(productToAddTo);
+            productMapper.updateMapper(productToAddTo);
 
             result.successful();
         }
@@ -168,7 +168,7 @@ public class Inventory {
             if(itemToRemove != null){// if itemToRemove is null the item does not exist
                 productToRemoveFrom.removeItem(itemToRemove);
 
-                productMapper.update(productToRemoveFrom);
+                productMapper.updateMapper(productToRemoveFrom);
 
                 String quantityMessage = minQuantityNotification(productToRemoveFrom);
 
@@ -235,7 +235,7 @@ public class Inventory {
         if(product != null){
             product.setMinCapacity(newMinQuantity);
 
-            productMapper.update(product);
+            productMapper.updateMapper(product);
 
 
             result.successful();
@@ -261,7 +261,7 @@ public class Inventory {
         if(product != null){
             product.setSellingPrice(newSellingPrice);
 
-            productMapper.update(product);
+            productMapper.updateMapper(product);
 
             result.successful();
         }
@@ -286,7 +286,7 @@ public class Inventory {
         if(product != null){
             product.setBuyingPrice(newBuyingPrice);
 
-            productMapper.update(product);
+            productMapper.updateMapper(product);
 
             result.successful();
         }
@@ -318,7 +318,7 @@ public class Inventory {
                 if(numOfDefects < itemToSetDefectTo.getCount()) {
                     itemToSetDefectTo.setNumOfDefects(numOfDefects);
 
-                    productMapper.update(productToSetDefectFrom);
+                    productMapper.updateMapper(productToSetDefectFrom);
 
                     result.successful();
                 }
@@ -369,7 +369,7 @@ public class Inventory {
 
                     itemToSetNewLocationTo.setLocation(location);
 
-                    productMapper.update(productToSetLocationFrom);
+                    productMapper.updateMapper(productToSetLocationFrom);
 
                     result.successful();
                 }

@@ -30,21 +30,6 @@ public class Menu {
         return input;
     }
 
-<<<<<<< HEAD:dev/Inventory_Suppliers/InventoryModule/src/PresentationLayer/Menu.java
-=======
-//    /**
-//     * This function initialize the system with the hard coded items.
-//     * @param in get an input stream
-//     */
-//    public static void initialize(Scanner in){
-//        char answer;
-//        System.out.print("Would you like to initialize the system? [y/n] ");
-//        answer=in.next().charAt(0);
-//        if(answer=='y' || answer=='Y')
-//            Controller.getInstance().initialize();
-//    }
->>>>>>> c27719494ff664aaca85d66ced44389e0754606a:dev/Inventory_Suppliers/src/InventoryModule/PresentationLayer/Menu.java
-
     public void display(Scanner in){
         String[] options=new String[]
                 {"Add a new product", "Remove a product", "Add a new item", "Remove an item",
@@ -54,11 +39,6 @@ public class Menu {
         boolean shouldTerminate=false;
         int input;
 
-<<<<<<< HEAD:dev/Inventory_Suppliers/InventoryModule/src/PresentationLayer/Menu.java
-=======
-        //initialize(in);
-
->>>>>>> c27719494ff664aaca85d66ced44389e0754606a:dev/Inventory_Suppliers/src/InventoryModule/PresentationLayer/Menu.java
         while(!shouldTerminate){
             displayMenu(options);
             input=getInputIndex(in);

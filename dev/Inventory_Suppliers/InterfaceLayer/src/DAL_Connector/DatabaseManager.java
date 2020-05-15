@@ -29,25 +29,14 @@ public class DatabaseManager {
     /**
      * Connects to InventoryDB
      */
-    private void connect() {
-
+    public void connect() {
         try {
             // db parameters
             String url = "jdbc:sqlite:Storage";
-
             // create a connection to the database
             conn = DriverManager.getConnection(url);
-
-        } catch (SQLException e) {
+        } catch (SQLException  e) {
             System.err.println(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.err.println(ex.getMessage());
-            }
         }
     }
 
@@ -71,4 +60,7 @@ public class DatabaseManager {
     }
 
 
+    public static void main(String[] args){
+        System.out.println(DatabaseManager.getInstance().getConnection());
+    }
 }

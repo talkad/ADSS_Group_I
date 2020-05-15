@@ -66,13 +66,13 @@ public class ItemMapper {
     private Result insert(Item item, int productID){
         Result result = new Result();
         int numRowsInserted;
-        String insertCommand = "INSERT INTO Item(orderId, productID, count, numOfDefects, expiryDate, location)" +
+        String insertCommand = "INSERT INTO Item(productID, orderId, count, numOfDefects, expirationDate, location)" +
                                 "VALUES(?,?,?,?,?,?)";
 
         try {
             PreparedStatement statement = conn.prepareStatement(insertCommand);
-            statement.setInt(1, item.getOrderID());
-            statement.setInt(2, productID);
+            statement.setInt(1, productID);
+            statement.setInt(2, item.getOrderID());
             statement.setInt(3, item.getCount());
             statement.setInt(4, item.getNumOfDefects());
             statement.setDate(5, new Date(item.getExpiryDate().getTime()));
@@ -101,7 +101,7 @@ public class ItemMapper {
     private Result update(Item item, int productID){
         Result result = new Result();
         int numRowsUpdated;
-        String updateCommand = "UPDATE Item SET count = ?, numOfDefects = ?, expiryDate = ?, location = ?"+
+        String updateCommand = "UPDATE Item SET count = ?, numOfDefects = ?, expirationDate = ?, location = ?"+
                 "WHERE orderId = ? AND productID = ?";
 
         try {
@@ -236,6 +236,5 @@ public class ItemMapper {
 
         return result;
     }
-
 
 }
