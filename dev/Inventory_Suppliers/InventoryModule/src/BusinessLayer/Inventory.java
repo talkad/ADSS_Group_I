@@ -5,11 +5,11 @@ import DTO.ProductDTO;
 import DataAccessLayer.CategoryMapper;
 import DataAccessLayer.ItemMapper;
 import DataAccessLayer.ProductMapper;
+import Bussiness_Connector.Connector;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-//TODO: add calls to the function of the db
+//TODO: check the calls to the db
 /**
  * a singleton class
  */
@@ -48,10 +48,11 @@ public class Inventory {
         Result result = new Result();
         Product newProduct = new Product(productDTO);
 
-        //TODO: generate an id for the product? yes
+        int getNewId = productMapper.getID();
 
-        if(productMapper.getProduct(newProduct.getId()) != null) { // checking if there's already a product with the same id
-            if (productMapper.doesProductExist(newProduct.getName(), newProduct.getManufacturer())) {//checks if the product already exists
+        if(productMapper.getProduct(newProduct.getId()) == null) { // checking if there's already a product with the same id
+            if (!productMapper.doesProductExist(newProduct.getName(), newProduct.getManufacturer())) {//checks if the product already exists
+                newProduct.setId(getNewId);
                 productMapper.addMapper(newProduct);
                 //productsList.add(newProduct);
                 result.successful();
@@ -198,11 +199,14 @@ public class Inventory {
         return null;
     }
 
-    //TODO: need to add their implementation to lack order
     public String sendLackOrder(Product product){
+        int orderId;
+        if((orderId = Connector.getInstance().sendLackOfItemOrder(product.getId(),
+                product.getMinCapacity()*2, product.getBuyingPrice())) != -1){
 
-        if(stamFunction() != -1){
+            Date date = new Date();
 
+            product.addItem(new Item(orderId, product.getMinCapacity()*2, 0, getDate2WeeksFromNow(date), "Inventory"));
 
             return "Minimum quantity for product " + product.getName() + " by " + product.getManufacturer() + " reached!" +
                     "Sent an order to fill the need!";
@@ -212,13 +216,54 @@ public class Inventory {
                 "Couldn't send an order to fill the lack cause there is no supplier to supply the need.";
     }
 
-    private int stamFunction(){
-        return 0;
+    private Date getDate2WeeksFromNow(Date date){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE, 14);
+        return calendar.getTime();
     }
 
-    //TODO: figure out how to do this thing
-    public void setPeriodicOrder(){
 
+    public Result setPeriodicOrder(int orderId, Map<Integer, Integer> toSet, int status){
+        Result result = new Result();
+        if(Connector.getInstance().setPeriodicOrder(orderId, toSet, status)){
+            result.successful();
+        }
+        else{
+            result.failure("Couldn't change the order");
+        }
+
+        return result;
+    }
+
+    public Result setPeriodicOrderDate(int orderId, Date newDate){
+        Result result = new Result();
+
+        if(Connector.getInstance().changePeriodicOrderDate(orderId, newDate)){
+            result.successful();
+        }
+        else{
+            result.failure("Couldn't change the date of the order");
+        }
+
+        return result;
+    }
+
+    public void loadInventory(int orderID, Map<Integer, Integer> toLoad){
+        for(int productId: toLoad.keySet()){
+            Product product = productMapper.getProduct(productId);
+
+            if(product != null){
+
+                Date date = new Date();
+
+                Item toAdd = new Item(orderID, toLoad.get(productId), 0, getDate2WeeksFromNow(date), "Inventory");
+
+                product.addItem(toAdd);
+
+                itemMapper.addMapper(toAdd, productId);
+            }
+        }
     }
 
     /**

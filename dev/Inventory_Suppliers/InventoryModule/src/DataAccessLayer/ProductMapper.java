@@ -218,6 +218,9 @@ public class ProductMapper {
      */
     public boolean doesProductExist(String name, String manufacturer){
 
+        if(identityProductMap.size() == 0)
+            initProductMap();
+
         for(Product product: identityProductMap.values()){
             if(product.getName().equals(name) && product.getManufacturer().equals(manufacturer))
                 return true;
@@ -233,6 +236,9 @@ public class ProductMapper {
      * @return all of the records in a List
      */
     public List<Product> getAll(){
+
+        if(identityProductMap.size() == 0)
+            initProductMap();
 
         Collection collection = identityProductMap.values();
         List<Product> list = new LinkedList<>();
@@ -298,6 +304,9 @@ public class ProductMapper {
      */
     public int getID(){
 
+        if(identityProductMap.size() == 0)
+            initProductMap();
+
         int nextID = 0;
 
         for(Integer id: identityProductMap.keySet()){
@@ -308,7 +317,7 @@ public class ProductMapper {
         return nextID+1;
     }
 
-    public static void main(String[] args){
+  /*  public static void main(String[] args){
 
         List<String> categories = new LinkedList<>();
         categories.add("milky");
@@ -333,8 +342,8 @@ public class ProductMapper {
         Product product = new Product(128, "milk", "tara", 10, 300,
                 200, 2.5, 10, 15, categories, items);
 
-        Result result = ProductMapper.getInstance().updateMapper(product);
+        Result result = ProductMapper.getInstance().addMapper(product);
 
         System.out.println(result.getErrorMsg());
-    }
+    }*/
 }

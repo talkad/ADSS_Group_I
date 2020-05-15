@@ -147,15 +147,11 @@ public class Controller{
      * Add a new product to the inventory
      */
     public void addProduct(Scanner in){
-        int productId;
         String productName, manufacturer, categoriesSTR;
         int minCapacity, buyingPrice, sellingPrice;
         double weight;
         List<String> categories;
         Result result;
-
-        System.out.print("insert the product id [number]: ");
-        productId = readInteger(in);
 
         System.out.print("insert the product name [String]: ");
         productName= readLine(in);
@@ -179,7 +175,7 @@ public class Controller{
         categoriesSTR= readLine(in);
         categories= Arrays.asList(categoriesSTR.split(","));
 
-        result= Inventory.getInstance().addProduct(new ProductDTO(productId, productName, manufacturer, minCapacity,
+        result= Inventory.getInstance().addProduct(new ProductDTO(0, productName, manufacturer, minCapacity,
                 buyingPrice,sellingPrice, weight, 0,0, cleanList(categories), new LinkedList<>()));
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
@@ -396,4 +392,60 @@ public class Controller{
         System.out.println(Inventory.getInstance().getDefectsReports());
     }
 
+    public void setPeriodicOrder(Scanner in){
+        Result result;
+        int orderId, status;
+        Map<Integer, Integer> toSet = new HashMap<>();
+        String setStr = "";
+
+        System.out.println("insert the order id you'd like to change [number]: ");
+        orderId = readInteger(in);
+
+        System.out.println("insert what you'd like to do (add or subtract from the order), [0 - add, 1 - subtract]");
+        status = readInteger(in);
+
+        System.out.println("insert the the product id's and the amount you'd like to add/subtract from it.");
+        System.out.println("In the following format: [<productId1>, quantity>],[<productId2>, quantity>],... ALL ARE NUMBERS");
+        while(setStr.length()==0) //get over '\n' at the start of a line
+            setStr= in.nextLine();
+
+        try{
+            for(List<String> toAdd: splitList(setStr)){
+                int productId = Integer.parseInt(toAdd.get(0));
+                int quantity = Integer.parseInt(toAdd.get(1));
+                toSet.put(productId, quantity);
+            }
+
+             result = Inventory.getInstance().setPeriodicOrder(orderId, toSet, status);
+
+            if(!result.isSuccessful()){
+                if(result.getErrorMsg() != null){
+                    System.out.println(result.getErrorMsg());
+                }
+            }
+        }
+        catch (Exception e){
+            System.out.println("Operation failed: invalid input. please try again");
+        }
+    }
+
+    public void setPeriodicOrderDate(Scanner in){
+        Result result;
+        int orderId;
+        Date newDate;
+
+        System.out.println("insert the order id you'd like to change [number]: ");
+        orderId = readInteger(in);
+
+        System.out.print("insert the items expiry date [dd-mm-yyyy]: ");
+        newDate = parseDate(in.next());
+
+        result = Inventory.getInstance().setPeriodicOrderDate(orderId, newDate);
+
+        if(!result.isSuccessful()){
+            if(result.getErrorMsg() != null){
+                System.out.println(result.getErrorMsg());
+            }
+        }
+    }
 }

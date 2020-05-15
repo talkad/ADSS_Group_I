@@ -47,9 +47,9 @@ public class ItemMapper {
             // loop through the result set
             while (rs.next()) {
                 Item item = new Item(rs.getInt("orderID"), rs.getInt("count"), rs.getInt("numOfDefects"),
-                        rs.getDate("expiryDate"), rs.getString("location"));
+                        rs.getDate("expirationDate"), rs.getString("location"));
 
-                identityItemMap.put(new Pair<>(productID, rs.getInt("orderId")), item);
+                identityItemMap.put(new Pair<>(productID, rs.getInt("orderID")), item);
 
             }
         } catch (SQLException e) {
@@ -66,7 +66,7 @@ public class ItemMapper {
     private Result insert(Item item, int productID){
         Result result = new Result();
         int numRowsInserted;
-        String insertCommand = "INSERT INTO Item(productID, orderId, count, numOfDefects, expirationDate, location)" +
+        String insertCommand = "INSERT INTO Item(productID, orderID, count, numOfDefects, expirationDate, location)" +
                                 "VALUES(?,?,?,?,?,?)";
 
         try {
@@ -102,7 +102,7 @@ public class ItemMapper {
         Result result = new Result();
         int numRowsUpdated;
         String updateCommand = "UPDATE Item SET count = ?, numOfDefects = ?, expirationDate = ?, location = ?"+
-                "WHERE orderId = ? AND productID = ?";
+                "WHERE orderID = ? AND productID = ?";
 
         try {
             PreparedStatement statement = conn.prepareStatement(updateCommand);
