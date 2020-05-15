@@ -95,6 +95,10 @@ public class Inventory {
 
 
         if(toRemove != null){ //if toRemove is null then the product does not exist in the inventory
+            for(Item item: toRemove.getItems()){
+                itemMapper.deleteMapper(productID, item.getOrderID());
+            }
+
             productMapper.deleteMapper(toRemove.getId());
             //productsList.remove(toRemove);
 
@@ -141,7 +145,7 @@ public class Inventory {
             productToAddTo.addItem(itemToAdd);
 
 
-            productMapper.updateMapper(productToAddTo);
+            itemMapper.addMapper(itemToAdd, productID);
 
             result.successful();
         }
@@ -167,9 +171,12 @@ public class Inventory {
             Item itemToRemove = productToRemoveFrom.getItem(itemID);
 
             if(itemToRemove != null){// if itemToRemove is null the item does not exist
-                productToRemoveFrom.removeItem(itemToRemove);
-
-                productMapper.updateMapper(productToRemoveFrom);
+                if(!productToRemoveFrom.removeItem(itemToRemove)) {// checking if the product was completely removed from the prodduct
+                    itemMapper.updateMapper(itemToRemove, productID);
+                }
+                else{
+                    itemMapper.deleteMapper(itemToRemove.getOrderID(), productID);
+                }
 
                 String quantityMessage = minQuantityNotification(productToRemoveFrom);
 
@@ -363,7 +370,7 @@ public class Inventory {
                 if(numOfDefects < itemToSetDefectTo.getCount()) {
                     itemToSetDefectTo.setNumOfDefects(numOfDefects);
 
-                    productMapper.updateMapper(productToSetDefectFrom);
+                    itemMapper.updateMapper(itemToSetDefectTo, productID);
 
                     result.successful();
                 }
@@ -414,7 +421,7 @@ public class Inventory {
 
                     itemToSetNewLocationTo.setLocation(location);
 
-                    productMapper.updateMapper(productToSetLocationFrom);
+                    itemMapper.updateMapper(itemToSetNewLocationTo, productID);
 
                     result.successful();
                 }

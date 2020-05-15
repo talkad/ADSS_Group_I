@@ -64,8 +64,9 @@ public class Product {
     /**
      * removes an item from type product from the inventory
      * @param item the item to remove
+     * @return if the product was completely removed
      */
-    public void removeItem(Item item){
+    public boolean removeItem(Item item){
 
         if(item.getLocation().equals("Store") || item.getLocation().equals("store")){// if the item was in the store then we'll update the amount of items in the store accordingly
             this.storeCapacity--;
@@ -76,7 +77,10 @@ public class Product {
 
         if(item.removeOne()){ // checks if the count of the item is 0
             items.remove(item); // is so, removes the item from the list
+            return true;
         }
+
+        return false;
     }
 
     /**
