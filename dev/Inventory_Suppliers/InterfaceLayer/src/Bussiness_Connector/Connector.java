@@ -1,8 +1,9 @@
 package Bussiness_Connector;
 
+import BusinessLayer.Inventory;
+
 import java.util.Date;
 import java.util.Map;
-import BusinessLayer.Inventory;
 
 public class Connector {
 

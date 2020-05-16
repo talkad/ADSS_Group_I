@@ -3,7 +3,6 @@ package DAL;
 import Buisness.Result;
 import Buisness.SupplierCard;
 
-
 import java.sql.*;
 import java.util.*;
 

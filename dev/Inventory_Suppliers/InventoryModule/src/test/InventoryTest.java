@@ -1,9 +1,7 @@
 package test;
 
 import BusinessLayer.Inventory;
-import BusinessLayer.Item;
 import BusinessLayer.Product;
-import DTO.ItemDTO;
 import DTO.ProductDTO;
 import DataAccessLayer.ProductMapper;
 import org.junit.Assert;

@@ -1,14 +1,12 @@
 package DataAccessLayer;
 
 import BusinessLayer.Item;
-import BusinessLayer.Pair;
 import BusinessLayer.Product;
 import BusinessLayer.Result;
 import DAL_Connector.DatabaseManager;
 
 import java.sql.*;
 import java.util.*;
-import java.util.Date;
 
 
 public class ProductMapper {

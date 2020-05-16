@@ -1,7 +1,6 @@
 package setUp;
 
 import Buisness.Item;
-import Buisness.SuperLi;
 import Buisness.SupplierCard;
 
 import java.time.LocalDate;
