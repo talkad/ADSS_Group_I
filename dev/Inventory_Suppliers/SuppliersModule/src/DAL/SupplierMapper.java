@@ -77,7 +77,7 @@ public class SupplierMapper {
 
             result.successful();
 
-        }catch (java.sql.SQLException e){
+        }catch (SQLException e){
             result.failure("Failed to create a statement");
         }
 
@@ -112,7 +112,7 @@ public class SupplierMapper {
             else
                 result.failure("Failed to update Product");
 
-        }catch (java.sql.SQLException e){
+        }catch (SQLException e){
             result.failure("Failed to create a statement");
         }
         return result;
@@ -140,7 +140,7 @@ public class SupplierMapper {
             else
                 result.failure("Failed to delete Product");
 
-        } catch (java.sql.SQLException e) {
+        } catch (SQLException e) {
             result.failure("Failed to create a statement");
         }
         return result;

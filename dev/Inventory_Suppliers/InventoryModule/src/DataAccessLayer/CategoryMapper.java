@@ -72,7 +72,7 @@ public class CategoryMapper {
             categoryStatement.setInt(2, id);
             numRowsInserted = categoryStatement.executeUpdate();
 
-        }catch (java.sql.SQLException e){
+        }catch (SQLException e){
             return false;
         }
 
@@ -102,7 +102,7 @@ public class CategoryMapper {
             else
                 result.failure("Failed to delete category");
 
-        }catch (java.sql.SQLException e){
+        }catch (SQLException e){
             result.failure("Failed to create a statement");
         }
 

@@ -1,4 +1,4 @@
-//package setUp;
+package setUp;//package setUp;
 //
 //import Buisness.FixedArrangement;
 //import Buisness.Item;

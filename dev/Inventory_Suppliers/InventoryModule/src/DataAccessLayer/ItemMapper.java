@@ -87,7 +87,7 @@ public class ItemMapper {
             else
                 result.failure("Failed to insert item");
 
-        } catch (java.sql.SQLException e) {
+        } catch (SQLException e) {
             result.failure("Failed to create a statement");
         }
 
@@ -124,7 +124,7 @@ public class ItemMapper {
             else
                 result.failure("Failed to update Item");
 
-        } catch (java.sql.SQLException e) {
+        } catch (SQLException e) {
             result.failure("Failed to create a statement");
         }
 
@@ -156,7 +156,7 @@ public class ItemMapper {
             else
                 result.failure("Failed to delete Item");
 
-        } catch (java.sql.SQLException e) {
+        } catch (SQLException e) {
             result.failure("Failed to create a statement");
         }
 
