@@ -2,13 +2,13 @@ package BusinessLayer;
 
 import DTO.ItemDTO;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Item {
     private int orderID;
     private int count;
     private int numOfDefects;
-    private Date expiryDate;
+    private LocalDate expiryDate;
     private String location;
 
     public Item(ItemDTO itemDTO){
@@ -19,7 +19,7 @@ public class Item {
         this.location = itemDTO.getLocation();
     }
 
-    public Item(int orderID, int count, int numOfDefects, Date expiryDate, String location) {
+    public Item(int orderID, int count, int numOfDefects, LocalDate expiryDate, String location) {
         this.orderID = orderID;
         this.count = count;
         this.numOfDefects = numOfDefects;
@@ -51,11 +51,11 @@ public class Item {
         this.numOfDefects = numOfDefects;
     }
 
-    public Date getExpiryDate() {
+    public LocalDate getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(Date expiryDate) {
+    public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
     }
 
@@ -86,7 +86,7 @@ public class Item {
      * @return an information about the item if it's defected or expired, otherwise returns null
      */
     public String defectInfo(){
-        Date currentDate = new Date(); // creates a Date object with the current date
+        LocalDate currentDate = LocalDate.now(); // creates a Date object with the current date
 
         if(this.numOfDefects > 0 || expiryDate.compareTo(currentDate) == -1){
             String info = "Items order ID: " + this.orderID + "\n";

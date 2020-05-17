@@ -3,12 +3,10 @@ package BusinessLayer;
 import Bussiness_Connector.Connector;
 import DTO.ItemDTO;
 import DTO.ProductDTO;
-import DataAccessLayer.CategoryMapper;
 import DataAccessLayer.ItemMapper;
 import DataAccessLayer.ProductMapper;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -17,11 +15,8 @@ import java.util.Map;
  */
 public class Inventory {
 
-    //private List<Product> productsList;
-
     private ProductMapper productMapper = ProductMapper.getInstance();
     private ItemMapper itemMapper = ItemMapper.getInstance();
-    private CategoryMapper categoryMapper = CategoryMapper.getInstance();
 
     public static Inventory instance = null;
 
@@ -199,7 +194,7 @@ public class Inventory {
         if((orderId = Connector.getInstance().sendLackOfItemOrder(product.getId(),
                 product.getMinCapacity()*2, product.getBuyingPrice())) != -1){
 
-            Date date = new Date();
+            LocalDate date = LocalDate.now();
 
             product.addItem(new Item(orderId, product.getMinCapacity()*2, 0, getDate2WeeksFromNow(date), "Inventory"));
 
@@ -211,11 +206,8 @@ public class Inventory {
                 "Couldn't send an order to fill the lack cause there is no supplier to supply the need.";
     }
 
-    private Date getDate2WeeksFromNow(Date date){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.DATE, 14);
-        return calendar.getTime();
+    private LocalDate getDate2WeeksFromNow(LocalDate date){
+        return date.plusDays(14);
     }
 
 
@@ -231,7 +223,7 @@ public class Inventory {
         return result;
     }
 
-    public Result setPeriodicOrderDate(int orderId, Date newDate){
+    public Result setPeriodicOrderDate(int orderId, LocalDate newDate){
         Result result = new Result();
 
         if(Connector.getInstance().changePeriodicOrderDate(orderId, newDate)){
@@ -250,7 +242,7 @@ public class Inventory {
 
             if(product != null){
 
-                Date date = new Date();
+                LocalDate date = LocalDate.now();
 
                 Item toAdd = new Item(orderID, toLoad.get(productId), 0, getDate2WeeksFromNow(date), "Inventory");
 

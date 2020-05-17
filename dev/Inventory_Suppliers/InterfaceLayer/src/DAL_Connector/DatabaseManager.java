@@ -32,7 +32,7 @@ public class DatabaseManager {
     public void connect() {
         try {
             // db parameters
-            String url = "jdbc:sqlite:Storage";
+            String url = "jdbc:sqlite:Storage.db";
             // create a connection to the database
             conn = DriverManager.getConnection(url);
         } catch (SQLException  e) {

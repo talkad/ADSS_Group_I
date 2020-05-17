@@ -5,8 +5,8 @@ import BusinessLayer.Result;
 import DTO.ItemDTO;
 import DTO.ProductDTO;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -33,10 +33,12 @@ public class Controller{
      * @param date is a string which have to be in the pre-defined format
      * @return a new date by the given string. if the string invalid return null.
      */
-    public Date parseDate(String date) {
+    public LocalDate parseDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d-MM-yyyy");
         try {
-            return new SimpleDateFormat("dd-MM-yyyy").parse(date);
-        } catch (ParseException e) {
+            return LocalDate.parse(date, formatter);
+        }catch(Exception e){
+            System.out.println("Incorrect format- try again");
             return null;
         }
     }
@@ -101,7 +103,7 @@ public class Controller{
         int productId;
         int orderId;
         int count;
-        Date expiryDate;
+        LocalDate expiryDate = null;
 
         Result result;
 
@@ -115,7 +117,8 @@ public class Controller{
         count = readInteger(in);
 
         System.out.print("insert the items expiry date [dd-mm-yyyy]: ");
-        expiryDate=parseDate(in.next());
+        while(expiryDate == null)
+            expiryDate=parseDate(in.next());
 
         result= Inventory.getInstance().addItem(productId, new ItemDTO(orderId, count, 0, expiryDate, "Inventory"));
         if(result.getErrorMsg()!=null)
@@ -432,7 +435,7 @@ public class Controller{
     public void setPeriodicOrderDate(Scanner in){
         Result result;
         int orderId;
-        Date newDate;
+        LocalDate newDate;
 
         System.out.println("insert the order id you'd like to change [number]: ");
         orderId = readInteger(in);

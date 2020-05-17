@@ -7,6 +7,7 @@ import DAL_Connector.DatabaseManager;
 
 import java.sql.Date;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.*;
 
 public class ItemMapper {
@@ -48,8 +49,10 @@ public class ItemMapper {
 
             // loop through the result set
             while (rs.next()) {
+                String date = rs.getString("expirationDate");
+
                 Item item = new Item(rs.getInt("orderID"), rs.getInt("count"), rs.getInt("numOfDefects"),
-                        rs.getDate("expirationDate"), rs.getString("location"));
+                        LocalDate.parse(date), rs.getString("location"));
 
                 identityItemMap.put(new Pair<>(productID, rs.getInt("orderID")), item);
 
@@ -78,7 +81,7 @@ public class ItemMapper {
             statement.setInt(2, item.getOrderID());
             statement.setInt(3, item.getCount());
             statement.setInt(4, item.getNumOfDefects());
-            statement.setDate(5, new Date(item.getExpiryDate().getTime()));
+            statement.setString(5, item.getExpiryDate().toString());
             statement.setString(6, item.getLocation());
             numRowsInserted = statement.executeUpdate();
 
@@ -112,7 +115,7 @@ public class ItemMapper {
             PreparedStatement statement = conn.prepareStatement(updateCommand);
             statement.setInt(1, item.getCount());
             statement.setInt(2, item.getNumOfDefects());
-            statement.setDate(3, new Date(item.getExpiryDate().getTime()));
+            statement.setString(3, item.getExpiryDate().toString());
             statement.setString(4, item.getLocation());
             statement.setInt(5, item.getOrderID());
             statement.setInt(6, productID);

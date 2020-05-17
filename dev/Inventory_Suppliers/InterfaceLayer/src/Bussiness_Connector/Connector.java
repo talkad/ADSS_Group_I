@@ -2,7 +2,7 @@ package Bussiness_Connector;
 
 import BusinessLayer.Inventory;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Map;
 
 public class Connector {
@@ -27,20 +27,17 @@ public class Connector {
     // status 1 - remove
     public boolean setPeriodicOrder(int orderId, Map<Integer, Integer> toSet, int status){
         if(status == 0){
-            //TODO: add
+            //SuperLi.setPeriodicOrder(orderId,toSet,status);
             return true;
         }
-        else if(status == 1){
-            //TODO: remove
-            return true;
+        else{
+            return false; // Superli.setPeriodicOrder(orderId,toSet,status);
         }
-
-        return false;
     }
 
     //TODO: complete the function
-    public boolean changePeriodicOrderDate(int orderId, Date newDate){
-        return true;
+    public boolean changePeriodicOrderDate(int orderId, LocalDate newDate){ //TODO change in iventory module to use LocalDate
+        return false; //Superli.ChangePeriodicOrderDate(orderId,newDate);
     }
 
     public void loadInventory(int orderID, Map<Integer, Integer> toLoad){

@@ -1,16 +1,16 @@
 package DTO;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class ItemDTO {
     private int orderID;
     private int count;
     private int numOfDefects;
-    private Date expiryDate;
+    private LocalDate expiryDate;
     private String location;
 
 
-    public ItemDTO(int orderID, int count, int numOfDefects, Date expiryDate, String location) {
+    public ItemDTO(int orderID, int count, int numOfDefects, LocalDate expiryDate, String location) {
         this.orderID = orderID;
         this.count = count;
         this.numOfDefects = numOfDefects;
@@ -42,11 +42,11 @@ public class ItemDTO {
         this.numOfDefects = numOfDefects;
     }
 
-    public Date getExpiryDate() {
+    public LocalDate getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(Date expiryDate) {
+    public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
     }
 
