@@ -137,7 +137,7 @@ public class Controller{
         System.out.print("insert the product id [number]: ");
         productId = readInteger(in);
 
-        System.out.print("insert the item id [number]: ");
+        System.out.print("insert the order id [number]: ");
         itemId = readInteger(in);
 
         result= Inventory.getInstance().removeOneItem(productId, itemId);
@@ -440,7 +440,7 @@ public class Controller{
         System.out.println("insert the order id you'd like to change [number]: ");
         orderId = readInteger(in);
 
-        System.out.print("insert the items expiry date [dd-mm-yyyy]: ");
+        System.out.print("insert the new periodic order date [dd-mm-yyyy]: ");
         newDate = parseDate(in.next());
 
         result = Inventory.getInstance().setPeriodicOrderDate(orderId, newDate);
@@ -450,5 +450,20 @@ public class Controller{
                 System.out.println(result.getErrorMsg());
             }
         }
+    }
+
+    public void loadInventory(Scanner in) {
+        int orderId;
+        boolean result;
+
+        System.out.println("insert the order id you'd like to change [number]: ");
+        orderId = readInteger(in);
+
+        result = Inventory.getInstance().tryLoadInventory(orderId);
+
+        if(result)
+            System.out.println("The order load successfully");
+        else
+            System.out.println("The order cannot be loaded yet");
     }
 }

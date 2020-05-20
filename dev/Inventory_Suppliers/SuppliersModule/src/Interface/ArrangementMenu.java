@@ -1,9 +1,8 @@
 package Interface;
 
 import Buisness.FixedArrangement;
-import Buisness.Item;
-import Buisness.SuperLi;
-import Presentation.Menu;
+import Buisness.SupplierManager;
+import Presentation.MenuSuppliers;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,9 +27,9 @@ public class ArrangementMenu {
             runMenu();
             return;
         }
-        if (!SuperLi.getSuppliers().containsKey(companyID)){
+        if (!SupplierManager.getSuppliers().containsKey(companyID)){
             System.out.println("error:404 - Supplier not found");
-            Menu.runMenu();
+            MenuSuppliers.getInstance().runMenu(scanner);
             return;
         }
 
@@ -40,59 +39,27 @@ public class ArrangementMenu {
                 "3.Modify Delivery Dates",
                 "4.Print Arrangement",
                 "5.Return to Main Menu"};
-        MenuHandler.handleArrangementMenu(commands,companyID);
+        MenuHandler.getInstance().handleArrangementMenu(commands,companyID);
     }
     public static void runItemMenu(int companyID){
         String[] commands = {"Please choose a function:",
                 "1.Add items to the arrangement",
                 "2.Remove items from the arrangement",
-                "3.Change an item's price",
-                "4.Return to Arrangement Menu"};
-        MenuHandler.handleItemMenu(commands,companyID);
+                "3.Return to Main Menu"};
+        MenuHandler.getInstance().handleItemMenu(commands,companyID);
     }
 
-    public static void changePrice(int companyId) {
-        System.out.println("Please enter the items you wish to change their price in the arrangement in the following format:\n" +
-                "itemID-price:itemID-price:itemID-price:...");
-        String input = scanner.next();
-        Map<Integer,Double> map = new HashMap<>();
-        String[] itemInput = input.split(":");
-        for (int i = 0; i < itemInput.length; i++){
-            String[] itemVal = itemInput[i].split("-");
-            try{
-                int itemID = Integer.parseInt(itemVal[0]);
-                double price = Double.parseDouble(itemVal[1]);
-                if(price <= 0) {
-                    System.out.println("price cannot be <= 0\n" +
-                            "returning to Arrangement Menu\n");
-                    runMenu();
-                    return;
-                }
-                map.put(itemID, price);
-            }
-            catch (Exception e){
-                System.out.println("Input was not of the right format!\n" +
-                        "returning to Arrangement Menu\n");
-                runMenu();
-                return;
-            }
-        }
-        SuperLi.getSuppliers().get(companyId).changePriceInAgreement(map);
-        System.out.println("Items' prices changed successfully!");
-    }
 
     public static void addItems(int companyId){
         System.out.println("Please enter the items you wish to add to the arrangement in the following format:\n" +
-                "itemID-price-name:itemID-price-name:itemID-price-name:...");
+                "productID:productId...");
         String input = scanner.next();
-        ArrayList<Item> list = new ArrayList<Item>();
+        ArrayList<Integer> list = new ArrayList<Integer>();
         String[] itemInput = input.split(":");
         for (int i = 0; i < itemInput.length; i++){
-            String[] itemVal = itemInput[i].split("-");
             try{
-                int itemID = Integer.parseInt(itemVal[0]);
-                double priceInt = Double.parseDouble(itemVal[1]);
-                list.add(new Item(itemID,priceInt,itemVal[2],companyId));
+                int productId = Integer.parseInt(itemInput[i]);
+                list.add(productId);
             }
             catch (Exception e){
                 System.out.println("Input was not of the right format!\n" +
@@ -101,7 +68,7 @@ public class ArrangementMenu {
                 return;
             }
         }
-        SuperLi.getSuppliers().get(companyId).addToArrangement(list);
+        SupplierManager.getSuppliers().get(companyId).addToArrangement(list);
         System.out.println("Items added successfully!");
     }
 
@@ -123,7 +90,7 @@ public class ArrangementMenu {
                 return;
             }
         }
-        SuperLi.getSuppliers().get(commanyId).deleteFromArrangement(list);
+        SupplierManager.getSuppliers().get(commanyId).deleteFromArrangement(list);
         System.out.println("Deleted Items successfully");
     }
 
@@ -133,8 +100,8 @@ public class ArrangementMenu {
                 "2.Add items' discounts to agreement",
                 "3.Remove items from agreement",
                 "4.Change items' discounts",
-                "5.Return to Arrangement Menu"};
-        MenuHandler.handleQuantityAgreementMenu(commands, companyID);
+                "5.Return to Main Menu"};
+        MenuHandler.getInstance().handleQuantityAgreementMenu(commands, companyID);
     }
     public static Map<Integer,Map<Integer,Double>> parseQuantity(String msg){
         System.out.println(msg+ " by this format:\n" +
@@ -176,7 +143,7 @@ public class ArrangementMenu {
             runMenu();
             return;
         }
-        if (SuperLi.getSuppliers().get(companyID).getArrangement().addNewAgreement(map))
+        if (SupplierManager.getSuppliers().get(companyID).getArrangement().addNewAgreement(map, companyID))
             System.out.println("Quantity agreement added successfully!");
         else
             System.out.println("Adding quantity agreement failed, item is not in the arrangement, agreement already exists or price is invalid");
@@ -190,7 +157,7 @@ public class ArrangementMenu {
             runMenu();
             return;
         }
-        if (SuperLi.getSuppliers().get(companyID).getArrangement().addItemsToAgreement(map))
+        if (SupplierManager.getSuppliers().get(companyID).getArrangement().addItemsToAgreement(map,companyID))
             System.out.println("Quantity agreement changed successfully!");
         else
             System.out.println("Updating quantity agreement failed, item is not in the arrangement or price is invalid");
@@ -204,7 +171,7 @@ public class ArrangementMenu {
             runMenu();
             return;
         }
-        if (SuperLi.getSuppliers().get(companyID).getArrangement().editItemInAgreement(map))
+        if (SupplierManager.getSuppliers().get(companyID).getArrangement().editItemInAgreement(map,companyID))
             System.out.println("Quantity agreement changed successfully!");
         else
             System.out.println("Updating quantity agreement failed, item is not in the arrangement or price is invalid");
@@ -228,7 +195,7 @@ public class ArrangementMenu {
                 return;
             }
         }
-        SuperLi.getSuppliers().get(companyId).getArrangement().deleteItemsFromAgreement(list);
+        SupplierManager.getSuppliers().get(companyId).getArrangement().deleteItemsFromAgreement(list,companyId);
         System.out.println("Deleted Items successfully");
     }
 
@@ -237,12 +204,12 @@ public class ArrangementMenu {
                 "1.Print past delivery dates",
                 "2.Print future delivery dates",
                 "3.Modify date",
-                "4.Return to Arrangement Menu"};
-        MenuHandler.handleDeliverDateMenu(commands, companyID);
+                "4.Return to Main Menu"};
+        MenuHandler.getInstance().handleDeliverDateMenu(commands, companyID);
     }
 
-    public static void modifyDate(int companyID){
-        if (!(SuperLi.getSuppliers().get(companyID).getArrangement() instanceof FixedArrangement)) {
+    public static void modifyDate(int companyID){ //TODO maybe remove
+        if (!(SupplierManager.getSuppliers().get(companyID).getArrangement() instanceof FixedArrangement)) {
             System.out.println("Error - cannot modify date of a non fixed arrangement. go to Order Menu to place orders!\n" +
                     "returning to Arrangement Menu\n");
             runMenu();
@@ -262,7 +229,7 @@ public class ArrangementMenu {
                 runMenu();
                 return;
             }
-            FixedArrangement arr = (FixedArrangement) SuperLi.getSuppliers().get(companyID).getArrangement();
+            FixedArrangement arr = (FixedArrangement) SupplierManager.getSuppliers().get(companyID).getArrangement();
             if(arr.modifyDate(date)){
                 System.out.println("Date updated successfully!");
             }

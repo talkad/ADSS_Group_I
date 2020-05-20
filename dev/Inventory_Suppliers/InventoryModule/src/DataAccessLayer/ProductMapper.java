@@ -189,9 +189,9 @@ public class ProductMapper {
 
 
     /**
-     * given a productID, returns a productDTO with id {@param productID}
+     * given a productID, returns a product with id {@param productID}
      * @param productID the id of the product
-     * @return productDTO with id {@param productID}. or null if no such entry exists
+     * @return product with id {@param productID}. or null if no such entry exists
      */
     public Product getProduct(int productID){
 
@@ -322,33 +322,4 @@ public class ProductMapper {
         return nextID+1;
     }
 
-  /*  public static void main(String[] args){
-
-        List<String> categories = new LinkedList<>();
-        categories.add("milky");
-        categories.add("salty");
-
-         Item milk1= new Item(1,20, 5, new Date(),"Inventory");
-        Item milk2= new Item(2,30, 5, new Date(),"Inventory");
-        Item milk3= new Item(3,50, 5, new Date(),"Inventory");
-        Item milk4= new Item(4,80, 5, new Date(),"Inventory");
-        Item milk5= new Item(5,90, 5, new Date(),"Inventory");
-        Item milk6= new Item(6,5555, 5, new Date(),"Inventory");
-
-        List<Item> items = new LinkedList<>();
-
-        items.add(milk1);
-        items.add(milk2);
-        items.add(milk3);
-        items.add(milk4);
-        items.add(milk5);
-        items.add(milk6);
-
-        Product product = new Product(128, "milk", "tara", 10, 300,
-                200, 2.5, 10, 15, categories, items);
-
-        Result result = ProductMapper.getInstance().addMapper(product);
-
-        System.out.println(result.getErrorMsg());
-    }*/
 }

@@ -1,20 +1,25 @@
 package DAL;
 
+import Buisness.ContactPerson;
 import Buisness.Result;
 import Buisness.SupplierCard;
+import DAL_Connector.DatabaseManager;
+
 
 import java.sql.*;
 import java.util.*;
 
 public class SupplierMapper {
-    private static Connection conn = DBmanager.getInstance().getConnection();
+    private static Connection conn = DatabaseManager.getInstance().getConnection();
 
     private Map<Integer, SupplierCard> identitySupplierMap;
+    private Map<Integer, ContactPerson> identityContactMap;
 
     private static SupplierMapper instance;
 
     public SupplierMapper(){
-        identitySupplierMap = new Hashtable<>();
+        identitySupplierMap = new HashMap<>();
+        identityContactMap = new HashMap<>();
     }
 
     public static SupplierMapper getInstance(){
@@ -30,14 +35,16 @@ public class SupplierMapper {
      */
     private void initSupplierMap(){
         String sql = "SELECT * FROM Supplier";
+        String fixed = "fixed", single = "single";
+
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
             // loop through the result set
             while (rs.next()) {
-                SupplierCard supplier = new SupplierCard(rs.getString("name"), rs.getString("manufacturer"), rs.getInt("companyId"),
-                        rs.getInt("bankAccount"), rs.getString("paymentConditions"),"fixed",  (rs.getString("selfPickup").equals("true")));
+                SupplierCard supplier = new SupplierCard(rs.getString("name"), rs.getString("manufacturer"), rs.getInt("companyId"), rs.getInt("bankAccount"), rs.getString("paymentConditions")
+                        , (rs.getInt("arrangementType") == 1 ? fixed : single), (rs.getInt("selfPickup") == 1));
 
                 identitySupplierMap.put(supplier.getCompanyId(), supplier);
             }
@@ -55,8 +62,8 @@ public class SupplierMapper {
         Result result = new Result();
         int numRowsInserted;
 
-        String insertCommand = "INSERT INTO Supplier(companyId, name, manufacturer, bankAccount, paymentConditions, selfPickup" +
-                "VALUES(?,?,?,?,?,?)";
+        String insertCommand = "INSERT INTO Supplier(companyId, name, manufacturer, bankAccount, paymentConditions, selfPickup,arrangementType)" +
+                "VALUES(?,?,?,?,?,?,?)";
 
         try {
             PreparedStatement statement = conn.prepareStatement(insertCommand);
@@ -65,7 +72,8 @@ public class SupplierMapper {
             statement.setString(3,supplier.getManufacturer());
             statement.setInt(4, supplier.getBankAccount());
             statement.setString(5, supplier.getPaymentConditions());
-            statement.setString(6, supplier.getArrangement().isSelfPickup() ? "true" : "false");
+            statement.setInt(6, supplier.getArrangement().isSelfPickup() ? 1 : 0);
+            statement.setInt(7, supplier.getType().equals("fixed") ? 1 : 0);
             numRowsInserted = statement.executeUpdate();
 
 
@@ -76,7 +84,7 @@ public class SupplierMapper {
 
             result.successful();
 
-        }catch (SQLException e){
+        }catch (java.sql.SQLException e){
             result.failure("Failed to create a statement");
         }
 
@@ -92,7 +100,7 @@ public class SupplierMapper {
         Result result = new Result();
         int numRowsUpdated;
         String updateCommand = "UPDATE Supplier SET name = ?, manufacturer = ?, bankAccount = ?, paymentConditions = ?" +
-                "selfPickup = ? WHERE id = ?";
+                " WHERE companyId = ?";
 
         try {
             PreparedStatement statement = conn.prepareStatement(updateCommand);
@@ -100,8 +108,7 @@ public class SupplierMapper {
             statement.setString(2, supplier.getManufacturer());
             statement.setInt(3, supplier.getBankAccount());
             statement.setString(4, supplier.getPaymentConditions());
-            statement.setString(5, supplier.getArrangement().isSelfPickup()?"true":"false");
-            statement.setInt(7, supplier.getCompanyId());
+            statement.setInt(5, supplier.getCompanyId());
 
             numRowsUpdated = statement.executeUpdate();
 
@@ -111,7 +118,7 @@ public class SupplierMapper {
             else
                 result.failure("Failed to update Product");
 
-        }catch (SQLException e){
+        }catch (java.sql.SQLException e){
             result.failure("Failed to create a statement");
         }
         return result;
@@ -139,7 +146,7 @@ public class SupplierMapper {
             else
                 result.failure("Failed to delete Product");
 
-        } catch (SQLException e) {
+        } catch (java.sql.SQLException e) {
             result.failure("Failed to create a statement");
         }
         return result;
@@ -187,14 +194,9 @@ public class SupplierMapper {
      *
      * @return all of the records in a List
      */
-    public List<SupplierCard> getAll(){
-
-        Collection collection = identitySupplierMap.values();
-        List<SupplierCard> list = new LinkedList<>();
-
-        list.addAll(collection);
-
-        return list;
+    public Map<Integer,SupplierCard> getAll(){
+        initSupplierMap();
+        return identitySupplierMap;
     }
 
 
@@ -244,6 +246,58 @@ public class SupplierMapper {
             identitySupplierMap.remove(companyId);
         }
 
+        return result;
+    }
+
+    public Result addContact(int companyId, ContactPerson person){
+        Result result = new Result();
+        int numRowsInserted = 0;
+
+        String insertCommand = "INSERT INTO ContactPerson(supplierId, name, methodName, method)" +
+                "VALUES(?,?,?,?)";
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(insertCommand);
+            for (String methodName: person.getContactMethods().keySet()) {
+                statement.setInt(1, companyId);
+                statement.setString(2, person.getName());
+                statement.setString(3,methodName);
+                statement.setString(4,person.getContactMethods().get(methodName));
+                numRowsInserted = statement.executeUpdate();
+            }
+            if(numRowsInserted == 1)
+                result.successful();
+            else
+                result.failure("Failed to update Product");
+            result.successful();
+
+        }catch (java.sql.SQLException e){
+            result.failure("Failed to create a statement");
+        }
+        return result;
+    }
+
+    public Result deleteContact(int companyId, ContactPerson person){
+        Result result = new Result();
+        int numRowsDeleted;
+        String deleteCommand = "DELETE FROM ContactPerson WHERE companyId = ? AND name = ?";
+
+        // delete the product only if there are no items belong to this product
+        try {
+            PreparedStatement statement = conn.prepareStatement(deleteCommand);
+            statement.setInt(1, companyId);
+            statement.setString(2, person.getName());
+
+            numRowsDeleted = statement.executeUpdate();
+
+            if (numRowsDeleted == 1)
+                result.successful();
+            else
+                result.failure("Failed to delete Contact");
+
+        } catch (java.sql.SQLException e) {
+            result.failure("Failed to create a statement");
+        }
         return result;
     }
 

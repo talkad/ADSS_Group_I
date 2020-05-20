@@ -1,5 +1,8 @@
 package Buisness;
 
+import BusinessLayer.Product;
+import DAL.ArrangementMapper;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,21 +11,23 @@ import java.util.stream.Collectors;
 
 public abstract class Arrangement {
 
-    protected Map<Integer,Item> _items;
+    protected Map<Integer, Product> _items;
     protected boolean _selfPickup;
     protected QuantityAgreement _quantityAgreement = null;
     protected DeliveryDates _deliveryDates = new DeliveryDates();
+    protected final int _supplierId;
 
-    public Arrangement(boolean _selfPickup) {
+    public Arrangement(boolean _selfPickup, int supplierId) {
         this._selfPickup = _selfPickup;
-        this._items = new HashMap<Integer, Item>();
+        this._supplierId = supplierId;
+        this._items = new HashMap<Integer, Product>();
     }
 
-    public Map<Integer, Item> getItems() {
+    public Map<Integer, Product> getItems() {
         return _items;
     }
 
-    public void setItems(Map<Integer, Item> _items) {
+    public void setItems(Map<Integer, Product> _items) {
         this._items = _items;
     }
 
@@ -44,8 +49,10 @@ public abstract class Arrangement {
 
     public String toString(){
         String output = "";
+        if (_quantityAgreement == null)
+            _quantityAgreement = ArrangementMapper.getInstance().getQuantity(_supplierId);
         if (_quantityAgreement != null)
-            output += agreementToString() +"=====================\n";
+            output += agreementToString() +"\n=====================\n";
         else
             output+= "No Quantity agreement\n=====================\n";
         List<Integer> list = _items.keySet().stream().sorted().collect(Collectors.toList());
@@ -54,23 +61,48 @@ public abstract class Arrangement {
         }
         return output;
     }
-    public boolean addNewAgreement (Map<Integer, Map<Integer,Double>> items) {
-        if (!_items.keySet().containsAll(items.keySet()) || !checkPrices(items) || _quantityAgreement!=null) return false;
+    public boolean addNewAgreement (Map<Integer, Map<Integer,Double>> items,int supplierid) {
+        if (!_items.keySet().containsAll(items.keySet()) || !checkPrices(items) || _quantityAgreement!=null)
+            return false;
         _quantityAgreement = new QuantityAgreement(items);
+        ArrangementMapper.getInstance().insertToQuantity(_quantityAgreement,supplierid);
         return true;
     }
 
-    public boolean addItemsToAgreement (Map<Integer, Map<Integer,Double>> items) {
+    public boolean addItemsToAgreement (Map<Integer, Map<Integer,Double>> items, int companyId) {
         if (!_items.keySet().containsAll(items.keySet()) || !checkPrices(items)) return false;
+        if (_quantityAgreement == null)
+            _quantityAgreement = ArrangementMapper.getInstance().getQuantity(_supplierId);
+        if (_quantityAgreement == null)
+            return false;
         _quantityAgreement.addItemsToAgreement(items);
+        for(int product : items.keySet())
+            for(int amount : items.get(product).keySet())
+            ArrangementMapper.getInstance().insertProductToQuantity(companyId,product,amount, items.get(product).get(amount));
         return true;
     }
 
-    public void deleteItemsFromAgreement (List<Integer> items){_quantityAgreement.deleteItemsFromAgreement(items);}
+    public void deleteItemsFromAgreement (List<Integer> items, int companyId){
+        if (_quantityAgreement == null)
+            _quantityAgreement = ArrangementMapper.getInstance().getQuantity(_supplierId);
+        if (_quantityAgreement == null)
+            return;
+        _quantityAgreement.deleteItemsFromAgreement(items,_supplierId);
+        for(int product: items)
+            ArrangementMapper.getInstance().deleteProductFromQuantity(product, companyId);
 
-    public boolean editItemInAgreement (Map<Integer, Map<Integer,Double>> items) {
-        if (!checkPrices(items)) return false;
+    }
+
+    public boolean editItemInAgreement (Map<Integer, Map<Integer,Double>> items, int companyId) {
+        if (!checkPrices(items) )
+            return false;
+        if (_quantityAgreement == null)
+            _quantityAgreement = ArrangementMapper.getInstance().getQuantity(_supplierId);
+        if (_quantityAgreement == null)
+            return false;
         _quantityAgreement.editItemInAgreement(items);
+        for(int product : items.keySet())
+            ArrangementMapper.getInstance().updateItemInQuantity(_supplierId,product,items.get(product));
         return true;
     }
 
@@ -90,14 +122,6 @@ public abstract class Arrangement {
 
     public String futureDateToString (){
         return _deliveryDates.futureDateToString();
-    }
-
-    public Map<Integer, Item> get_items() {
-        return _items;
-    }
-
-    public void set_items(Map<Integer, Item> _items) {
-        this._items = _items;
     }
 
     public QuantityAgreement get_quantityAgreement() {

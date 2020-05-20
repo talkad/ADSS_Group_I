@@ -1,14 +1,29 @@
 package Interface;
 
-import Buisness.SuperLi;
-import Presentation.Menu;
+import Buisness.SupplierManager;
+import Presentation.MenuSuppliers;
 
 import java.util.Scanner;
 
 public class MenuHandler {
-    static Scanner scanner;
 
-    public static int handleChoice (String [] commands){
+    private Scanner scanner;
+
+    public static MenuHandler Menu = null;
+
+    /**
+     *
+     * @return an instance of Controller
+     */
+    public static MenuHandler getInstance(){
+        if(Menu == null){
+            Menu = new MenuHandler();
+        }
+        return Menu;
+    }
+
+
+    public int handleChoice (String [] commands){
         for (String command : commands) System.out.println(command);
         int choice = -1;
         try {
@@ -17,16 +32,16 @@ public class MenuHandler {
         }
         catch (Exception e){
             System.out.println("Bad input, please try again");
-            SupplierMenu.runMenu();
+            MenuSuppliers.getInstance().runMenu(scanner);
         }
-        if(!(choice>=1 & choice<commands.length-1)){
+        if(!(choice>=1 & choice<=commands.length-1)){
             System.out.println("Bad input, please try again");
-            SupplierMenu.runMenu();
+            MenuSuppliers.getInstance().runMenu(scanner);
         }
         return choice;
     }
 
-    public static void handleSupplierMenu(String [] commands){
+    public void handleSupplierMenu(String [] commands){
         int choice = handleChoice(commands);
 
         switch (choice){
@@ -40,12 +55,12 @@ public class MenuHandler {
                 SupplierMenu.runEditSupplierMenu();
                 break;
             case 4:
-                Menu.runMenu();
+                MenuSuppliers.getInstance().runMenu(scanner);
                 break;
         }
     }
 
-    public static void handleEditSupplierMenu(String [] commands, int companyID) {
+    public void handleEditSupplierMenu(String [] commands, int companyID) {
         int choice = handleChoice(commands);
         switch (choice){
             case 1:
@@ -58,15 +73,15 @@ public class MenuHandler {
                 SupplierMenu.changeBank(companyID);
                 break;
             case 4:
-                System.out.println(SuperLi.getSuppliers().get(companyID).toString());
+                System.out.println(SupplierManager.getSuppliers().get(companyID).toString());
                 break;
             case 5:
-                Menu.runMenu();
+                MenuSuppliers.getInstance().runMenu(scanner);
                 break;
         }
     }
 
-    public static void handleContactMenu(String [] commands, int companyID) {
+    public void handleContactMenu(String [] commands, int companyID) {
         int choice = handleChoice(commands);
         switch (choice){
             case 1:
@@ -79,15 +94,15 @@ public class MenuHandler {
                 SupplierMenu.runEditContactMenu(companyID);
                 break;
             case 4:
-                System.out.println(SuperLi.getSuppliers().get(companyID).contactsToString());
+                System.out.println(SupplierManager.getSuppliers().get(companyID).contactsToString());
                 break;
             case 5:
-                Menu.runMenu();
+                MenuSuppliers.getInstance().runMenu(scanner);
                 break;
         }
     }
 
-    public static void handleEditContactMenu(String [] commands, int companyID, String contactName) {
+    public void handleEditContactMenu(String [] commands, int companyID, String contactName) {
         int choice = handleChoice(commands);
         switch (choice){
             case 1:
@@ -104,7 +119,7 @@ public class MenuHandler {
         }
     }
 
-    public static void handleArrangementMenu(String [] commands, int companyID){
+    public void handleArrangementMenu(String [] commands, int companyID){
         int choice = handleChoice(commands);
         switch (choice){
             case 1:
@@ -117,15 +132,15 @@ public class MenuHandler {
                 ArrangementMenu.runDeliveryDateMenu(companyID);
                 break;
             case 4:
-                System.out.println(SuperLi.getSuppliers().get(companyID).getArrangement().toString());
+                System.out.println(SupplierManager.getSuppliers().get(companyID).getArrangement().toString());
                 break;
             case 5:
-                Menu.runMenu();
+                MenuSuppliers.getInstance().runMenu(scanner);
                 break;
         }
     }
 
-    public static void handleItemMenu(String [] commands, int companyID){
+    public void handleItemMenu(String [] commands, int companyID){
         int choice = handleChoice(commands);
         switch (choice){
             case 1:
@@ -134,34 +149,31 @@ public class MenuHandler {
             case 2:
                 ArrangementMenu.removeItems(companyID);
                 break;
-              case 3:
-                ArrangementMenu.changePrice(companyID);
-                break;
-             case 4:
-                ArrangementMenu.runMenu();
+            case 3:
+                MenuSuppliers.getInstance().runMenu(scanner);
                 break;
          }
     }
 
-    public static void handleDeliverDateMenu(String [] commands, int companyID){
+    public void handleDeliverDateMenu(String [] commands, int companyID){
         int choice = handleChoice(commands);
         switch (choice){
             case 1:
-                System.out.println(SuperLi.getSuppliers().get(companyID).getArrangement().pastDateToString());
+                System.out.println(SupplierManager.getSuppliers().get(companyID).getArrangement().pastDateToString());
                 break;
             case 2:
-                System.out.println(SuperLi.getSuppliers().get(companyID).getArrangement().futureDateToString());
+                System.out.println(SupplierManager.getSuppliers().get(companyID).getArrangement().futureDateToString());
                 break;
             case 3:
                 ArrangementMenu.modifyDate(companyID);
                 break;
             case 4:
-                ArrangementMenu.runMenu();
+                MenuSuppliers.getInstance().runMenu(scanner);
                 break;
         }
     }
 
-    public static void handleQuantityAgreementMenu(String [] commands, int companyID) {
+    public void handleQuantityAgreementMenu(String [] commands, int companyID) {
         int choice = handleChoice(commands);
         switch (choice) {
             case 1:
@@ -177,12 +189,12 @@ public class MenuHandler {
                 ArrangementMenu.changePriceInAgreement(companyID);
                 break;
             case 5:
-                ArrangementMenu.runMenu();
+                MenuSuppliers.getInstance().runMenu(scanner);
                 break;
         }
     }
 
-    public static void handleOrderMenu(String [] commands, int companyID) {
+    public void handleOrderMenu(String [] commands, int companyID) {
         int choice = handleChoice(commands);
         switch (choice){
             case 1:
@@ -201,12 +213,12 @@ public class MenuHandler {
                 OrderMenu.printOrderDetails(companyID);
                 break;
             case 6:
-                Menu.runMenu();
+                MenuSuppliers.getInstance().runMenu(scanner);
                 break;
         }
     }
 
-    public static void handleModifyOrderMenu(String [] commands, int companyID, int orderNumber) {
+    public void handleModifyOrderMenu(String [] commands, int companyID, int orderNumber) {
         int choice = handleChoice(commands);
         switch (choice){
             case 1:
@@ -219,7 +231,7 @@ public class MenuHandler {
                 OrderMenu.removeItems(companyID, orderNumber);
                 break;
             case 4:
-                OrderMenu.runMenu();
+                MenuSuppliers.getInstance().runMenu(scanner);
                 return;
         }
     }

@@ -1,22 +1,25 @@
 package Interface;
 
-import Buisness.SuperLi;
+import Buisness.SupplierManager;
+import DAL.SupplierMapper;
 
+import java.sql.SQLOutput;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.zip.CheckedOutputStream;
 
 public class SupplierMenu {
 
     static Scanner scanner = new Scanner(System.in);
 
     public static void runMenu() {
-        String[] commands = {"=====Supplier-Menu=====",
-                "Please choose a function:",
+        System.out.println("=====Supplier-Menu=====");
+        String[] commands = {"Please choose a function:",
                 "1.Add new Supplier",
                 "2.Delete a Supplier card",
                 "3.Edit a Supplier card",
                 "4.Return to Main Menu"};
-        MenuHandler.handleSupplierMenu(commands);
+        MenuHandler.getInstance().handleSupplierMenu(commands);
     }
 
     public static void addSupplier(){
@@ -41,7 +44,7 @@ public class SupplierMenu {
             runMenu();
             return;
         }
-        if(SuperLi.addSupplier(values[0],values[1],companyID,bankAccount,values[4],values[5],selfPickup))
+        if(SupplierManager.addSupplier(values[0],values[1],companyID,bankAccount,values[4],values[5],selfPickup))
             System.out.println("Added Supplier successfully");
         else
             System.out.println("Supplier already existed in the System");
@@ -59,7 +62,7 @@ public class SupplierMenu {
             runMenu();
             return;
         }
-        if(SuperLi.deleteSupplier(companyID))
+        if(SupplierManager.deleteSupplier(companyID))
             System.out.println("Supplier deleted successfully");
         else
             System.out.println("Error 404: supplier not found");
@@ -75,7 +78,7 @@ public class SupplierMenu {
             runMenu();
             return;
         }
-        if (!SuperLi.getSuppliers().containsKey(companyID)){
+        if (!SupplierManager.getSuppliers().containsKey(companyID)){
             System.out.println("error:404 - Supplier not found");
             runMenu();
         }
@@ -86,13 +89,14 @@ public class SupplierMenu {
                 "3.Change Supplier Bank account number" ,
                 "4.Print Supplier card" ,
                 "5.Return to Main Menu"};
-        MenuHandler.handleEditSupplierMenu(commands,companyID);
+        MenuHandler.getInstance().handleEditSupplierMenu(commands,companyID);
     }
 
     public static void changePayment(int companyID){
         System.out.println("Please enter the new payment conditions\n");
         String input = scanner.nextLine();
-        SuperLi.getSuppliers().get(companyID).setPaymentConditions(input);
+        SupplierManager.getSuppliers().get(companyID).setPaymentConditions(input);
+        SupplierMapper.getInstance().updateMapper(SupplierManager.getSuppliers().get(companyID));
         System.out.println("Supplier edited successfully\n");
     }
 
@@ -114,7 +118,8 @@ public class SupplierMenu {
             runMenu();
             return;
         }
-        SuperLi.getSuppliers().get(companyID).setBankAccount(bankNumber);
+        SupplierManager.getSuppliers().get(companyID).setBankAccount(bankNumber);
+        SupplierMapper.getInstance().updateMapper(SupplierManager.getSuppliers().get(companyID));
         System.out.println("Bank account number updated successfully!\n");
     }
 
@@ -125,7 +130,7 @@ public class SupplierMenu {
                 "3.Edit a Contact Person",
                 "4.Print all contacts",
                 "5.Return to Main Menu"};
-        MenuHandler.handleContactMenu(commands,companyID);
+        MenuHandler.getInstance().handleContactMenu(commands,companyID);
     }
 
     public static void addContact(int companyID){
@@ -145,7 +150,7 @@ public class SupplierMenu {
             }
             map.put(methodsSplit[0],methodsSplit[1]);
         }
-        if(SuperLi.addContact(companyID, name,map)){
+        if(SupplierManager.addContact(companyID, name,map)){
             System.out.println("Contact added successfully!");
         }
         else{
@@ -157,7 +162,7 @@ public class SupplierMenu {
         System.out.println("Please enter the name of the contact person you would like to modify");
         String contactName = scanner.nextLine();
 
-        if (!SuperLi.getSuppliers().get(companyID).getContacts().contains(contactName)){
+        if (!SupplierManager.getSuppliers().get(companyID).getContacts().contains(contactName)){
             System.out.println("error:404 - contact not found!");
             runMenu();
             return;
@@ -168,7 +173,7 @@ public class SupplierMenu {
                 "2.Delete method from contact",
                 "3.Edit details of method",
                 "4.Return to Contact Menu"};
-        MenuHandler.handleEditContactMenu(commands,companyID,contactName);
+        MenuHandler.getInstance().handleEditContactMenu(commands,companyID,contactName);
     }
 
     public static void addMethod(int companyID, String contact){
@@ -183,7 +188,7 @@ public class SupplierMenu {
             return;
         }
         else{
-            SuperLi.getSuppliers().get(companyID).getContactByName(contact).addToMethods(details[0],details[1]);
+            SupplierManager.getSuppliers().get(companyID).getContactByName(contact).addToMethods(details[0],details[1]);
             System.out.println("Contact method added successfully\n");
         }
     }
@@ -200,7 +205,7 @@ public class SupplierMenu {
             return;
         }
         else{
-            SuperLi.getSuppliers().get(companyID).getContactByName(contact).editMethod(details[0],details[1]);
+            SupplierManager.getSuppliers().get(companyID).getContactByName(contact).editMethod(details[0],details[1]);
             System.out.println("Contact method edited successfully\n");
         }
     }
@@ -208,7 +213,7 @@ public class SupplierMenu {
     public static void deleteMethod(int companyID, String contact){
         System.out.println("Please enter the method you with to delete\n");
         String method = scanner.nextLine();
-        SuperLi.getSuppliers().get(companyID).getContactByName(contact).deleteFromMethods(method);
+        SupplierManager.getSuppliers().get(companyID).getContactByName(contact).deleteFromMethods(method);
         System.out.println("Contact method deleted successfully\n");
     }
 
@@ -217,7 +222,7 @@ public class SupplierMenu {
         String contactName;
         contactName = scanner.nextLine();
 
-        if(SuperLi.deleteContact(companyID,contactName))
+        if(SupplierManager.deleteContact(companyID,contactName))
             System.out.println("Contact deleted successfully");
         else{
             System.out.println("error:404-contact not found\n" +

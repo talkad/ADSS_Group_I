@@ -24,7 +24,7 @@ public class InventoryMenu {
                 {"Add a new product", "Remove a product", "Add a new item", "Remove an item",
                         "Update minimum quantity", "Update selling price", "Update buying price", "Set defect",
                         "Update item location", "Get report by categories", "Get defect report",
-                        "Set periodic order", "Set periodic order date", "Go to main menu"};
+                        "Set periodic order", "Set periodic order date", "load order into inventory", "Go to main menu"};
 
         boolean shouldTerminate=false;
         int input;
@@ -74,6 +74,9 @@ public class InventoryMenu {
                     Controller.getInstance().setPeriodicOrderDate(in);
                     break;
                 case 14:
+                    Controller.getInstance().loadInventory(in);
+                    break;
+                case 15:
                     shouldTerminate=true;
                     break;
                 default:

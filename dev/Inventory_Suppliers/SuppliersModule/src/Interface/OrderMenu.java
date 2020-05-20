@@ -1,9 +1,9 @@
 package Interface;
 
 import Buisness.Order;
-import Buisness.SuperLi;
 import Buisness.SupplierCard;
-import Presentation.Menu;
+import Buisness.SupplierManager;
+import Presentation.MenuSuppliers;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,24 +27,24 @@ public class OrderMenu {
             runMenu();
             return;
         }
-        if (!SuperLi.getSuppliers().containsKey(companyID)){
+        if (!SupplierManager.getSuppliers().containsKey(companyID)){
             System.out.println("error:404 - Supplier not found!");
-            Menu.runMenu();
+            MenuSuppliers.getInstance().runMenu(scanner);
             return;
         }
 
-        String [] commands = {"Please choose a function:\n" +
+        String [] commands = {"Please choose a function:\n",
                 "1.Place Order",
                 "2.Modify Order",
                 "3.Cancel Order",
                 "4.Print Order History",
                 "5.Print Order Details",
                 "6.Return to Main Menu"};
-        MenuHandler.handleOrderMenu(commands, companyID);
+        MenuHandler.getInstance().handleOrderMenu(commands, companyID);
 
     }
     public static void placeOrder(int companyID){
-        SupplierCard supplier = SuperLi.getSuppliers().get(companyID);
+        SupplierCard supplier = SupplierManager.getSuppliers().get(companyID);
         Map<Integer,Integer> map = parseItems("Please enter the items you wish to order");
         if (map == null){
             System.out.println("Wrong input supplied, place order failed. returning to order menu");
@@ -52,7 +52,7 @@ public class OrderMenu {
             return;
         }
         System.out.println("Please enter the items you wish to order in the following format: DD/MM/YYYY\n");
-        String date = scanner.nextLine();
+        String date = scanner.next();
         LocalDate dateTime;
         try{
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -79,7 +79,7 @@ public class OrderMenu {
 
         int comp = 0;
         int length = 0;
-        for (Order order: SuperLi.getSuppliers().get(companyID).getOrders().values()) {
+        for (Order order: SupplierManager.getSuppliers().get(companyID).getOrders().values()) {
             comp = 13;
             System.out.print(order.getOrderNum());
             length = String.valueOf(order.getOrderNum()).length();
@@ -111,7 +111,7 @@ public class OrderMenu {
             runMenu();
             return;
         }
-        SupplierCard supplier = SuperLi.getSuppliers().get(companyID);
+        SupplierCard supplier = SupplierManager.getSuppliers().get(companyID);
         if (!supplier.getOrders().containsKey(choice)){
             System.out.println("error:404 - Order not found!");
             runMenu();
@@ -119,7 +119,7 @@ public class OrderMenu {
         else{
             supplier.cancelOrder(choice);
             System.out.println("Order canceled successfully!");
-            Menu.runMenu();
+            MenuSuppliers.getInstance().runMenu(scanner);
         }
         return;
     }
@@ -134,23 +134,23 @@ public class OrderMenu {
             runMenu();
             return;
         }
-        if (!SuperLi.getSuppliers().get(companyID).getOrders().containsKey(orderNumber)){
+        if (!SupplierManager.getSuppliers().get(companyID).getOrders().containsKey(orderNumber)){
             System.out.println("error:404 - order not found!");
             runMenu();
             return;
         }
 
-        String [] commands = {"Please choose a function:\n" +
+        String [] commands = {"Please choose a function:",
                 "1.Change Order Date",
                 "2.Add items to order",
                 "3.Remove Items from order",
-                "4.Return to Order Menu"};
-        MenuHandler.handleModifyOrderMenu(commands, companyID, orderNumber);
+                "4.Return to Main Menu"};
+        MenuHandler.getInstance().handleModifyOrderMenu(commands, companyID, orderNumber);
     }
 
     public static void changeOrderDate(int companyID, int order){
         System.out.println("Please enter the new date in the following format: DD/MM/YYYY");
-        String dateInput = scanner.nextLine();
+        String dateInput = scanner.next();
         LocalDate datetime;
         try{
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -162,49 +162,28 @@ public class OrderMenu {
             runMenu();
             return;
         }
-        SuperLi.getSuppliers().get(companyID).getOrders().get(order).setOrderDate(datetime);
+        SupplierManager.getSuppliers().get(companyID).changeOrderDate(order, datetime);
         System.out.println("Order date changed successfully!");
     }
-    public static HashMap<Integer,Integer> parseItems(String message){
-        HashMap<Integer,Integer> map = new HashMap<Integer, Integer>();
+    public static HashMap<Integer,Integer> parseItems(String message) {
+        HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
         int i = 0;
         boolean amountFlag = false;
-        String item = "",amount = "";
         System.out.println(message + " in the following format:\n" +
-                "itemID-amount|itemID-amount|...");
+                "itemID-amount:itemID-amount:...");
         String order = scanner.next();
-        while (i < order.length()){
-            if (order.charAt(i) == '-'){
-                amountFlag = true;
-                i++;
+        for(String itemBlock: order.split(":")){
+            String[] item = itemBlock.split("-");
+            try {
+                map.put(Integer.parseInt(item[0]), Integer.parseInt(item[1]));
             }
-            else if (order.charAt(i) == '|'){
-                try{
-                    amountFlag = false;
-                    int itemID = Integer.parseInt(item);
-                    int amountInt = Integer.parseInt(amount);
-                    map.put(itemID,amountInt);
-                    item = "";
-                    amount = "";
-                }
-                catch (Exception e){
-                    System.out.println("Input was not of the right format!\n" +
-                            "returning to Order Menu\n");
-                    return null;
-                }
-                i++;
-            }
-            else if (amountFlag){
-                amount += order.charAt(i);
-                i++;
-            }
-            else{
-                item +=order.charAt(i);
-                i++;
+            catch (Exception e){
+                return null;
             }
         }
         return map;
     }
+
     public static void addItems(int companyID, int orderNumber){
         HashMap<Integer,Integer> map = parseItems("Please enter the items you wish to add to the order");
         if (map == null){
@@ -212,7 +191,7 @@ public class OrderMenu {
             runMenu();
             return;
         }
-        if (SuperLi.getSuppliers().get(companyID).addItemsToOrder(map, orderNumber)){
+        if (SupplierManager.getSuppliers().get(companyID).addItemsToOrder(map, orderNumber)){
             System.out.println("Items added successfully!");
             return;
         }
@@ -228,17 +207,14 @@ public class OrderMenu {
         if (map == null){
             System.out.println("Wrong input supplied, removing items failed. returning to order menu");
             runMenu();
-            return;
         }
-        if (SuperLi.getSuppliers().get(companyID).deleteItemsFromOrder(map, orderNumber)){
+        else if (SupplierManager.getSuppliers().get(companyID).deleteItemsFromOrder(map, orderNumber)){
             System.out.println("Items removed successfully!");
-            return;
         }
         else{
             System.out.println("One of the specified items is not a part of the order specified or attempted to remove more than ordered\n" +
                     "Adding items failed, returning to Order Menu\n");
             runMenu();
-            return;
         }
     }
     public static void printOrderDetails(int companyID){
@@ -252,12 +228,12 @@ public class OrderMenu {
             runMenu();
             return;
         }
-        if (!SuperLi.getSuppliers().get(companyID).getOrders().containsKey(orderNumber)){
+        if (!SupplierManager.getSuppliers().get(companyID).getOrders().containsKey(orderNumber)){
             System.out.println("error:404 - order not found!");
             runMenu();
             return;
         }
-        Order order = SuperLi.getSuppliers().get(companyID).getOrders().get(orderNumber);
+        Order order = SupplierManager.getSuppliers().get(companyID).getOrders().get(orderNumber);
         System.out.println("Order Number: " + order.getOrderNum());
         System.out.println("Date Created: " + order.getDateCreated().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         System.out.println("Arrive Date: " + order.getOrderDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));

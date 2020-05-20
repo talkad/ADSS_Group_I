@@ -1,6 +1,7 @@
 package Menu;
 
 import DAL_Connector.DatabaseManager;
+import Presentation.MenuSuppliers;
 import PresentationLayer.InventoryMenu;
 
 import java.util.Scanner;
@@ -8,6 +9,7 @@ import java.util.Scanner;
 public class Menu {
 
     private static InventoryMenu inventoryMenu = InventoryMenu.getInstance();
+    private static MenuSuppliers menu = MenuSuppliers.getInstance();
 
     /**
      * This function displays the menu to the standard output stream
@@ -54,7 +56,7 @@ public class Menu {
                     inventoryMenu.display(in);
                     break;
                 case 2:
-                    //TODO: call the suppliers menu
+                    menu.runMenu(in);
                     break;
                 case 3:
                     System.out.println ( "Bye..." );

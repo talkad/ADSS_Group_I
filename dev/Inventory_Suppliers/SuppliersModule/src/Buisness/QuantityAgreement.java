@@ -1,5 +1,7 @@
 package Buisness;
 
+import DAL.ArrangementMapper;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,12 +26,15 @@ public class QuantityAgreement {
         _discounts.putAll(items);
     }
 
-    public void deleteItemsFromAgreement (List<Integer> items){
+    public void deleteItemsFromAgreement (List<Integer> items,int companyId){
         for (Integer item: items){
             _discounts.remove(item);
+            ArrangementMapper.getInstance().deleteProductFromQuantity(companyId,item);
         }
     }
-    public void editItemInAgreement (Map<Integer, Map<Integer,Double>> items) {addItemsToAgreement(items);}
+    public void editItemInAgreement (Map<Integer, Map<Integer,Double>> items) {
+        addItemsToAgreement(items);
+    }
 
     public String toString(){
         String output = "Quantity Agreement detail:\n==========================\n\n";

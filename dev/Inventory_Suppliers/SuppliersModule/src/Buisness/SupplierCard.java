@@ -1,8 +1,14 @@
 package Buisness;
 
+import BusinessLayer.Product;
+import DAL.ArrangementMapper;
+import DAL.OrderMapper;
+import DataAccessLayer.ProductMapper;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SupplierCard {
@@ -23,11 +29,18 @@ public class SupplierCard {
         _bankAccount = bankAccount;
         _paymentConditions = paymentConditions;
         if (arrangementType.toUpperCase().equals("FIXED"))
-            _arrangement = new FixedArrangement(LocalDate.now(),selfPickup);
+            _arrangement = new FixedArrangement(LocalDate.now(),selfPickup, companyId);
         else
-            _arrangement = new SingleArrangement(selfPickup);
+            _arrangement = new SingleArrangement(selfPickup,companyId);
         _contacts = new ArrayList<>();
         _orders = new HashMap<>();
+    }
+
+    public String getType(){
+        if (this._arrangement instanceof FixedArrangement)
+            return "fixed";
+        else
+            return "single";
     }
 
     public String getName() {
@@ -71,16 +84,17 @@ public class SupplierCard {
     }
 
     public Arrangement getArrangement() {
-        return _arrangement;
+        return ArrangementMapper.getInstance().getArrangement(_companyId);
     }
 
     public void setArrangement(Arrangement arrangement) {
         this._arrangement = _arrangement;
+        ArrangementMapper.getInstance().updateArrangement(_companyId,arrangement);
     }
 
     public ArrayList<ContactPerson> getContacts() {
         return _contacts;
-    }
+    }//TODO
 
     public ContactPerson getContactByName (String name) {
         for (ContactPerson person: _contacts) {
@@ -88,25 +102,33 @@ public class SupplierCard {
                 return person;
         }
         return null;
-    }
+    }//TODO
 
     public void setContacts(ArrayList<ContactPerson> contacts) {
         this._contacts = _contacts;
     }
 
-    public Map<Integer, Order> getOrders() { return _orders; }
+    public Map<Integer, Order> getOrders() {
+        Map<Integer,Order> map =OrderMapper.getInstance().getOrders(_companyId);
+        return map;
+    }
 
-    public void setOrders(Map<Integer, Order> _orders) { this._orders = _orders; }
+    public void setOrders(Map<Integer, Order> _orders) {
+        OrderMapper.getInstance().deleteOrders(_companyId);
+        for(Order order: _orders.values())
+            OrderMapper.getInstance().saveOrder(order,_companyId);
+    }
 
     public boolean placeOrder(Map<Integer, Integer> items, LocalDate date){
         for (int item: items.keySet()){
-            if (!_arrangement.getItems().containsKey(item))
+            if (!ArrangementMapper.getInstance().getArrangement(_companyId).getItems().containsKey(item))
                 return false;
         }
-        Order order = new Order(SuperLi.get_orderNumIncrement(),date, "Pending", items);
-        _orders.put(SuperLi.get_orderNumIncrement(),order);
-        _arrangement.get_deliveryDates().getDates().put(date, false);
-        SuperLi.incrementOrderNum();
+        Order order = new Order(SupplierManager.get_orderNumIncrement(),date, "Pending", items, false);
+        _orders.put(SupplierManager.get_orderNumIncrement(),order);
+        _arrangement.get_deliveryDates().getDates().put(order.getOrderNum(),date);
+        SupplierManager.incrementOrderNum();
+        OrderMapper.getInstance().saveOrder(order, this._companyId);
         return true;
     }
 
@@ -117,7 +139,7 @@ public class SupplierCard {
             _contacts.add(contact);
             return true;
         }
-    }
+    } //TODO
 
     public boolean removeContact(String contact){
         if (contact == null)
@@ -129,45 +151,66 @@ public class SupplierCard {
             }
         }
         return false;
-    }
+    } //TODO
 
     public boolean cancelOrder (int orderNum){
+        if (_orders.size() == 0)
+            _orders = getOrders();
         if(!_orders.containsKey(orderNum))
             return false;
         else{
             _orders.get(orderNum).setStatus("Canceled");
-            _orders.get(orderNum).setOrderDate(null);
+            OrderMapper.getInstance().updateOrder(_orders.get(orderNum), _companyId);
             return true;
         }
     }
 
+    public boolean changeOrderDate(int orderNum, LocalDate date){
+        if (_orders.size() == 0)
+            _orders = OrderMapper.getInstance().getOrders(_companyId);
+        _orders.get(orderNum).setOrderDate(date);
+        OrderMapper.getInstance().updateOrder(_orders.get(orderNum),_companyId);
+        return ArrangementMapper.getInstance().updateItemInDelivery(orderNum, _companyId, date).isSuccessful();
+    }
+
     public boolean addItemsToOrder(Map<Integer,Integer> items, int orderNumber){
+        if (_arrangement.getItems().size() == 0)
+            _arrangement = ArrangementMapper.getInstance().getArrangement(_companyId);
         if(!_arrangement.validateItems(items.keySet())) return false;
-        Order toAdd = _orders.get(orderNumber);
-        toAdd.addItems(items);
+        Order order = OrderMapper.getInstance().getOrder(orderNumber);
+        for(int productId:items.keySet()){
+            if (order.getItemList().containsKey(productId))
+                order.getItemList().put(productId, order.getItemList().get(productId)+items.get(productId));
+        }
+        OrderMapper.getInstance().updateOrderItems(orderNumber, order.getItemList());
         return true;
     }
 
     public boolean deleteItemsFromOrder(Map<Integer,Integer> items, int orderNumber){
-        Order toDelete = _orders.get(orderNumber);
-        return toDelete.deleteItems(items);
+        Order toDelete =  OrderMapper.getInstance().getOrder(orderNumber);
+        if(!toDelete.deleteItems(items))
+            return false;
+        return OrderMapper.getInstance().updateOrderItems(orderNumber, toDelete.getItemList()).isSuccessful();
     }
 
-    public void addToArrangement (ArrayList<Item> items){
-        for (Item item: items){
-            _arrangement.getItems().put(item.getId(),item);
+    public void addToArrangement (List<Integer> products){
+        for (int product: products){
+            _arrangement.getItems().put(product, ProductMapper.getInstance().getProduct(product));
+            ArrangementMapper.getInstance().insertProduct(this._companyId, product);
         }
     }
 
-    public void deleteFromArrangement (ArrayList<Integer> items){
-        for (Integer item: items){
-            _arrangement.getItems().remove(item);
+    public void deleteFromArrangement (ArrayList<Integer> products){
+        for (Integer product: products){
+            _arrangement.getItems().remove(product);
+            ArrangementMapper.getInstance().deleteProduct(this._companyId, product);
+
         }
     }
 
-    public void changePriceInAgreement (Map<Integer,Double> items){
-        for (Integer item: items.keySet()){
-            _arrangement.getItems().get(item).setPrice(items.get(item));
+    public void changePriceInArrangement (Map<Integer,Integer> products){ //TODO talk to tal
+        for (Integer item: products.keySet()){
+            _arrangement.getItems().get(item).setBuyingPrice(products.get(item));
         }
     }
 

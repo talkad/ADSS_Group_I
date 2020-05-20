@@ -6,40 +6,40 @@ import java.util.Map;
 
 public class DeliveryDates {
 
-    private Map<LocalDate, Boolean> _dates;
+    private Map<Integer,LocalDate> _dates;
 
     public DeliveryDates() {_dates = new HashMap<>(); }
 
-    public DeliveryDates(HashMap<LocalDate, Boolean> dates) {
+    public DeliveryDates(HashMap<Integer,LocalDate> dates) {
         this._dates = dates;
     }
 
-    public Map<LocalDate,Boolean> getDates() {
+    public Map<Integer,LocalDate> getDates() {
         return _dates;
     }
 
-    public void setDates(Map<LocalDate,Boolean> _dates) {
+    public void setDates(Map<Integer,LocalDate> _dates) {
         this._dates = _dates;
     }
 
-    public void addDate(LocalDate ld, boolean fixed){
-        _dates.put(ld, fixed);
+    public void addDate(LocalDate ld, Integer order){
+        _dates.put(order,ld);
     }
 
     public String pastDateToString(){
         String output = "";
-        for (LocalDate date: _dates.keySet()){
-            if (date.compareTo(LocalDate.now()) < 0 )
-                output+=date.toString();
+        for (int orderNum: _dates.keySet()){
+            if (_dates.get(orderNum).compareTo(LocalDate.now()) < 0)
+                output+= orderNum + "\t\t" +_dates.get(orderNum).toString() +"\n";
         }
         return output;
     }
 
     public String futureDateToString(){
         String output = "";
-        for (LocalDate date: _dates.keySet()){
-            if (date.compareTo(LocalDate.now()) >= 0 )
-                output+=date.toString();
+        for (int orderNum: _dates.keySet()){
+            if (_dates.get(orderNum).compareTo(LocalDate.now()) >= 0 )
+                output+= orderNum + "\t\t" +_dates.get(orderNum).toString() +"\n";
         }
         return output;
     }

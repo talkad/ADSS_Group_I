@@ -6,6 +6,7 @@ import DTO.ProductDTO;
 import DataAccessLayer.ItemMapper;
 import DataAccessLayer.ProductMapper;
 
+import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -234,6 +235,19 @@ public class Inventory {
         }
 
         return result;
+    }
+
+    public boolean tryLoadInventory(int orderID){
+        Map<Integer,Integer> order;
+
+        order = Connector.getInstance().tryLoadInventory(orderID);
+
+        if(order != null){
+            loadInventory(orderID, order);
+            return true;
+        }
+
+       return false;
     }
 
     public void loadInventory(int orderID, Map<Integer, Integer> toLoad){
