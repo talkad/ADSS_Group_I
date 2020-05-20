@@ -38,7 +38,8 @@ public class DatabaseManager {
             // create a connection to the database
             //System.out.println(System.getProperty("user.dir")+"/Storage.db");
             //conn = DriverManager.getConnection(url);
-            DriverManager.getConnection("jdbc:sqlite:"+System.getProperty("user.dir")+"/Storage.db");
+            conn = DriverManager.getConnection("jdbc:sqlite:../dev/Inventory_Suppliers/Storage.db");
+            //+System.getProperty("user.dir")+
         } catch (SQLException  e) {
             System.err.println(e.getMessage());
         }
