@@ -21,11 +21,17 @@ public class mainBL {
         return instance;
     }
 
-    public void createEmployee(int id, String firstName, String lastName, String bankDetails, String workConditions, Date startTime, int salary, List<String> roles, boolean updateFlag){
+    public void createEmployee(int id, String firstName, String lastName, String bankDetails, String workConditions, Date startTime, int salary, List<String> roles, boolean updateFlag) throws ApplicationException{
         Employee newEmp = new Employee(id, firstName, lastName, bankDetails, workConditions, startTime, salary, roles);
         if(!updateFlag && newEmp.getRoles().contains("driver"))
         {
+            try {
                 DoThinks.addDriver(newEmp, new ArrayList<>());
+            }
+            catch(Exception e)
+            {
+                send(e.getMessage());
+            }
         }
         else if(newEmp.getRoles().contains("driver")) {
             DoThinks.AddOrEditDriver(newEmp.getId(), newEmp);
@@ -86,7 +92,7 @@ public class mainBL {
     public boolean isFree(int id, int day, int period) throws ApplicationException {
         boolean free = mainDataInstance.isFree(id, day, period);
         if(!free)
-           send("Error: Employee isn't free during that time");
+            send("Error: Employee isn't free during that time");
         return free;
     }
 
@@ -123,5 +129,10 @@ public class mainBL {
 
     private void send(String msg) throws ApplicationException {
         throw new ApplicationException(msg, null);
+    }
+
+    public Employee GetEmployee(int id)
+    {
+        return mainData.getInstance().GetEmployee(id);
     }
 }

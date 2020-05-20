@@ -1,5 +1,7 @@
 package EmployeeModule;
 
+import EmployeeModule.BusinessLayer.Employee;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -77,4 +79,8 @@ public class DTOEmployee {
                 "salary: " + salary + "\n" + "roles: " + this.roles.toString() + "\n"
                 + "free time:\n";
     }
+
+     public Employee getEmployee(){
+        return new Employee(id, firstName, lastName, bankDetails, workConditions, startTime, salary, roles);
+     }
 }

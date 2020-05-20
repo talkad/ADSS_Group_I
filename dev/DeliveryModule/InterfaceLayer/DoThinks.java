@@ -22,12 +22,13 @@ import java.util.List;
 
 public class DoThinks {
 
-    public static boolean CreateForm(String date, LocalTime time, String Destiny, String Source, ItemList itemList, int truckNumber, int driverId) throws IOException, ParseException, ApplicationException {
+    public static boolean CreateForm(String date, String time, String Destiny, String Source, ItemList itemList, int truckNumber, int driverId) throws IOException, ParseException, ApplicationException {
         if (!TruckManager.CheckLicense(truckNumber, driverId))
             return false;
 
         int shifttype = 0;
-        int timehour = time.getHour();
+        String[] arr = time.split(":");
+        int timehour = Integer.parseInt(arr[0]);
         if(7 <= timehour && timehour < 16)
             shifttype = 1;
         if(16 <= timehour && timehour <= 23)
@@ -39,14 +40,14 @@ public class DoThinks {
         if((dest =SiteManager.FindSite(Destiny)) == null ||(source = SiteManager.FindSite(Source)) == null)
         	return false;
         Date datenew = new SimpleDateFormat("dd/MM/yyyy").parse(date);
-        DeliveryManager.CreateForm(datenew, time, dest, source, itemList, truckNumber, driverId);
+        DeliveryManager.CreateForm(-1, datenew, time, dest, source, itemList, truckNumber, driverId, true);
         return true;
     }
     public static boolean CheckShift(String date, int time, int id) throws ApplicationException {
         return DriverManager.CheckShift(date, time, id);
     }
 
-    public static String Departure(int formID, int truckWeight){
+    public static String Departure(int formID, int truckWeight) throws ApplicationException {
     	DeliveryForm form = DeliveryManager.FindForm(formID);
         if (!TruckManager.CheckWeight(form.getTruckNumber(), truckWeight))
             return null;
@@ -76,14 +77,14 @@ public class DoThinks {
     	return true;
     }
   
-    public static void EnterDeliveryArea(String Name, List<String> Addresses){
+    public static void EnterDeliveryArea(String Name, List<String> Addresses) throws ApplicationException {
     	List<Site> sites = SiteManager.FindSitesByName(Addresses);
-        SiteManager.createDeliveryArea(Name, sites);
+        SiteManager.createDeliveryArea(Name, sites, true);
     }
     
     
     
-    public static void addDriver(Employee employee, List<String> lic)
+    public static void addDriver(Employee employee, List<String> lic) throws ApplicationException
     {
         List<License> licen = new ArrayList<>();
     	for(String item : lic )
@@ -101,13 +102,13 @@ public class DoThinks {
     }
     
     
-    public static void addSite( String Address, String PhoneNumber, String ContantName, List<String> DeliveryArea, boolean isSupplier)
+    public static void addSite( String Address, String PhoneNumber, String ContantName, List<String> DeliveryArea, int isSupplier) throws ApplicationException
     {
     	List<DeliveryArea> Areas = SiteManager.FindAreasByName(DeliveryArea);
-    	SiteManager.addSite(Address, PhoneNumber, ContantName, Areas, isSupplier);
+    	SiteManager.addSite(Address, PhoneNumber, ContantName, Areas, isSupplier, true);
     }
     
-    public static void RemoveDriver(int id)
+    public static void RemoveDriver(int id) throws ApplicationException
     {
     	DriverManager.RemoveDriver(id);
     }
@@ -117,10 +118,24 @@ public class DoThinks {
     	DriverManager.EditEmployee(id, newEmp);
     }
     
-    public static void AddOrEditDriver(int id, Employee newEmp)
+    public static void AddOrEditDriver(int id, Employee newEmp) throws ApplicationException
     {
-    	
+    	DriverManager.AddOrEditDriver(id, newEmp);
     }
+    public static void addLicense(int id, String license) throws ApplicationException
+    {
+    	DriverManager.AddLicense(id, License.valueOf(license));
+    }
+    
+    public static void Load() throws ApplicationException
+    {
+    	DriverManager.Loadall();
+    	TruckManager.Loadall();
+    	SiteManager.init();
+    	DeliveryManager.init();
+    }
+    
+    
     
     
 }

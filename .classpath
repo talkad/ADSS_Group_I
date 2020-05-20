@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry excluding="DeliveryModule/Test/" kind="src" path="dev"/>
+	<classpathentry kind="src" path="dev/DeliveryModule/Test"/>
+	<classpathentry kind="lib" path="release/adss2020_v01.jar"/>
+	<classpathentry kind="lib" path="release/tests.jar"/>
+	<classpathentry kind="output" path="out/production/ADSS_Group_I"/>
+</classpath>

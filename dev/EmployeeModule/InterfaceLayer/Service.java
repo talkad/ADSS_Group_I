@@ -11,7 +11,7 @@ import java.util.*;
 public class Service {
     public static int shiftCounter = 1;
 
-    public static void main(String [] args) {
+    public static void main(String [] args) throws ApplicationException {
         Service service = new Service();
         EmployeeModule.BusinessLayer.mainBL mainBL = EmployeeModule.BusinessLayer.mainBL.getInstance();
         Scanner scanner = new Scanner(System.in);
@@ -185,7 +185,7 @@ public class Service {
         }
     }
 
-    private void createEmployee(EmployeeModule.BusinessLayer.mainBL mainBL, ILEmployee employee, boolean updateFlag){
+    private void createEmployee(EmployeeModule.BusinessLayer.mainBL mainBL, ILEmployee employee, boolean updateFlag) throws ApplicationException{
         mainBL.createEmployee(employee.getId(), employee.getFirstName(), employee.getLastName(), employee.getBankDetails(), employee.getWorkConditions(), employee.getStartTime(), employee.getSalary(), employee.getRoles(), updateFlag);
     }
 
@@ -403,7 +403,7 @@ public class Service {
         return false;
     }
 
-    private void dataLoad(EmployeeModule.BusinessLayer.mainBL mainBL){
+    private void dataLoad(EmployeeModule.BusinessLayer.mainBL mainBL) throws ApplicationException{
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         try {
             Date emp1 = formatter.parse("21/06/2018");

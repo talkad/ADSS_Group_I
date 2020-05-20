@@ -1,5 +1,9 @@
 package DeliveryModule.BuisnessLayer;
 
+import DeliveryModule.DAL.DAL;
+import DeliveryModule.DAL.SiteDAL;
+import org.omg.CORBA.portable.ApplicationException;
+
 import java.util.List;
 
 
@@ -19,7 +23,7 @@ public abstract class Site {
     public void AddArea(DeliveryArea area){
         DeliveryArea.add(area);
     }
-    
+    public String getAddress() { return this.Address; }
     public List<DeliveryArea> getAreas()
     {
     	return DeliveryArea;
@@ -30,4 +34,8 @@ public abstract class Site {
 		return this.Address == Address;
     }
 
+    public void save(int isSupplier) throws ApplicationException {
+        SiteDAL siteDAL = new SiteDAL(Address, PhoneNumber, ContantName, isSupplier);
+        DAL.Insert("Site", siteDAL);
+    }
 }

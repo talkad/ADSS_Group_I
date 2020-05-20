@@ -1,5 +1,7 @@
 package DeliveryModule.BuisnessLayer;
 
+import DeliveryModule.DAL.DeliveryFormDAL;
+
 import java.util.Date;
 import java.time.*;
 
@@ -9,7 +11,7 @@ public class DeliveryForm {
 	private final int Id;
     private DeliveryForm PrevForm;
     private Date date;
-    private LocalTime DepTime;
+    private String DepTime;
     private Site Destiny;
     private Site Source;
     private ItemList itemList;
@@ -19,7 +21,7 @@ public class DeliveryForm {
 
 
 
-    public DeliveryForm(Date date, LocalTime depTime, Site Destiny, Site Source, ItemList itemList, int truckNumber, int driverId){
+    public DeliveryForm(Date date, String depTime, Site Destiny, Site Source, ItemList itemList, int truckNumber, int driverId){
     	this.Id = IDCounter;
     	IDCounter++;
     	this.date = date;
@@ -31,8 +33,22 @@ public class DeliveryForm {
         this.TruckNumber = truckNumber;
         this.TruckWeight = -1;
     }
+
+    public DeliveryForm(int Id, Date date, String depTime, Site Destiny, Site Source, ItemList itemList, int truckNumber, int driverId){
+        this.Id = Id;
+        if(Id >= IDCounter)
+            IDCounter = Id + 1;
+        this.date = date;
+        this.DepTime = depTime;
+        this.Destiny = Destiny;
+        this.DriverID = driverId;
+        this.itemList = itemList;
+        this.Source = Source;
+        this.TruckNumber = truckNumber;
+        this.TruckWeight = -1;
+    }
     
-    private DeliveryForm(DeliveryForm prevForm, Date date, LocalTime depTime, Site Destiny, Site Source, ItemList itemList, int truckNumber, Integer truckWeight, int driverId){
+    private DeliveryForm(DeliveryForm prevForm, Date date, String depTime, Site Destiny, Site Source, ItemList itemList, int truckNumber, Integer truckWeight, int driverId){
         this.Id = IDCounter;
         IDCounter++;
     	this.date = date;
@@ -53,11 +69,15 @@ public class DeliveryForm {
     public void SetTruckNum(int truckNumber) { this.TruckNumber = truckNumber; }
     public void SetSource( Site source ) { this.Source = source; }
     public void SetItemList( ItemList itemList ) { this.itemList = itemList; }
+    public Site getDestiny() { return this.Destiny; }
+    public Site getSource() { return this.Source; }
     public int getTruckNumber() { return TruckNumber; }
     public ItemList getItemList() { return itemList; }
-    public LocalTime getDepTime() { return DepTime; }
+    public String getDepTime() { return DepTime; }
     public int getDriverId() { return DriverID; }
     public Date getDate() {return date;}
+    public int getID() { return this.Id; }
+    public DeliveryForm getPrevForm() { return this.PrevForm; }
 
     public boolean equal(DeliveryForm other){
        return this.Id == other.Id;
@@ -70,10 +90,10 @@ public class DeliveryForm {
     }
     
     
-    public DeliveryForm CreateEdit( Date date, LocalTime depTime, Site Destiny, Site Source, ItemList itemList, Integer truckNumber, Integer truckWeight, int driverId)
+    public DeliveryForm CreateEdit( Date date, String depTime, Site Destiny, Site Source, ItemList itemList, Integer truckNumber, Integer truckWeight, int driverId)
     {
     	Date newDate;
-    	LocalTime newDepTime;
+    	String newDepTime;
     	Site newDestiny, newSource;
     	ItemList newList;
     	int newTruck;
@@ -116,6 +136,7 @@ public class DeliveryForm {
     	return new DeliveryForm(this, newDate, newDepTime, newDestiny, newSource, newList, newTruck, newWeight, newDriver);
     	
     }
+
 }
 
 

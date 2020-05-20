@@ -3,16 +3,14 @@ package DeliveryModule.PresentationLayer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.time.LocalTime;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import DeliveryModule.BuisnessLayer.Item;
-import DeliveryModule.BuisnessLayer.ItemList;
-import DeliveryModule.BuisnessLayer.License;
+import DeliveryModule.BuisnessLayer.*;
+import DeliveryModule.DAL.DAL;
 import DeliveryModule.InterfaceLayer.DoThinks;
 import org.omg.CORBA.portable.ApplicationException;
 
@@ -20,42 +18,71 @@ public class Start {
 	
 	private static BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
  
-    public static void Start() throws IOException, ParseException, ApplicationException {
+    public static void StartDelivery() {
     	while(true) {
-	        System.out.println("Welcome to Delivery !");
-	        System.out.println(
-	                "1. Add Delivery Area\n" +
-	                "2. Order Stock Completion\n"+
-	                "3. Create Delivery Form\n"+
-	                "4. Departure for delivery\n" +
-	                "5. Add Truck\n" +
-	                "6. Add Driver\n" +
-	                "7. Add Site\n" +
-	                "8. Exit");
-	        //String input = 
-	      
-	        String line = buffer.readLine();
-	        switch(line)
-	        {
-	        case("1") : InsertDeliveryArea(); break;
-	        case("2") : OrderStock(); break;
-	        case("3") : CreateFrom(); break;
-	        case("4") : Departure(); break;
-	        case("5") : AddTruck(); break;
-	        case("6") : AddDriver(); break;
-	        case("7") : AddSite(); break;
-	        case("8") : return;
-	        
-	        }
+    		try {
+				System.out.println("Welcome to Delivery !");
+				System.out.println(
+						"1. Add Delivery Area\n" +
+								"2. Order Stock Completion\n" +
+								"3. Create Delivery Form\n" +
+								"4. Departure for delivery\n" +
+								"5. Add Truck\n" +
+								"6. Add Driver (does nothing)\n" +
+								"7. Add Site\n" +
+								"8. Add License\n" +
+								"9. Exit");
+				//String input =
+
+				String line = buffer.readLine();
+				switch (line) {
+					case ("1"):
+						InsertDeliveryArea();
+						break;
+					case ("2"):
+						OrderStock();
+						break;
+					case ("3"):
+						CreateFrom();
+						break;
+					case ("4"):
+						Departure();
+						break;
+					case ("5"):
+						AddTruck();
+						break;
+					case ("6"):
+						AddDriver();
+						break;
+					case ("7"):
+						AddSite();
+						break;
+					case ("8"):
+						AddLicense();
+						break;
+					case("9"):
+						return;
+					
+
+				}
+			}
+    		catch (ApplicationException e){
+				System.out.println(e.getId());
+
+			}
+    		catch(Exception e)
+    		{
+    			e.printStackTrace();
+    		}
     	}
     }
-    public static void main(String[] args) throws IOException, ParseException, ApplicationException {
-        Start();
+    public static void main(String[] args){
+    	StartDelivery();
     }
     
     
     
-    private static void InsertDeliveryArea() throws IOException
+    private static void InsertDeliveryArea() throws IOException, ApplicationException
     {
     	System.out.println();
     	System.out.println("please enter the name of the new Delivery Area");
@@ -88,9 +115,9 @@ public class Start {
 		String date = buffer.readLine();
 
 		System.out.println("please enter departure time");
-		String timestring = buffer.readLine();
-		String[] arr = timestring.split(":");
-		LocalTime time = LocalTime.of(Integer.parseInt(arr[0]), Integer.parseInt(arr[1]),Integer.parseInt(arr[2]));
+		String time = buffer.readLine();
+		//String[] arr = timestring.split(":");
+		//LocalTime time = LocalTime.of(Integer.parseInt(arr[0]), Integer.parseInt(arr[1]),Integer.parseInt(arr[2]));
 		
 		System.out.println("please enter destiny");	
 		String destinyAdd = buffer.readLine();
@@ -118,7 +145,7 @@ public class Start {
     	
     }
     
-    private static void Departure() throws IOException, ParseException
+    private static void Departure() throws IOException, ParseException, ApplicationException
     {
     	System.out.println();
     	System.out.println("please enter Form number");
@@ -257,11 +284,14 @@ public class Start {
     
     }
     
-    private static void AddSite() throws IOException
+    private static void AddSite() throws IOException, ApplicationException
     {
     	System.out.println("would you like to add a Supplier or a Shop? for Suplier enter Y. for Shop enter N");
     	String name = buffer.readLine();
-    	boolean isSupplier = name == "Y";
+    	boolean isSupplie = name == "Y";
+    	int isSupplier = 1;
+    	if(isSupplie)
+    		isSupplier = 0;
     	System.out.println("please enter the site Address");
     	String address = buffer.readLine();
     	System.out.println("please enter phone number");
@@ -270,12 +300,23 @@ public class Start {
     	String contact = buffer.readLine();
     	System.out.println("would you like to add a Delivery Area? Y/N");
     	List<String> areas = new ArrayList<>();
-    	while(buffer.readLine() == "Y")
+    	while(buffer.readLine().equals("Y"))
     	{
     		System.out.println("please enter the Area name");
     		areas.add(buffer.readLine());
     		System.out.println("would you like to enter another Delivery Area? Y/N");
     	}
     	DoThinks.addSite(address, phone, contact, areas, isSupplier);
+    }
+    
+    private static void AddLicense() throws IOException, ApplicationException
+    {
+    	System.out.println("please enter Driver ID");
+    	int ID = Integer.parseInt(buffer.readLine());
+    	
+    	System.out.println("please enter the Licnese");
+    	String Licnese = buffer.readLine();
+    	
+    	DoThinks.addLicense(ID, Licnese);
     }
 }

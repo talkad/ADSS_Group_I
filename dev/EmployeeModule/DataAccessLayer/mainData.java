@@ -1,6 +1,7 @@
 package EmployeeModule.DataAccessLayer;
 
 import EmployeeModule.Pair;
+import EmployeeModule.BusinessLayer.Employee;
 
 import java.sql.*;
 import java.util.List;
@@ -30,14 +31,14 @@ public class mainData {
     protected Connection connect() {
         Connection conn = null;
         try {
-        // db parameters
-        String url = "jdbc:sqlite:Employees.db";
-        // create a connection to the database
-        conn = DriverManager.getConnection(url);
+            // db parameters
+            String url = "jdbc:sqlite:Employees.db";
+            // create a connection to the database
+            conn = DriverManager.getConnection(url);
             //System.out.println("Connection to SQLite has been established.");
         } catch (SQLException e) {
-                System.err.println(e.getMessage());
-            } /*finally {
+            System.err.println(e.getMessage());
+        } /*finally {
                 try {
                     if (conn != null) {
                         conn.close();
@@ -125,5 +126,10 @@ public class mainData {
 
     public boolean isFree(int id, int day, int period) {
         return freeTimeMapperInstance.isFree(id, day, period);
+    }
+
+    public Employee GetEmployee(int id)
+    {
+        return employeeMapperInstance.getEmployee(id).getEmployee();
     }
 }

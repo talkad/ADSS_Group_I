@@ -70,7 +70,7 @@ public class employeeTest {
     }
 
     @Before
-    public void InitiateEmployees(){
+    public void InitiateEmployees() throws ApplicationException{
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         try {
             out = new java.io.ByteArrayOutputStream();
