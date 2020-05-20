@@ -70,7 +70,8 @@ public class SupplierManager {
     }
 
     public static boolean deleteContact (int companyId, String contactName){
-        return _suppliers.get(companyId).removeContact(contactName);
+        if(!_suppliers.get(companyId).removeContact(contactName)) return false;
+        return SupplierMapper.getInstance().deleteContact(companyId, contactName).isSuccessful();
     }
 
 
@@ -83,9 +84,16 @@ public class SupplierManager {
         double cheapestDiscount = price;
         double tempDiscount;
         for (SupplierCard supplier: SupplierMapper.getInstance().getAll().values()){
+
+
+
             Arrangement arr = ArrangementMapper.getInstance().getArrangement(supplier.getCompanyId());
-            if (arr != null && arr.getItems().containsKey(itemID))
+            if (arr != null && !arr.getItems().containsKey(itemID))
                 continue;
+            else if(cheapestSup == -1)
+            {
+                cheapestSup = supplier.getCompanyId();
+            }
             else if(!quantityAgreement || ArrangementMapper.getInstance().getQuantity(supplier.getCompanyId()) != null){
                 Map<Integer,Order> map = OrderMapper.getInstance().getOrders(supplier.getCompanyId());
                 for (Order order: map.values()){
@@ -105,6 +113,7 @@ public class SupplierManager {
                             continue;
                         }
                         else{
+                            cheapestSup = supplier.getCompanyId();
                             continue;
                         }
                         if (tempDiscount < discount){
@@ -115,6 +124,9 @@ public class SupplierManager {
                         }
                     }
                 }
+            }
+            else{
+                cheapestSup = supplier.getCompanyId();
             }
         }
         if (orderID != -1 && supplierID != -1){
@@ -160,7 +172,7 @@ public class SupplierManager {
         if(order == null)
             return null;
 
-        if (order.getStatus() != "pending" || !order.getOrderDate().isEqual(LocalDate.now()))
+        if (!order.getStatus().equals("Pending") || order.getOrderDate().isAfter(LocalDate.now()))
             return null;
         else
             return order.getItemList();

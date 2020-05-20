@@ -277,7 +277,7 @@ public class SupplierMapper {
         return result;
     }
 
-    public Result deleteContact(int companyId, ContactPerson person){
+    public Result deleteContact(int companyId, String personName){
         Result result = new Result();
         int numRowsDeleted;
         String deleteCommand = "DELETE FROM ContactPerson WHERE companyId = ? AND name = ?";
@@ -286,7 +286,7 @@ public class SupplierMapper {
         try {
             PreparedStatement statement = conn.prepareStatement(deleteCommand);
             statement.setInt(1, companyId);
-            statement.setString(2, person.getName());
+            statement.setString(2, personName);
 
             numRowsDeleted = statement.executeUpdate();
 

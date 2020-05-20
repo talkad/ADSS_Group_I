@@ -1,6 +1,7 @@
 package DAL_Connector;
 
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -31,10 +32,13 @@ public class DatabaseManager {
      */
     public void connect() {
         try {
+            File file = new File(".");
             // db parameters
-            String url = "jdbc:sqlite:Storage.db";
+            //String url = "jdbc:sqlite::resource:Storage.db";
             // create a connection to the database
-            conn = DriverManager.getConnection(url);
+            //System.out.println(System.getProperty("user.dir")+"/Storage.db");
+            //conn = DriverManager.getConnection(url);
+            DriverManager.getConnection("jdbc:sqlite:"+System.getProperty("user.dir")+"/Storage.db");
         } catch (SQLException  e) {
             System.err.println(e.getMessage());
         }
