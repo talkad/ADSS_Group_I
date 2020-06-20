@@ -454,7 +454,7 @@ public class Inventory {
      */
     public String getCategoriesReport(List<List<String>> categories, int storeID){
         //getting all the products from the db
-        List<Product> productsList = productMapper.getAll();
+        List<Product> productsList = productMapper.getAll(storeID);
 
 
         String categoriesReport = "Categories Report:\n";

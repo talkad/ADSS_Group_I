@@ -1,6 +1,6 @@
 package InventoryModule.DataAccessLayer;
 
-import DAL_Connector.DatabaseManager;
+import Interface.DAL_Connector.DatabaseManager;
 import InventoryModule.Business.Item;
 import InventoryModule.Business.Product;
 import InventoryModule.Business.Result;
@@ -43,7 +43,7 @@ public class ProductMapper {
 
             // loop through the result set
             while (rs.next()) {
-                Product product = new Product(rs.getInt("id"), rs.getString("name"), rs.getString("manufacturer"),
+                Product product = new Product(rs.getInt("id"),rs.getInt("storeID"), rs.getString("name"), rs.getString("manufacturer"),
                         rs.getInt("minCapacity"), rs.getInt("buyingPrice"), rs.getInt("sellingPrice"),
                         rs.getDouble("weight"), rs.getInt("inventoryCapacity"), rs.getInt("storeCapacity"),
                         CategoryMapper.getInstance().getCategories(rs.getInt("id")),
@@ -68,8 +68,8 @@ public class ProductMapper {
         int numRowsInserted;
 
         String insertCommand = "INSERT INTO Product(id, name, manufacturer, minCapacity, buyingPrice, sellingPrice, " +
-                "weight, inventoryCapacity, storeCapacity)" +
-                "VALUES(?,?,?,?,?,?,?,?,?)";
+                "weight, inventoryCapacity, storeCapacity, storeID)" +
+                "VALUES(?,?,?,?,?,?,?,?,?,?)";
 
         try {
             PreparedStatement statement = conn.prepareStatement(insertCommand);
@@ -82,6 +82,7 @@ public class ProductMapper {
             statement.setDouble(7, product.getWeight());
             statement.setInt(8, product.getInventoryCapacity());
             statement.setInt(9, product.getStoreCapacity());
+            statement.setInt(10, product.getStoreID());
             numRowsInserted = statement.executeUpdate();
 
 
@@ -119,7 +120,7 @@ public class ProductMapper {
         Result result = new Result();
         int numRowsUpdated;
         String updateCommand = "UPDATE Product SET minCapacity = ?, buyingPrice = ?, sellingPrice = ?, weight = ?," +
-                "inventoryCapacity = ?, storeCapacity = ? WHERE id = ?";
+                "inventoryCapacity = ?, storeCapacity = ?, storeID = ? WHERE id = ?";
 
         try {
             PreparedStatement statement = conn.prepareStatement(updateCommand);
@@ -129,7 +130,8 @@ public class ProductMapper {
             statement.setDouble(4, product.getWeight());
             statement.setInt(5, product.getInventoryCapacity());
             statement.setInt(6, product.getStoreCapacity());
-            statement.setInt(7, product.getId());
+            statement.setInt(7, product.getStoreID());
+            statement.setInt(8, product.getId());
 
             numRowsUpdated = statement.executeUpdate();
 
@@ -193,7 +195,7 @@ public class ProductMapper {
      * @param productID the id of the product
      * @return product with id {@param productID}. or null if no such entry exists
      */
-    public Product getProduct(int productID){
+    public Product getProduct(int productID, int storeID){
 
         Product product = null;
 
@@ -203,7 +205,10 @@ public class ProductMapper {
         if(identityProductMap.containsKey(productID))
         {
             product = identityProductMap.get(productID);
-            if(product.getItems() == null) {
+            if(product.getStoreID() != storeID) {
+                return null;
+            }
+            else if(product.getItems() == null) {
                 product.setItems(ItemMapper.getInstance().getItems(productID));
             }
         }
@@ -217,13 +222,14 @@ public class ProductMapper {
      * @param manufacturer is the product manufacturer name
      * @return whether there's already a product with the same name and manufacturer name
      */
-    public boolean doesProductExist(String name, String manufacturer){
+    public boolean doesProductExist(String name, String manufacturer, int storeID){
 
         if(identityProductMap.size() == 0)
             initProductMap();
 
         for(Product product: identityProductMap.values()){
-            if(product.getName().equals(name) && product.getManufacturer().equals(manufacturer))
+            if(product.getName().equals(name) && product.getManufacturer().equals(manufacturer)
+                    && product.getStoreID() == storeID)
                 return true;
         }
 
@@ -231,12 +237,12 @@ public class ProductMapper {
     }
 
 
-
     /**
      *
-     * @return all of the records in a List
+     * @param storeID is the store id
+     * @return  all products with the given storeID
      */
-    public List<Product> getAll(){
+    public List<Product> getAll(int storeID){
 
         if(identityProductMap.size() == 0)
             initProductMap();
@@ -247,7 +253,7 @@ public class ProductMapper {
         while (it.hasNext()) {
             Map.Entry<Integer, Product> e = it.next();
             int id = e.getKey();
-            list.add(getProduct(id));
+            list.add(getProduct(id, storeID));
         }
 
         return list;

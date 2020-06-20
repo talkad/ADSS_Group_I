@@ -1,7 +1,7 @@
 package InventoryModule.DataAccessLayer;
 
 
-import DAL_Connector.DatabaseManager;
+import Interface.DAL_Connector.DatabaseManager;
 import InventoryModule.Business.Item;
 import InventoryModule.Business.Pair;
 import InventoryModule.Business.Result;
