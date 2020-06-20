@@ -1,6 +1,8 @@
 package InventoryModule.PresentationLayer;
 
 import InventoryModule.Business.Inventory;
+import InventoryModule.Business.Item;
+import InventoryModule.Business.Product;
 import InventoryModule.Business.Result;
 import InventoryModule.DTO.ItemDTO;
 import InventoryModule.DTO.ProductDTO;
@@ -525,4 +527,13 @@ public class Controller{
         else
             System.out.println("The order cannot be loaded yet");
     }
+
+    public boolean confirmItem(Product product, Item item) {
+        System.out.println("The order arrived. Item details:");
+        System.out.printf("product name: %s\nadd to store: %d\nitem expiration date: %s\n",
+                product.getName(), product.getStoreID(), item.getExpiryDate().toString());
+        System.out.print("Would you like to accept this item?[y/n]");
+
+    }
+
 }

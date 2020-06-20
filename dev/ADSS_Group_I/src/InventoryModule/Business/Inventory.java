@@ -5,6 +5,7 @@ import InventoryModule.DTO.ItemDTO;
 import InventoryModule.DTO.ProductDTO;
 import InventoryModule.DataAccessLayer.ItemMapper;
 import InventoryModule.DataAccessLayer.ProductMapper;
+import InventoryModule.PresentationLayer.Controller;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +17,7 @@ public class Inventory {
 
     private ProductMapper productMapper = ProductMapper.getInstance();
     private ItemMapper itemMapper = ItemMapper.getInstance();
+    private Controller controller = Controller.getInstance();
 
     public static Inventory instance = null;
 
@@ -252,8 +254,9 @@ public class Inventory {
 
     //TODO: change this to work with the storeID
     public void loadInventory(int orderID, Map<Integer, Integer> toLoad, int storeID){
+        boolean confirmItem;
         for(int productId: toLoad.keySet()){
-            Product product = productMapper.getProduct(productId);
+            Product product = productMapper.getProduct(productId, storeID);
 
             if(product != null){
 
@@ -261,9 +264,12 @@ public class Inventory {
 
                 Item toAdd = new Item(orderID, toLoad.get(productId), 0, getDate2WeeksFromNow(date), "InventoryModule");
 
-                product.addItem(toAdd);
+                confirmItem = controller.confirmItem(product, toAdd);
 
-                itemMapper.addMapper(toAdd, productId);
+                if(confirmItem) {
+                    product.addItem(toAdd);
+                    itemMapper.addMapper(toAdd, productId);
+                }
             }
         }
     }
