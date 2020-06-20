@@ -18,6 +18,14 @@ public class InventoryMenu {
         return instance;
     }
 
+    private void displayMenu(String[] options){
+        System.out.println("\nMenu- choose an index:");
+        for(int i=0; i<options.length; i++)
+            System.out.println((i+1) +". "+ options[i]);
+
+        System.out.print("Selection: ");
+    }
+
     public void display(Scanner in){
         String[] mainMenu = new String[] {"Add to Inventory", "Remove from Inventory", "Update Inventory",
                 "Inventory reports", "Orders menu", "Return to main menu"};
@@ -26,60 +34,116 @@ public class InventoryMenu {
         String[] removeMenu = new String[] {"Remove product", "Remove item"};
         String[] updateMenu = new String[] {"Update min quantity", "Update selling price", "Update buying price",
         "Update item status", "Update item location"};
-        String[] reports = new String[] {"Get categories reports", "Get defects report"};
-        String[] orders = new String[] {"Set periodic order", "Set periodic order date", "Confirm order"};
+        String[] reportsMenu = new String[] {"Get categories reports", "Get defects report"};
+        String[] ordersMenu = new String[] {"Set periodic order", "Set periodic order date", "Confirm order"};
 
         boolean shouldTerminate=false;
         int input;
 
         while(!shouldTerminate){
-            Menu.displayMenu(options);
+            Menu.displayMenu(mainMenu);
             input = Menu.getInputIndex(in);
+            System.out.println();
 
             switch (input) {
                 case 1:
-                    Controller.getInstance().addProduct(in);
+                    displayMenu(addMenu);
+                    input = Menu.getInputIndex(in);
+                    System.out.println();
+
+                    switch (input) {
+                        case 1:
+                            Controller.getInstance().addProduct(in);
+                            break;
+                        case 2:
+                            Controller.getInstance().addItem(in);
+                            break;
+                        default:
+                            System.out.println ( "Unrecognized option" );
+                            break;
+                    }
                     break;
                 case 2:
-                    Controller.getInstance().removeProduct(in);
+                    displayMenu(removeMenu);
+                    input = Menu.getInputIndex(in);
+                    System.out.println();
+
+                    switch (input) {
+                        case 1:
+                            Controller.getInstance().removeProduct(in);
+                            break;
+                        case 2:
+                            Controller.getInstance().removeItem(in);
+                            break;
+                        default:
+                            System.out.println ( "Unrecognized option" );
+                            break;
+                    }
                     break;
                 case 3:
-                    Controller.getInstance().addItem(in);
+                    displayMenu(updateMenu);
+                    input = Menu.getInputIndex(in);
+                    System.out.println();
+
+                    switch (input) {
+                        case 1:
+                            Controller.getInstance().updateMinQuantity(in);
+                            break;
+                        case 2:
+                            Controller.getInstance().updateSellingPrice(in);
+                            break;
+                        case 3:
+                            Controller.getInstance().updateBuyingPrice(in);
+                            break;
+                        case 4:
+                            Controller.getInstance().updateItemStatus(in);
+                            break;
+                        case 5:
+                            Controller.getInstance().updateItemLocation(in);
+                            break;
+                        default:
+                            System.out.println ( "Unrecognized option" );
+                            break;
+                    }
                     break;
                 case 4:
-                    Controller.getInstance().removeItem(in);
+                    displayMenu(reportsMenu);
+                    input = Menu.getInputIndex(in);
+                    System.out.println();
+
+                    switch (input) {
+                        case 1:
+                            Controller.getInstance().getCategoriesReport(in);
+                            break;
+                        case 2:
+                            Controller.getInstance().getDefectsReports(in);
+                            break;
+                        default:
+                            System.out.println ( "Unrecognized option" );
+                            break;
+                    }
                     break;
                 case 5:
-                    Controller.getInstance().updateMinQuantity(in);
+                    displayMenu(ordersMenu);
+                    input = Menu.getInputIndex(in);
+                    System.out.println();
+
+                    switch (input) {
+                        case 1:
+                            Controller.getInstance().setPeriodicOrder(in);
+                            break;
+                        case 2:
+                            Controller.getInstance().setPeriodicOrderDate(in);
+                            break;
+                        case 3:
+                            Controller.getInstance().loadInventory(in);
+                            break;
+                        default:
+                            System.out.println ( "Unrecognized option" );
+                            break;
+                    }
                     break;
                 case 6:
-                    Controller.getInstance().updateSellingPrice(in);
-                    break;
-                case 7:
-                    Controller.getInstance().updateBuyingPrice(in);
-                    break;
-                case 8:
-                    Controller.getInstance().updateItemStatus(in);
-                    break;
-                case 9:
-                    Controller.getInstance().updateItemLocation(in);
-                    break;
-                case 10:
-                    Controller.getInstance().getCategoriesReport(in);
-                    break;
-                case 11:
-                    Controller.getInstance().getDefectsReports(in);
-                    break;
-                case 12:
-                    Controller.getInstance().setPeriodicOrder(in);
-                    break;
-                case 13:
-                    Controller.getInstance().setPeriodicOrderDate(in);
-                    break;
-                case 14:
-                    Controller.getInstance().loadInventory(in);
-                    break;
-                case 15:
                     shouldTerminate=true;
                     break;
                 default:
@@ -87,6 +151,5 @@ public class InventoryMenu {
                     break;
             }
         }
-
     }
 }
