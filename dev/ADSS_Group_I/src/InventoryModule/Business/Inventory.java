@@ -39,24 +39,24 @@ public class Inventory {
      * @param productDTO the product's information to be added
      * @return a Result object with information about the result of the operation
      */
-    public Result addProduct(ProductDTO productDTO){ //TODO: change this to work with the storeID
+    public Result addProduct(ProductDTO productDTO){
         Result result = new Result();
         Product newProduct = new Product(productDTO);
 
         int getNewId = productMapper.getID();
 
-        if(productMapper.getProduct(newProduct.getId()) == null) { // checking if there's already a product with the same id
-            if (!productMapper.doesProductExist(newProduct.getName(), newProduct.getManufacturer())) {//checks if the product already exists
+        if(productMapper.getProduct(newProduct.getId(), productDTO.getStoreID()) == null) { // checking if there's already a product with the same id
+            if (!productMapper.doesProductExist(newProduct.getName(), newProduct.getManufacturer(), newProduct.getStoreID())) {//checks if the product already exists
                 newProduct.setId(getNewId);
                 productMapper.addMapper(newProduct);
                 //productsList.add(newProduct);
                 result.successful();
             } else {
-                result.failure("Product already exists in the inventory");
+                result.failure("Product already exists in the store's inventory");
             }
         }
         else{
-            result.failure("There's already a product with this id. Id must be unique");
+            result.failure("There's already a product with this id in the selected store. Id must be unique");
         }
 
         return result;
@@ -67,10 +67,10 @@ public class Inventory {
      * @param productID the id of the product to remove
      * @return a Result object with information about the result of the operation 
      */
-    public Result removeProduct(int productID, int storeID){ //TODO: change this to work with the storeID
+    public Result removeProduct(int productID, int storeID){
         Result result = new Result();
     
-        Product toRemove = productMapper.getProduct(productID);
+        Product toRemove = productMapper.getProduct(productID, storeID);
 
 
         if(toRemove != null){ //if toRemove is null then the product does not exist in the inventory
@@ -84,7 +84,7 @@ public class Inventory {
             result.successful();
         }
         else{
-            result.failure("The product you are trying to remove does not exist");
+            result.failure("The product you are trying to remove does not exist in the selected store");
         }
 
         return result;
@@ -113,10 +113,10 @@ public class Inventory {
      * @param itemDTO the item to add
      * @return a Result object with information about the result of the operation
      */
-    public Result addItem(int productID, ItemDTO itemDTO, int storeID){ //TODO: change this to work with the storeID
+    public Result addItem(int productID, ItemDTO itemDTO, int storeID){
         Result result = new Result();
 
-        Product productToAddTo = productMapper.getProduct(productID);
+        Product productToAddTo = productMapper.getProduct(productID, storeID);
 
         if(productToAddTo != null){// if productToAddTo is null then there is no such product in the inventory
             Item itemToAdd = new Item(itemDTO);
@@ -130,7 +130,7 @@ public class Inventory {
             result.successful();
         }
         else{
-            result.failure("The item you are trying to add does not have a corresponding product in the inventory.");
+            result.failure("The item you are trying to add does not have a corresponding product in the selected store's inventory.");
         }
 
         return result;
@@ -142,10 +142,10 @@ public class Inventory {
      * @param itemID the order ID of the item
      * @return a Result object with information about the result of the operation
      */
-    public Result removeOneItem(int productID, int itemID, int storeID){ //TODO: change this to work with the storeID
+    public Result removeOneItem(int productID, int itemID, int storeID){
         Result result = new Result();
 
-        Product productToRemoveFrom = productMapper.getProduct(productID);
+        Product productToRemoveFrom = productMapper.getProduct(productID, storeID);
 
         if(productToRemoveFrom != null){
             Item itemToRemove = productToRemoveFrom.getItem(itemID);
@@ -193,14 +193,10 @@ public class Inventory {
     public String sendLackOrder(Product product, int storeID){
         int orderId;
         if((orderId = Connector.getInstance().sendLackOfItemOrder(product.getId(),
-                product.getMinCapacity()*2, product.getBuyingPrice())) != -1){
+                product.getMinCapacity()*2, product.getBuyingPrice(), storeID)) != -1){
 
-            LocalDate date = LocalDate.now();
-
-            product.addItem(new Item(orderId, product.getMinCapacity()*2, 0, getDate2WeeksFromNow(date), "InventoryModule"));
-
-            return "Minimum quantity for product " + product.getName() + " by " + product.getManufacturer() + " reached!" +
-                    "Sent an order to fill the need!";
+            return "Minimum quantity for product " + product.getName() + " by " + product.getManufacturer() +
+                    " reached is store " + storeID + "! Sent an order to fill the need!";
         }
 
         return "Minimum quantity for product " + product.getName() + " by " + product.getManufacturer() + " reached!" +
@@ -211,10 +207,9 @@ public class Inventory {
         return date.plusDays(14);
     }
 
-    //TODO: change this to work with the storeID
     public Result setPeriodicOrder(int orderId, Map<Integer, Integer> toSet, int status, int storeID){
         Result result = new Result();
-        if(Connector.getInstance().setPeriodicOrder(orderId, toSet, status)){
+        if(Connector.getInstance().setPeriodicOrder(orderId, toSet, status, storeID)){
             result.successful();
         }
         else{
@@ -224,11 +219,10 @@ public class Inventory {
         return result;
     }
 
-    //TODO: change this to work with the storeID
     public Result setPeriodicOrderDate(int orderId, LocalDate newDate, int storeID){
         Result result = new Result();
 
-        if(Connector.getInstance().changePeriodicOrderDate(orderId, newDate)){
+        if(Connector.getInstance().changePeriodicOrderDate(orderId, newDate, storeID)){
             result.successful();
         }
         else{
@@ -238,7 +232,6 @@ public class Inventory {
         return result;
     }
 
-    //TODO: change this to work with the storeID
     public boolean tryLoadInventory(int orderID, int storeID){
         Map<Integer,Integer> order;
 
@@ -252,7 +245,6 @@ public class Inventory {
        return false;
     }
 
-    //TODO: change this to work with the storeID
     public void loadInventory(int orderID, Map<Integer, Integer> toLoad, int storeID){
         boolean confirmItem;
         for(int productId: toLoad.keySet()){
@@ -280,11 +272,10 @@ public class Inventory {
      * @param newMinQuantity the new minimum quantity to update to
      * @return a Result object with information about the result of the operation
      */
-    //TODO: change this to work with the storeID
     public Result updateMinQuantity(int productID, int newMinQuantity, int storeID){
         Result result = new Result();
 
-        Product product = productMapper.getProduct(productID);
+        Product product = productMapper.getProduct(productID, storeID);
 
         if(product != null){
             product.setMinCapacity(newMinQuantity);
@@ -307,11 +298,10 @@ public class Inventory {
      * @param newSellingPrice the new selling price to update to
      * @return a Result object with information about the result of the operation
      */
-    //TODO: change this to work with the storeID
     public Result updateSellingPrice(int productID, int newSellingPrice, int storeID){
         Result result = new Result();
 
-        Product product = productMapper.getProduct(productID);
+        Product product = productMapper.getProduct(productID, storeID);
 
         if(product != null){
             product.setSellingPrice(newSellingPrice);
@@ -333,11 +323,10 @@ public class Inventory {
      * @param newBuyingPrice the new buying price to update to
      * @return a Result object with information about the result of the operation
      */
-    //TODO: change this to work with the storeID
     public Result updateBuyingPrice(int productID, int newBuyingPrice, int storeID){
         Result result = new Result();
 
-        Product product = productMapper.getProduct(productID);
+        Product product = productMapper.getProduct(productID, storeID);
 
         if(product != null){
             product.setBuyingPrice(newBuyingPrice);
@@ -360,11 +349,10 @@ public class Inventory {
      * @param numOfDefects the amount of defected items
      * @return a Result object with information about the result of the operation
      */
-    //TODO: change this to work with the storeID
     public Result setDefect(int productID, int itemId, int numOfDefects, int storeID){
         Result result = new Result();
 
-        Product productToSetDefectFrom = productMapper.getProduct(productID);
+        Product productToSetDefectFrom = productMapper.getProduct(productID, storeID);
 
         if(productToSetDefectFrom != null) { // if productToSetDefectFrom is null then it means he does not exist
 
@@ -400,11 +388,10 @@ public class Inventory {
      * @param location the new location to set
      * @return a Result object with information about the result of the operation
      */
-    //TODO: change this to work with the storeID
     public Result updateItemLocation(int productID, int itemId, String location, int storeID){
         Result result = new Result();
 
-        Product productToSetLocationFrom = productMapper.getProduct(productID);
+        Product productToSetLocationFrom = productMapper.getProduct(productID, storeID);
 
         if(productToSetLocationFrom != null) {// if productToSetLocationFrom is null then it means he does not exist
             Item itemToSetNewLocationTo = productToSetLocationFrom.getItem(itemId);
@@ -447,12 +434,6 @@ public class Inventory {
         return result;
     }
 
-    //TODO: change this to work with the storeID
-    public void orderArrived(Map<Integer,Integer> goods){
-        //TODO: this
-    }
-
-    //TODO: make the reports work with the new storeID field
     /**
      * creates an inventory report according to given catagories
      * @param categories the catagories to include in the report 
@@ -485,7 +466,7 @@ public class Inventory {
         }
 
         if(categoriesReport.compareTo("Categories Report:\n") == 0){
-            categoriesReport = "There are no products in the requested catagories";
+            categoriesReport = "There are no products in the requested categories";
         }
         return categoriesReport;
     }
@@ -496,7 +477,7 @@ public class Inventory {
      */
     public String getDefectsReports(int storeID){
         //getting all the products from the db
-        List<Product> productsList = productMapper.getAll();
+        List<Product> productsList = productMapper.getAll(storeID);
 
         String defectsReport = "Defects or Expired Report:\n\n";
 
