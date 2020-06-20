@@ -82,7 +82,7 @@ public class FreeTimeMapper {
         freeTimeMap.put(rs.getInt("employeeId"), freeTime);
     }
 
-    public void writeUnFreeTime(int id, int period, int day) {
+    public void writeUpdatedFreeTime(int id, int period, int day, boolean available) {
         String time = "day";
         if(period == 1)
             time = "night";
@@ -91,7 +91,7 @@ public class FreeTimeMapper {
         try (Connection conn = dataInstance.connect();
              PreparedStatement ps = conn.prepareStatement(UN_FREE_TIME)) {
             ps.executeUpdate();
-            freeTimeMap.get(id)[period][day] = false;
+            freeTimeMap.get(id)[period][day] = available;
         } catch (SQLException e) {
             e.printStackTrace();
         }

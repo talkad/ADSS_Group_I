@@ -1,4 +1,4 @@
-package DataAccessLayer;
+package InventoryModule.DataAccessLayer;
 
 import BusinessLayer.Result;
 import DAL_Connector.DatabaseManager;

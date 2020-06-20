@@ -1,4 +1,4 @@
-package Menu;
+package Interface.Menu;
 
 import DAL_Connector.DatabaseManager;
 import Presentation.MenuSuppliers;
@@ -41,7 +41,7 @@ public class Menu {
     public static void main(String[] args){
         Scanner in = new Scanner(System.in);
 
-        String[] options=new String[]
+        String[] options = new String[]
                 {"Inventory menu", "Suppliers menu", "exit"};
 
         boolean shouldTerminate=false;

@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Service {
-    public static int shiftCounter = 1;
+    public static int shiftCounter = 1; //todo problem
 
     public static void main(String [] args) throws ApplicationException {
         Service service = new Service();
@@ -92,8 +92,98 @@ public class Service {
                         System.out.println("Id must be an integer");
                     }
                     break;
+                case("11"):
+                    flag = true;
+                    service.editShift(scanner, mainBL);
+                    break;
             }
         }
+    }
+
+    private void editShift(Scanner scanner, mainBL mainBL) {
+        try {
+            System.out.print("Please insert the shift's date in the format <dd/MM/yyyy> " +
+                    "followed by a space and time of the shift (1 for day and 2 for night):\n");
+            String shiftTime = scanner.nextLine();
+                if (mainBL.searchShift(shiftTime, true)) {
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                    try {
+                        int time = Integer.parseInt(shiftTime.split(" ")[1]);
+                        Date shiftDate = formatter.parse(shiftTime.split(" ")[0]);
+                        Date currDate = new Date();
+                        if (currDate.before(shiftDate)) {
+                            Calendar c = Calendar.getInstance();
+                            c.setTime(shiftDate);
+                            int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+                            for (int id: mainBL.getEmployeesInShift(shiftTime)) {
+                                mainBL.writeUpdatedFreeTime(id, time, dayOfWeek - 1, true);
+                            }
+                            ILShift shift = generateShift(scanner, shiftTime, mainBL);
+                            if (shift != null) {
+                                System.out.println("Successfully edited the shift's details");
+                                createShift(mainBL, shift, true);
+                            }
+                        }
+                        else{
+                            System.out.println("shift already took place or is taking place tomorrow, and cannot be edited");
+                        }
+                    }catch (ParseException e) {
+                        System.out.println("Invalid date format");
+                    }
+                }
+        } catch (ApplicationException e){
+            System.out.println(e.getId());
+        }
+    }
+
+    private ILShift generateShift(Scanner scanner, String shiftTime, mainBL mainBL) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            Date shiftDate = formatter.parse(shiftTime.split(" ")[0]);
+            System.out.println("Insert shift's branch number: ");
+            int branch = isNumeric(scanner.nextLine());
+            if (branch != -1) {
+                String role;
+                int amount;
+                System.out.println("Insert shift's required role and after that the role's amount, " +
+                        "to stop inserting roles type 'stop'");
+                String inRole = "Insert role: ";
+                String inAmount = "Insert amount: ";
+                List<String> shiftRolesList = new LinkedList<>();
+                shiftRolesList.add("shift manager");
+                while (true) {
+                    System.out.print(inRole);
+                    role = scanner.nextLine();
+                    if (role.equals("stop"))
+                        break;
+                    else {
+                        System.out.print(inAmount);
+                        amount = isNumeric(scanner.nextLine());
+                        while (amount == -1) {
+                            System.out.println("Invalid input, please insert a number: ");
+                            amount = isNumeric(scanner.nextLine());
+                        }
+                        for (int i = 0; i < amount; i++) {
+                            shiftRolesList.add(role);
+                            if (role.equals("driver"))
+                                shiftRolesList.add("storekeeper");
+                        }
+                    }
+                }
+                ILShift shift = new ILShift(shiftDate, Integer.parseInt(shiftTime.split(" ")[1]), branch, shiftCounter, shiftRolesList, new LinkedList<>());
+                List<Pair<Integer, String>> addEmployees = addEmployeesToShift(scanner, shift.getRoles(), shift.getDate(), shift.getTime(), mainBL);
+                if (addEmployees != null) {
+                    shift.setEmployees(addEmployees);
+                    return shift;
+                }
+                else return null;
+            } else {
+                System.out.println("Branch id must be an integer");
+            }
+        } catch (ParseException e) {
+            System.out.println("Invalid date format");
+        }
+        return null;
     }
 
     private void removeEmployee(int id, mainBL mainBL) {
@@ -101,6 +191,10 @@ public class Service {
             mainBL.removeEmployee(id);
             System.out.println("Successfully removed employee");
         } catch (ApplicationException e){ System.out.println(e.getId());}
+    }
+
+    private void removeShift(String shiftTime, mainBL mainBL){
+        mainBL.removeShift(shiftTime);
     }
 
     private void displayAllEmployees(EmployeeModule.BusinessLayer.mainBL mainBL) {
@@ -203,44 +297,10 @@ public class Service {
                     if (shiftTime != -1) {
                         if ((shiftTime == 1) || (shiftTime == 2)) {
                             if (!mainBL.searchShift(shiftDateStr + " " + shiftTime, false)) {
-                                System.out.println("Insert shift's branch number: ");
-                                int branch = isNumeric(scanner.nextLine());
-                                if (branch != -1) {
-                                    String role;
-                                    int amount;
-                                    System.out.println("Insert shift's required role and after that the role's amount, " +
-                                            "to stop inserting roles type 'stop'");
-                                    String inRole = "Insert role: ";
-                                    String inAmount = "Insert amount: ";
-                                    List<String> shiftRolesList = new LinkedList<>();
-                                    shiftRolesList.add("shift manager");
-                                    while (true) {
-                                        System.out.print(inRole);
-                                        role = scanner.nextLine();
-                                        if (role.equals("stop"))
-                                            break;
-                                        else {
-                                            System.out.print(inAmount);
-                                            amount = isNumeric(scanner.nextLine());
-                                            while (amount == -1) {
-                                                System.out.println("Invalid input, please insert a number: ");
-                                                amount = isNumeric(scanner.nextLine());
-                                            }
-                                            for (int i = 0; i < amount; i++) {
-                                                shiftRolesList.add(role);
-                                                if (role.equals("driver"))
-                                                    shiftRolesList.add("storekeeper");
-                                            }
-                                        }
-                                    }
-                                    ILShift shift = new ILShift(shiftDate, shiftTime, branch, shiftCounter, shiftRolesList, new LinkedList<>());
-                                    List<Pair<Integer, String>> addEmployees = addEmployeesToShift(scanner, shift.getRoles(), shift.getDate(), shift.getTime(), mainBL);
-                                    if (addEmployees != null) {
-                                        shift.setEmployees(addEmployees);
-                                        createShift(mainBL, shift);
-                                    }
-                                } else {
-                                    System.out.println("Branch id must be an integer");
+                                ILShift shift = generateShift(scanner, shiftDateStr, mainBL);
+                                if(shift != null) {
+                                    System.out.println("Successfully added the shift");
+                                    createShift(mainBL, shift, false);
                                 }
                             }
                         } else {
@@ -260,10 +320,9 @@ public class Service {
         }
     }
 
-    private void createShift(EmployeeModule.BusinessLayer.mainBL mainBL, ILShift shift){
-        mainBL.createShift(shift.getDate(), shift.getTime(), shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees());
+    private void createShift(EmployeeModule.BusinessLayer.mainBL mainBL, ILShift shift, boolean updateFlag){
+        mainBL.createShift(shift.getDate(), shift.getTime(), shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees(), updateFlag);
         shiftCounter++;
-        System.out.println("Successfully added the shift");
     }
 
     public void editFreeTime(Scanner scanner, int id, EmployeeModule.BusinessLayer.mainBL mainBL){
@@ -348,7 +407,7 @@ public class Service {
             }
             if (checkRoles.isEmpty()) {
                 for (Pair<Integer, String> p : shiftList) {
-                    mainBL.unFreeTime(p.getFirst(), time - 1, dayOfWeek - 1);
+                    mainBL.writeUpdatedFreeTime(p.getFirst(), time - 1, dayOfWeek - 1, false);
                 }
                 return shiftList;
             } else {
@@ -401,6 +460,18 @@ public class Service {
             System.out.println(e.getId());
         }
         return false;
+    }
+
+    public List<String> getDriversInShift (String shiftTime, EmployeeModule.BusinessLayer.mainBL mainBL){
+        List<String> driversIdList = null;
+        try {
+            if (mainBL.searchShift(shiftTime, true)) {
+                driversIdList = mainBL.getDriversInShift(shiftTime);
+            }
+        } catch (ApplicationException e){
+            System.out.println(e.getId());
+        }
+        return driversIdList;
     }
 
     private void dataLoad(EmployeeModule.BusinessLayer.mainBL mainBL) throws ApplicationException{
@@ -512,19 +583,19 @@ public class Service {
             ILShift ilShift1 = new ILShift(shift1, 1, 4, 1, reqRoles1, shift1Employees);
             ILShift ilShift2 = new ILShift(shift2, 2, 6, 2, reqRoles2, shift2Employees);
             ILShift ilShift3 = new ILShift(shift3, 1, 8, 3, reqRoles3, shift3Employees);
-            mainBL.createShift(ilShift1.getDate(), ilShift1.getTime(), ilShift1.getBranch(), ilShift1.getShiftId(), ilShift1.getRoles(), ilShift1.getEmployees());
-            mainBL.createShift(ilShift2.getDate(), ilShift2.getTime(), ilShift2.getBranch(), ilShift2.getShiftId(), ilShift2.getRoles(), ilShift2.getEmployees());
-            mainBL.createShift(ilShift3.getDate(), ilShift3.getTime(), ilShift3.getBranch(), ilShift3.getShiftId(), ilShift3.getRoles(), ilShift3.getEmployees());
-            mainBL.unFreeTime(1, 0, 0);
-            mainBL.unFreeTime(1, 0, 2);
-            mainBL.unFreeTime(3, 0, 0);
-            mainBL.unFreeTime(3, 0, 2);
-            mainBL.unFreeTime(5, 0, 0);
-            mainBL.unFreeTime(5, 0, 2);
-            mainBL.unFreeTime(6, 1, 1);
-            mainBL.unFreeTime(2, 1, 1);
-            mainBL.unFreeTime(8, 1, 1);
-            mainBL.unFreeTime(9, 0, 2);
+            mainBL.createShift(ilShift1.getDate(), ilShift1.getTime(), ilShift1.getBranch(), ilShift1.getShiftId(), ilShift1.getRoles(), ilShift1.getEmployees(), false);
+            mainBL.createShift(ilShift2.getDate(), ilShift2.getTime(), ilShift2.getBranch(), ilShift2.getShiftId(), ilShift2.getRoles(), ilShift2.getEmployees(), false);
+            mainBL.createShift(ilShift3.getDate(), ilShift3.getTime(), ilShift3.getBranch(), ilShift3.getShiftId(), ilShift3.getRoles(), ilShift3.getEmployees(), false);
+            mainBL.writeUpdatedFreeTime(1, 0, 0, false);
+            mainBL.writeUpdatedFreeTime(1, 0, 2, false);
+            mainBL.writeUpdatedFreeTime(3, 0, 0, false);
+            mainBL.writeUpdatedFreeTime(3, 0, 2, false);
+            mainBL.writeUpdatedFreeTime(5, 0, 0, false);
+            mainBL.writeUpdatedFreeTime(5, 0, 2, false);
+            mainBL.writeUpdatedFreeTime(6, 1, 1, false);
+            mainBL.writeUpdatedFreeTime(2, 1, 1, false);
+            mainBL.writeUpdatedFreeTime(8, 1, 1, false);
+            mainBL.writeUpdatedFreeTime(9, 0, 2, false);
             shiftCounter = shiftCounter + 3;
             System.out.println("Successfully loaded pre-made data");
         }catch (ParseException ignored){}

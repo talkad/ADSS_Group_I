@@ -1,6 +1,6 @@
-package Bussiness_Connector;
-
-import Buisness.SupplierManager;
+package Interface.Bussiness_Connector;
+SuppliersModule.Business.SupplierManager.java
+import SuppliersModule.Business.Interface.Bussiness_Connector.SupplierManager;
 import java.time.LocalDate;
 import java.util.Map;
 

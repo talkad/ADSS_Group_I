@@ -83,8 +83,8 @@ public class mainData {
         return shiftMapperInstance.searchShift(key);
     }
 
-    public void writeUnFreeTime(int id, int period, int day) {
-        freeTimeMapperInstance.writeUnFreeTime(id, period, day);
+    public void writeUpdatedFreeTime(int id, int period, int day, boolean available) {
+        freeTimeMapperInstance.writeUpdatedFreeTime(id, period, day, available);
     }
 
     public String getEmployee(int id) {
@@ -131,5 +131,17 @@ public class mainData {
     public Employee GetEmployee(int id)
     {
         return employeeMapperInstance.getEmployee(id).getEmployee();
+    }
+
+    public List<String> getDriversInShift(String shiftTime) {
+        return shiftMapperInstance.getDriversInShift(shiftTime);
+    }
+
+    public List<Integer> getEmployeesInShift(String shiftTime) {
+        return shiftMapperInstance.getEmployeesInShift(shiftTime);
+    }
+
+    public void removeShift(String shiftTime) {
+        shiftMapperInstance.removeShift(shiftTime);
     }
 }

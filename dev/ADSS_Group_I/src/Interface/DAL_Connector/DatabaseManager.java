@@ -1,4 +1,4 @@
-package DAL_Connector;
+package Interface.DAL_Connector;
 
 
 import java.io.File;
