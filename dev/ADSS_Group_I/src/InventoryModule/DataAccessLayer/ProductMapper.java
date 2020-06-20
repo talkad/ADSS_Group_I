@@ -1,9 +1,9 @@
-package DataAccessLayer;
+package InventoryModule.DataAccessLayer;
 
-import BusinessLayer.Item;
-import BusinessLayer.Product;
-import BusinessLayer.Result;
 import DAL_Connector.DatabaseManager;
+import InventoryModule.Business.Item;
+import InventoryModule.Business.Product;
+import InventoryModule.Business.Result;
 
 import java.sql.*;
 import java.util.*;

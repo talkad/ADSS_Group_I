@@ -18,7 +18,7 @@ public class InventoryMenu {
         return instance;
     }
 
-
+    //TODO: add the confirmDeliveryItem function
     public void display(Scanner in){
         String[] options=new String[]
                 {"Add a new product", "Remove a product", "Add a new item", "Remove an item",
@@ -86,8 +86,4 @@ public class InventoryMenu {
         }
 
     }
-
-
-
-
 }

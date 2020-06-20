@@ -1,13 +1,14 @@
 package InventoryModule.Business;
 
+import Bussiness_Connector.Connector;
 import InventoryModule.DTO.ItemDTO;
 import InventoryModule.DTO.ProductDTO;
-import DataAccessLayer.ItemMapper;
-import DataAccessLayer.ProductMapper;
+import InventoryModule.DataAccessLayer.ItemMapper;
+import InventoryModule.DataAccessLayer.ProductMapper;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-
 /**
  * a singleton class
  */
@@ -31,14 +32,12 @@ public class Inventory {
         return instance;
     }
 
-
-
     /**
      * adds a product to the inventory
      * @param productDTO the product's information to be added
      * @return a Result object with information about the result of the operation
      */
-    public Result addProduct(ProductDTO productDTO){
+    public Result addProduct(ProductDTO productDTO){ //TODO: change this to work with the storeID
         Result result = new Result();
         Product newProduct = new Product(productDTO);
 
@@ -66,7 +65,7 @@ public class Inventory {
      * @param productID the id of the product to remove
      * @return a Result object with information about the result of the operation 
      */
-    public Result removeProduct(int productID){
+    public Result removeProduct(int productID, int storeID){ //TODO: change this to work with the storeID
         Result result = new Result();
     
         Product toRemove = productMapper.getProduct(productID);
@@ -112,7 +111,7 @@ public class Inventory {
      * @param itemDTO the item to add
      * @return a Result object with information about the result of the operation
      */
-    public Result addItem(int productID, ItemDTO itemDTO){
+    public Result addItem(int productID, ItemDTO itemDTO, int storeID){ //TODO: change this to work with the storeID
         Result result = new Result();
 
         Product productToAddTo = productMapper.getProduct(productID);
@@ -141,7 +140,7 @@ public class Inventory {
      * @param itemID the order ID of the item
      * @return a Result object with information about the result of the operation
      */
-    public Result removeOneItem(int productID, int itemID){
+    public Result removeOneItem(int productID, int itemID, int storeID){ //TODO: change this to work with the storeID
         Result result = new Result();
 
         Product productToRemoveFrom = productMapper.getProduct(productID);
@@ -159,7 +158,7 @@ public class Inventory {
 
                 productMapper.updateMapper(productToRemoveFrom);
 
-                String quantityMessage = minQuantityNotification(productToRemoveFrom);
+                String quantityMessage = minQuantityNotification(productToRemoveFrom, storeID);
 
                 result.successful(quantityMessage);
             }
@@ -179,15 +178,17 @@ public class Inventory {
      * @param product the product to check
      * @return a String saying the minimum quantity is reached if so or null if the quantity hasn't reached yet
      */
-    public String minQuantityNotification(Product product){
+    public String minQuantityNotification(Product product, int storeID){
         if(product.hasMinQuantityReached()){
-            return sendLackOrder(product);
+            return sendLackOrder(product, storeID);
         }
 
         return null;
     }
 
-    public String sendLackOrder(Product product){
+    //TODO: change this to work with the storeID
+    //TODO: i dont think that we need to add right away the requested item
+    public String sendLackOrder(Product product, int storeID){
         int orderId;
         if((orderId = Connector.getInstance().sendLackOfItemOrder(product.getId(),
                 product.getMinCapacity()*2, product.getBuyingPrice())) != -1){
@@ -208,8 +209,8 @@ public class Inventory {
         return date.plusDays(14);
     }
 
-
-    public Result setPeriodicOrder(int orderId, Map<Integer, Integer> toSet, int status){
+    //TODO: change this to work with the storeID
+    public Result setPeriodicOrder(int orderId, Map<Integer, Integer> toSet, int status, int storeID){
         Result result = new Result();
         if(Connector.getInstance().setPeriodicOrder(orderId, toSet, status)){
             result.successful();
@@ -221,7 +222,8 @@ public class Inventory {
         return result;
     }
 
-    public Result setPeriodicOrderDate(int orderId, LocalDate newDate){
+    //TODO: change this to work with the storeID
+    public Result setPeriodicOrderDate(int orderId, LocalDate newDate, int storeID){
         Result result = new Result();
 
         if(Connector.getInstance().changePeriodicOrderDate(orderId, newDate)){
@@ -234,20 +236,22 @@ public class Inventory {
         return result;
     }
 
-    public boolean tryLoadInventory(int orderID){
+    //TODO: change this to work with the storeID
+    public boolean tryLoadInventory(int orderID, int storeID){
         Map<Integer,Integer> order;
 
         order = Connector.getInstance().tryLoadInventory(orderID);
 
         if(order != null){
-            loadInventory(orderID, order);
+            loadInventory(orderID, order, storeID);
             return true;
         }
 
        return false;
     }
 
-    public void loadInventory(int orderID, Map<Integer, Integer> toLoad){
+    //TODO: change this to work with the storeID
+    public void loadInventory(int orderID, Map<Integer, Integer> toLoad, int storeID){
         for(int productId: toLoad.keySet()){
             Product product = productMapper.getProduct(productId);
 
@@ -270,7 +274,8 @@ public class Inventory {
      * @param newMinQuantity the new minimum quantity to update to
      * @return a Result object with information about the result of the operation
      */
-    public Result updateMinQuantity(int productID, int newMinQuantity){
+    //TODO: change this to work with the storeID
+    public Result updateMinQuantity(int productID, int newMinQuantity, int storeID){
         Result result = new Result();
 
         Product product = productMapper.getProduct(productID);
@@ -296,7 +301,8 @@ public class Inventory {
      * @param newSellingPrice the new selling price to update to
      * @return a Result object with information about the result of the operation
      */
-    public Result updateSellingPrice(int productID, int newSellingPrice){
+    //TODO: change this to work with the storeID
+    public Result updateSellingPrice(int productID, int newSellingPrice, int storeID){
         Result result = new Result();
 
         Product product = productMapper.getProduct(productID);
@@ -321,7 +327,8 @@ public class Inventory {
      * @param newBuyingPrice the new buying price to update to
      * @return a Result object with information about the result of the operation
      */
-    public Result updateBuyingPrice(int productID, int newBuyingPrice){
+    //TODO: change this to work with the storeID
+    public Result updateBuyingPrice(int productID, int newBuyingPrice, int storeID){
         Result result = new Result();
 
         Product product = productMapper.getProduct(productID);
@@ -347,7 +354,8 @@ public class Inventory {
      * @param numOfDefects the amount of defected items
      * @return a Result object with information about the result of the operation
      */
-    public Result setDefect(int productID, int itemId, int numOfDefects){
+    //TODO: change this to work with the storeID
+    public Result setDefect(int productID, int itemId, int numOfDefects, int storeID){
         Result result = new Result();
 
         Product productToSetDefectFrom = productMapper.getProduct(productID);
@@ -386,7 +394,8 @@ public class Inventory {
      * @param location the new location to set
      * @return a Result object with information about the result of the operation
      */
-    public Result updateItemLocation(int productID, int itemId, String location){
+    //TODO: change this to work with the storeID
+    public Result updateItemLocation(int productID, int itemId, String location, int storeID){
         Result result = new Result();
 
         Product productToSetLocationFrom = productMapper.getProduct(productID);
@@ -432,12 +441,18 @@ public class Inventory {
         return result;
     }
 
+    //TODO: change this to work with the storeID
+    public void orderArrived(Map<Integer,Integer> goods){
+        //TODO: this
+    }
+
+    //TODO: make the reports work with the new storeID field
     /**
      * creates an inventory report according to given catagories
      * @param categories the catagories to include in the report 
      * @return an inventory report according to the given {@code catagories} 
      */
-    public String getCategoriesReport(List<List<String>> categories){
+    public String getCategoriesReport(List<List<String>> categories, int storeID){
         //getting all the products from the db
         List<Product> productsList = productMapper.getAll();
 
@@ -473,7 +488,7 @@ public class Inventory {
      * 
      * @return a report listing all the defected and expired items in the inventory
      */
-    public String getDefectsReports(){
+    public String getDefectsReports(int storeID){
         //getting all the products from the db
         List<Product> productsList = productMapper.getAll();
 
