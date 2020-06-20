@@ -18,13 +18,16 @@ public class InventoryMenu {
         return instance;
     }
 
-    //TODO: add the confirmDeliveryItem function
     public void display(Scanner in){
-        String[] options=new String[]
-                {"Add a new product", "Remove a product", "Add a new item", "Remove an item",
-                        "Update minimum quantity", "Update selling price", "Update buying price", "Set defect",
-                        "Update item location", "Get report by categories", "Get defect report",
-                        "Set periodic order", "Set periodic order date", "load order into inventory", "Go to main menu"};
+        String[] mainMenu = new String[] {"Add to Inventory", "Remove from Inventory", "Update Inventory",
+                "Inventory reports", "Orders menu", "Return to main menu"};
+
+        String[] addMenu = new String[] {"Add product", "Add item"};
+        String[] removeMenu = new String[] {"Remove product", "Remove item"};
+        String[] updateMenu = new String[] {"Update min quantity", "Update selling price", "Update buying price",
+        "Update item status", "Update item location"};
+        String[] reports = new String[] {"Get categories reports", "Get defects report"};
+        String[] orders = new String[] {"Set periodic order", "Set periodic order date", "Confirm order"};
 
         boolean shouldTerminate=false;
         int input;
@@ -65,7 +68,7 @@ public class InventoryMenu {
                     Controller.getInstance().getCategoriesReport(in);
                     break;
                 case 11:
-                    Controller.getInstance().getDefectsReports();
+                    Controller.getInstance().getDefectsReports(in);
                     break;
                 case 12:
                     Controller.getInstance().setPeriodicOrder(in);

@@ -16,7 +16,6 @@ import java.util.*;
  */
 public class Controller{
 
-    //TODO: add the confirmDeliveryItem function
 
     public static Controller controller = null;
 
@@ -529,10 +528,29 @@ public class Controller{
     }
 
     public boolean confirmItem(Product product, Item item) {
+        char answer;
+        Scanner in = new Scanner(System.in);
+
+
         System.out.println("The order arrived. Item details:");
         System.out.printf("product name: %s\nadd to store: %d\nitem expiration date: %s\n",
                 product.getName(), product.getStoreID(), item.getExpiryDate().toString());
         System.out.print("Would you like to accept this item?[y/n]");
+
+        while(true) {
+            answer = in.next().charAt(0);
+
+            if (answer == 'y' || answer == 'Y') {
+                System.out.println("item accepted- the item will be added.");
+                return true;
+            }
+            if (answer == 'n' || answer == 'N') {
+                System.out.println("the item will not be added to inventory.");
+                return false;
+            }
+
+            System.out.print("invalid input. please try again:");
+        }
 
     }
 

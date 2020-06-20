@@ -1,4 +1,4 @@
-package Bussiness_Connector;
+package Interface.Bussiness_Connector;
 
 import SuppliersModule.Business.SupplierManager;
 
@@ -36,7 +36,7 @@ public class Connector {
     }
 
 
-    public Map<Integer,Integer> tryLoadInventory(int orderID){
+    public Map<Integer,Integer> tryLoadInventory(int orderID, int storeID){
         return  SupplierManager.orderItems(orderID);
     }
 }

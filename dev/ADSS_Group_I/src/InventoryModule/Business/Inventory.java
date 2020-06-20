@@ -1,6 +1,6 @@
 package InventoryModule.Business;
 
-import Bussiness_Connector.Connector;
+import Interface.Bussiness_Connector.Connector;
 import InventoryModule.DTO.ItemDTO;
 import InventoryModule.DTO.ProductDTO;
 import InventoryModule.DataAccessLayer.ItemMapper;
@@ -235,7 +235,7 @@ public class Inventory {
     public boolean tryLoadInventory(int orderID, int storeID){
         Map<Integer,Integer> order;
 
-        order = Connector.getInstance().tryLoadInventory(orderID);
+        order = Connector.getInstance().tryLoadInventory(orderID, storeID);
 
         if(order != null){
             loadInventory(orderID, order, storeID);
