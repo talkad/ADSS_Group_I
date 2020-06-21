@@ -17,7 +17,7 @@ public class Service {
         if(instance == null){
             instance = new Service();
             mainBL = EmployeeModule.BusinessLayer.mainBL.getInstance();
-            shiftCounter = mainBL.getShiftCounter();
+            shiftCounter = mainBL.getShiftCounter()+1;
         }
         return instance;
     }
