@@ -2,10 +2,10 @@ package InventoryModule.Business;
 
 
 import InventoryModule.DTO.ItemDTO;
-
 import java.time.LocalDate;
 
 public class Item {
+
     private int orderID;
     private int count;
     private int numOfDefects;

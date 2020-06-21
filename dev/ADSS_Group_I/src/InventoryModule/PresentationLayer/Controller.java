@@ -1,6 +1,8 @@
 package InventoryModule.PresentationLayer;
 
 import InventoryModule.Business.Inventory;
+import InventoryModule.Business.Item;
+import InventoryModule.Business.Product;
 import InventoryModule.Business.Result;
 import InventoryModule.DTO.ItemDTO;
 import InventoryModule.DTO.ProductDTO;
@@ -13,6 +15,7 @@ import java.util.*;
  * This class provides services for menu
  */
 public class Controller{
+
 
     public static Controller controller = null;
 
@@ -104,6 +107,7 @@ public class Controller{
         int orderId;
         int count;
         LocalDate expiryDate = null;
+        int storeID;
 
         Result result;
 
@@ -113,6 +117,9 @@ public class Controller{
         System.out.print("insert the order id [number]: ");
         orderId = readInteger(in);
 
+        System.out.println("Enter the ID of the store you'd like to add the items to [number]: ");
+        storeID = readInteger(in);
+
         System.out.print("insert the item count that was delivered [number]: ");
         count = readInteger(in);
 
@@ -120,7 +127,8 @@ public class Controller{
         while(expiryDate == null)
             expiryDate=parseDate(in.next());
 
-        result= Inventory.getInstance().addItem(productId, new ItemDTO(orderId, count, 0, expiryDate, "InventoryModule"));
+        result= Inventory.getInstance().addItem(productId,
+                new ItemDTO(orderId, count, 0, expiryDate, "InventoryModule"), storeID);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -133,6 +141,7 @@ public class Controller{
         int productId;
         int itemId;
         Result result;
+        int storeID;
 
         System.out.print("insert the product id [number]: ");
         productId = readInteger(in);
@@ -140,7 +149,10 @@ public class Controller{
         System.out.print("insert the order id [number]: ");
         itemId = readInteger(in);
 
-        result= Inventory.getInstance().removeOneItem(productId, itemId);
+        System.out.println("Enter the ID of the store you'd like to remove an item from [number]: ");
+        storeID = readInteger(in);
+
+        result= Inventory.getInstance().removeOneItem(productId, itemId, storeID);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -155,6 +167,10 @@ public class Controller{
         double weight;
         List<String> categories;
         Result result;
+        int storeID;
+
+        System.out.println("Enter the ID of the store you'd like to add the product to [number]: ");
+        storeID = readInteger(in);
 
         System.out.print("insert the product name [String]: ");
         productName= readLine(in);
@@ -178,7 +194,7 @@ public class Controller{
         categoriesSTR= readLine(in);
         categories= Arrays.asList(categoriesSTR.split(","));
 
-        result= Inventory.getInstance().addProduct(new ProductDTO(0, productName, manufacturer, minCapacity,
+        result= Inventory.getInstance().addProduct(new ProductDTO(0, storeID, productName, manufacturer, minCapacity,
                 buyingPrice,sellingPrice, weight, 0,0, cleanList(categories), new LinkedList<>()));
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
@@ -188,13 +204,16 @@ public class Controller{
      * Remove an exists product from the inventory
      */
     public void removeProduct(Scanner in){
-        int productId;
+        int productId, storeID;
         Result result;
 
         System.out.print("insert the product id [number]: ");
         productId = readInteger(in);
 
-        result = Inventory.getInstance().removeProduct(productId);
+        System.out.println("Enter the ID of the store you'd like to remove the product from [number]: ");
+        storeID = readInteger(in);
+
+        result = Inventory.getInstance().removeProduct(productId, storeID);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -207,14 +226,18 @@ public class Controller{
         int productId;
         int minQuantity;
         Result result;
+        int storeID;
 
         System.out.print("insert the product id [number]: ");
         productId = readInteger(in);
 
+        System.out.println("Enter the ID of the store you'd like to update the product from [number]: ");
+        storeID = readInteger(in);
+
         System.out.print("insert min quantity [number]: ");
         minQuantity= readInteger(in);
 
-        result= Inventory.getInstance().updateMinQuantity(productId, minQuantity);
+        result= Inventory.getInstance().updateMinQuantity(productId, minQuantity, storeID);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -228,14 +251,18 @@ public class Controller{
         int productId;
         int sellingPrice;
         Result result;
+        int storeID;
 
         System.out.print("insert the product id [number]: ");
         productId = readInteger(in);
 
+        System.out.println("Enter the ID of the store you'd like to update the product from [number]: ");
+        storeID = readInteger(in);
+
         System.out.print("insert new price [number]: ");
         sellingPrice = readInteger(in);
 
-        result= Inventory.getInstance().updateSellingPrice(productId, sellingPrice);
+        result= Inventory.getInstance().updateSellingPrice(productId, sellingPrice, storeID);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -249,14 +276,18 @@ public class Controller{
         int productId;
         int buyingPrice;
         Result result;
+        int storeID;
 
         System.out.print("insert the product id [number]: ");
         productId = readInteger(in);
 
+        System.out.println("Enter the ID of the store you'd like to update the product from [number]: ");
+        storeID = readInteger(in);
+
         System.out.print("insert new price [number]: ");
         buyingPrice = readInteger(in);
 
-        result= Inventory.getInstance().updateBuyingPrice(productId, buyingPrice);
+        result= Inventory.getInstance().updateBuyingPrice(productId, buyingPrice, storeID);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -271,6 +302,7 @@ public class Controller{
         int itemId;
         int numOfDefects;
         Result result;
+        int storeID;
 
         System.out.print("insert the product id [number]: ");
         productId = readInteger(in);
@@ -278,10 +310,13 @@ public class Controller{
         System.out.print("insert the item id [number]: ");
         itemId = readInteger(in);
 
+        System.out.println("Enter the ID of the store you'd like to update the items from [number]: ");
+        storeID = readInteger(in);
+
         System.out.print("insert the number of defected items in the batch [number]: ");
         numOfDefects = readInteger(in);
 
-        result= Inventory.getInstance().setDefect(productId, itemId, numOfDefects);
+        result= Inventory.getInstance().setDefect(productId, itemId, numOfDefects, storeID);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -295,6 +330,7 @@ public class Controller{
         int itemId;
         String location;
         Result result;
+        int storeID;
 
         System.out.print("insert the product id [number]: ");
         productId = readInteger(in);
@@ -302,10 +338,13 @@ public class Controller{
         System.out.print("insert the item id [number]: ");
         itemId = readInteger(in);
 
+        System.out.println("Enter the ID of the store you'd like to update the items from [number]: ");
+        storeID = readInteger(in);
+
         System.out.print("insert a new location [String]: ");
         location= readLine(in);;
 
-        result= Inventory.getInstance().updateItemLocation(productId, itemId, location);
+        result= Inventory.getInstance().updateItemLocation(productId, itemId, location, storeID);
         if(result.getErrorMsg()!=null)
             System.out.println(result.getErrorMsg());
     }
@@ -377,6 +416,10 @@ public class Controller{
      */
     public void getCategoriesReport(Scanner in){
         String categoriesSTR="";
+        int storeID;
+
+        System.out.println("Enter the ID of the store you'd like the report from [number]: ");
+        storeID = readInteger(in);
 
         System.out.println("insert categories you wish to see in the report:");
         System.out.println("The format should be like [milk,500ml],[shampoo].");
@@ -385,14 +428,19 @@ public class Controller{
         while(categoriesSTR.length()==0) //get over '\n' at the start of a line
             categoriesSTR= in.nextLine();
 
-        System.out.println(Inventory.getInstance().getCategoriesReport(splitList(categoriesSTR)));
+        System.out.println(Inventory.getInstance().getCategoriesReport(splitList(categoriesSTR), storeID));
     }
 
     /**
      * This function displays all the defect items status on screen
      */
-    public void getDefectsReports(){
-        System.out.println(Inventory.getInstance().getDefectsReports());
+    public void getDefectsReports(Scanner in){
+        int storeID;
+
+        System.out.println("Enter the ID of the store you'd like the report from [number]: ");
+        storeID = readInteger(in);
+
+        System.out.println(Inventory.getInstance().getDefectsReports(storeID));
     }
 
     public void setPeriodicOrder(Scanner in){
@@ -400,9 +448,13 @@ public class Controller{
         int orderId, status;
         Map<Integer, Integer> toSet = new HashMap<>();
         String setStr = "";
+        int storeID;
 
         System.out.println("insert the order id you'd like to change [number]: ");
         orderId = readInteger(in);
+
+        System.out.println("Enter the ID of the store you'd like to set the order to [number]: ");
+        storeID = readInteger(in);
 
         System.out.println("insert what you'd like to do (add or subtract from the order), [0 - add, 1 - subtract]");
         status = readInteger(in);
@@ -419,7 +471,7 @@ public class Controller{
                 toSet.put(productId, quantity);
             }
 
-             result = Inventory.getInstance().setPeriodicOrder(orderId, toSet, status);
+             result = Inventory.getInstance().setPeriodicOrder(orderId, toSet, status, storeID);
 
             if(!result.isSuccessful()){
                 if(result.getErrorMsg() != null){
@@ -436,14 +488,18 @@ public class Controller{
         Result result;
         int orderId;
         LocalDate newDate;
+        int storeID;
 
         System.out.println("insert the order id you'd like to change [number]: ");
         orderId = readInteger(in);
 
+        System.out.println("Enter the ID of the store you'd like to set the order to [number]: ");
+        storeID = readInteger(in);
+
         System.out.print("insert the new periodic order date [dd-mm-yyyy]: ");
         newDate = parseDate(in.next());
 
-        result = Inventory.getInstance().setPeriodicOrderDate(orderId, newDate);
+        result = Inventory.getInstance().setPeriodicOrderDate(orderId, newDate, storeID);
 
         if(!result.isSuccessful()){
             if(result.getErrorMsg() != null){
@@ -455,15 +511,47 @@ public class Controller{
     public void loadInventory(Scanner in) {
         int orderId;
         boolean result;
+        int storeID;
 
         System.out.println("insert the order id you'd like to change [number]: ");
         orderId = readInteger(in);
 
-        result = Inventory.getInstance().tryLoadInventory(orderId);
+        System.out.println("Enter the ID of the store you'd like to load the order to [number]: ");
+        storeID = readInteger(in);
+
+        result = Inventory.getInstance().tryLoadInventory(orderId, storeID);
 
         if(result)
             System.out.println("The order load successfully");
         else
             System.out.println("The order cannot be loaded yet");
     }
+
+    public boolean confirmItem(Product product, Item item) {
+        char answer;
+        Scanner in = new Scanner(System.in);
+
+
+        System.out.println("The order arrived. Item details:");
+        System.out.printf("product name: %s\nadd to store: %d\nitem expiration date: %s\n",
+                product.getName(), product.getStoreID(), item.getExpiryDate().toString());
+        System.out.print("Would you like to accept this item?[y/n]");
+
+        while(true) {
+            answer = in.next().charAt(0);
+
+            if (answer == 'y' || answer == 'Y') {
+                System.out.println("item accepted- the item will be added.");
+                return true;
+            }
+            if (answer == 'n' || answer == 'N') {
+                System.out.println("the item will not be added to inventory.");
+                return false;
+            }
+
+            System.out.print("invalid input. please try again:");
+        }
+
+    }
+
 }

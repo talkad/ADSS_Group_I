@@ -2,13 +2,12 @@ package InventoryModule.Business;
 
 
 import InventoryModule.DTO.ProductDTO;
-
 import java.util.LinkedList;
 import java.util.List;
 
 public class Product {
-
     private int id;
+    private int storeID;
     private String name;
     private String manufacturer;
     private int minCapacity;
@@ -22,6 +21,7 @@ public class Product {
 
     public Product(ProductDTO productDTO) {
         this.id = productDTO.getId();
+        this.storeID = productDTO.getStoreID();
         this.name = productDTO.getName();
         this.manufacturer = productDTO.getManufacturer();
         this.minCapacity = productDTO.getMinCapacity();
@@ -34,8 +34,9 @@ public class Product {
         this.items = new LinkedList<>();
     }
 
-    public Product(int id, String name, String manufacturer, int minCapacity, int buyingPrice, int sellingPrice, double weight, int inventoryCapacity, int storeCapacity, List<String> categories, List<Item> items) {
+    public Product(int id, int storeID, String name, String manufacturer, int minCapacity, int buyingPrice, int sellingPrice, double weight, int inventoryCapacity, int storeCapacity, List<String> categories, List<Item> items) {
         this.id = id;
+        this.storeID = storeID;
         this.name = name;
         this.manufacturer = manufacturer;
         this.minCapacity = minCapacity;
@@ -103,7 +104,7 @@ public class Product {
      * @return if the minimum quantity set for the product is reached
      */
     public boolean hasMinQuantityReached(){
-        return inventoryCapacity + storeCapacity <= minCapacity;
+        return inventoryCapacity + storeCapacity == minCapacity;
     }
 
 //    /**
@@ -276,5 +277,13 @@ public class Product {
         toString += "Items: " + items.toString() + "\n";
 
         return toString;
+    }
+
+    public int getStoreID() {
+        return storeID;
+    }
+
+    public void setStoreID(int storeID) {
+        this.storeID = storeID;
     }
 }
