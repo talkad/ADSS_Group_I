@@ -1,10 +1,12 @@
 package SuppliersModule.DAL;
 
-import Buisness.ContactPerson;
-import Buisness.Result;
-import Buisness.SupplierCard;
-import DAL_Connector.DatabaseManager;
 
+
+
+import Interface.DAL_Connector.DatabaseManager;
+import InventoryModule.Business.Result;
+import SuppliersModule.Business.ContactPerson;
+import SuppliersModule.Business.SupplierCard;
 
 import java.sql.*;
 import java.util.*;

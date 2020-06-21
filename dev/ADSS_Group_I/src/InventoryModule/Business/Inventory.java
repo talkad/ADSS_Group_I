@@ -1,9 +1,11 @@
 package InventoryModule.Business;
 
+import Interface.Bussiness_Connector.Connector;
 import InventoryModule.DTO.ItemDTO;
 import InventoryModule.DTO.ProductDTO;
-import DataAccessLayer.ItemMapper;
-import DataAccessLayer.ProductMapper;
+import InventoryModule.DataAccessLayer.ItemMapper;
+import InventoryModule.DataAccessLayer.ProductMapper;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;

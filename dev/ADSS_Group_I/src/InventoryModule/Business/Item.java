@@ -1,6 +1,7 @@
 package InventoryModule.Business;
 
-import DTO.ItemDTO;
+
+import InventoryModule.DTO.ItemDTO;
 
 import java.time.LocalDate;
 

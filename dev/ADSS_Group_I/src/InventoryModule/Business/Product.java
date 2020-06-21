@@ -1,6 +1,7 @@
 package InventoryModule.Business;
 
-import DTO.ProductDTO;
+
+import InventoryModule.DTO.ProductDTO;
 
 import java.util.LinkedList;
 import java.util.List;

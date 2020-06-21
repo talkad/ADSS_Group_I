@@ -1,8 +1,9 @@
 package SuppliersModule.Interface;
 
-import Buisness.FixedArrangement;
-import Buisness.SupplierManager;
-import Presentation.MenuSuppliers;
+
+import SuppliersModule.Business.FixedArrangement;
+import SuppliersModule.Business.SupplierManager;
+import SuppliersModule.Presentation.MenuSuppliers;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

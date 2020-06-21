@@ -1,7 +1,7 @@
 package SuppliersModule.Interface;
 
-import Buisness.SupplierManager;
-import Presentation.MenuSuppliers;
+import SuppliersModule.Business.SupplierManager;
+import SuppliersModule.Presentation.MenuSuppliers;
 
 import java.util.Scanner;
 

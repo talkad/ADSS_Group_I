@@ -120,4 +120,16 @@ public class ShiftMapper {
             shiftMap.remove(shiftTime);
         } catch (SQLException e) {e.printStackTrace();}
     }
+
+    public int getShiftIdCounter() {
+        String GET_MAX_SHIFT_ID = "SELECT MAX(shiftId) FROM Shifts";
+        try (Connection conn = dataInstance.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(GET_MAX_SHIFT_ID)) {
+                return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

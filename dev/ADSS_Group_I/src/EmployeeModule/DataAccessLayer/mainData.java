@@ -144,4 +144,8 @@ public class mainData {
     public void removeShift(String shiftTime) {
         shiftMapperInstance.removeShift(shiftTime);
     }
+
+    public int getShiftIdCounter(){
+       return shiftMapperInstance.getShiftIdCounter();
+    }
 }

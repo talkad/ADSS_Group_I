@@ -1,9 +1,9 @@
 package SuppliersModule.Business;
 
+import InventoryModule.DataAccessLayer.ProductMapper;
 import SuppliersModule.Business.*;
 import SuppliersModule.DAL.ArrangementMapper;
 import SuppliersModule.DAL.OrderMapper;
-import DataAccessLayer.ProductMapper;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

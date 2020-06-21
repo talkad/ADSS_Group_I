@@ -154,4 +154,8 @@ public class mainBL {
         //todo? mainDataInstance.removeShiftEmployees(shiftTime);
         mainDataInstance.removeShift(shiftTime);
     }
+
+    public int getShiftCounter(){
+        return mainDataInstance.getShiftIdCounter();
+    }
 }

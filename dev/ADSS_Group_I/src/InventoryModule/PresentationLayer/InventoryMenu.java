@@ -1,6 +1,7 @@
 package InventoryModule.PresentationLayer;
 
-import Menu.Menu;
+
+import Interface.Menu.Menu;
 
 import java.util.Scanner;
 
@@ -18,6 +19,15 @@ public class InventoryMenu {
         return instance;
     }
 
+    public static int getInputIndex(Scanner in){
+        int input=0;
+        try{
+            input= in.nextInt();
+        } catch (Exception e){
+            System.out.println("Invalid input- this is not a number.");
+        }
+        return input;
+    }
 
     public void display(Scanner in){
         String[] options=new String[]
@@ -26,12 +36,12 @@ public class InventoryMenu {
                         "Update item location", "Get report by categories", "Get defect report",
                         "Set periodic order", "Set periodic order date", "load order into inventory", "Go to main menu"};
 
-        boolean shouldTerminate=false;
+        boolean shouldTerminate = false;
         int input;
 
         while(!shouldTerminate){
             Menu.displayMenu(options);
-            input = Menu.getInputIndex(in);
+            input = getInputIndex(in);
 
             switch (input) {
                 case 1:
@@ -80,7 +90,7 @@ public class InventoryMenu {
                     shouldTerminate=true;
                     break;
                 default:
-                    System.out.println ( "Unrecognized option" );
+                    System.out.println ("Unrecognized option");
                     break;
             }
         }
