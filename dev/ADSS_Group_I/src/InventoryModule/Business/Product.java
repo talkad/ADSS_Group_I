@@ -103,7 +103,7 @@ public class Product {
      * @return if the minimum quantity set for the product is reached
      */
     public boolean hasMinQuantityReached(){
-        return inventoryCapacity + storeCapacity <= minCapacity;
+        return inventoryCapacity + storeCapacity == minCapacity;
     }
 
 //    /**
