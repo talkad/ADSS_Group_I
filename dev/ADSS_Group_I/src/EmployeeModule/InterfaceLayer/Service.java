@@ -476,37 +476,12 @@ public class Service {
         }
     }
 
-    public boolean isEmployeeInShift(int id, String shiftTime, mainBL mainBL){
-        try{
-            return mainBL.isEmployeeInShift(id, shiftTime);
-        } catch (ApplicationException e){
-            System.out.println(e.getId());
-        }
-        return false;
-    }
-
-    public List<String> getDriversInShift (String shiftTime, mainBL mainBL){
-        List<String> driversIdList = null;
-        try {
-            if (mainBL.searchShift(shiftTime, true)) {
-                driversIdList = mainBL.getDriversInShift(shiftTime);
-            }
-        } catch (ApplicationException e){
-            System.out.println(e.getId());
-        }
-        return driversIdList;
-    }
-
     public boolean hasRole(int id, String role) throws ApplicationException {
         return mainBL.hasRole(id, role);
     }
 
     public boolean searchEmployee(int id) throws ApplicationException {
         return mainBL.searchEmployee(id, true);
-    }
-
-    public boolean addDriverToShift(String shiftTime, int id) throws ApplicationException {
-        return mainBL.addDriverToShift(shiftTime, id);
     }
 
     private void dataLoad(mainBL mainBL) throws ApplicationException{

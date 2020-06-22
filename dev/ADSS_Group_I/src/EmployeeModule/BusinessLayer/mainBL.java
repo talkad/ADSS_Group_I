@@ -114,8 +114,18 @@ public class mainBL {
         return mainDataInstance.getShift(key);
     }
 
-    public List<String> getDriversInShift(String key) {
-        return mainDataInstance.getDriversInShift(key);
+    public List<String> getDriversInShift(String shiftTime) {
+        List<String> driversIdList;
+        try {
+            if (searchShift(shiftTime, true)) {
+                driversIdList = mainDataInstance.getDriversInShift(shiftTime);
+                if(!driversIdList.isEmpty())
+                    return driversIdList;
+            }
+        } catch (ApplicationException e){
+            System.out.println(e.getId());
+        }
+        return null;
     }
 
     public List<Integer> getEmployeesInShift(String key) {

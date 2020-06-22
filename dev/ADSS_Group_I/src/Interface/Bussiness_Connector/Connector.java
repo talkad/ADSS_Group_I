@@ -62,4 +62,16 @@ public class Connector {
     public List<String> getAvailableDrivers(String shiftTime) throws ApplicationException {
         return mainBL.getInstance().getAvailableDrivers(shiftTime);
     }
+
+    public boolean addDriverToShift(String shiftTime, int id) throws ApplicationException {
+        return mainBL.getInstance().addDriverToShift(shiftTime, id);
+    }
+
+    public boolean isEmployeeInShift(int id, String shiftTime) throws ApplicationException {
+        return mainBL.getInstance().isEmployeeInShift(id, shiftTime);
+    }
+
+    public List<String> getDriversInShift(String shiftTime) {
+        return mainBL.getInstance().getDriversInShift(shiftTime);
+    }
 }
