@@ -167,8 +167,10 @@ public class mainBL {
             String time = shiftTime.split(" ")[1];
             if(mainDataInstance.canAddDriver(shiftTime)){
                if(mainDataInstance.hasRole(id, "driver")) {
-                   mainDataInstance.writeUpdatedFreeTime(id, Integer.parseInt(time)-1, mainDataInstance.dayOfTheShift(shiftDate)-1, false);
-                   return mainDataInstance.addRole(shiftTime, id, "driver");
+                   if(mainDataInstance.isFree(id, mainDataInstance.dayOfTheShift(shiftDate)-1, Integer.parseInt(time)-1)) {
+                       mainDataInstance.writeUpdatedFreeTime(id, Integer.parseInt(time) - 1, mainDataInstance.dayOfTheShift(shiftDate) - 1, false);
+                       return mainDataInstance.addRole(shiftTime, id, "driver");
+                   }
                }
            }
            else{

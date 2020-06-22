@@ -33,19 +33,16 @@ public class Service {
     public void display(Scanner scanner) throws ApplicationException {
         EmployeeModule.BusinessLayer.mainBL mainBL = EmployeeModule.BusinessLayer.mainBL.getInstance();
         boolean quit = false;
-        boolean flag = false;
-        String[] options = new String[] {"Add employee", "Edit employee free time", "Add shift", "Get shift history", "Get employee details",  "Quit", "Load pre-made data", "Edit employee's details", "Display all employees", "Remove employee", "Edit Shift"};
+        String[] options = new String[] {"Add employee", "Edit employee free time", "Add shift", "Get shift history", "Get employee details", "Quit", "Add driver to shift", "Edit employee's details", "Display all employees", "Remove employee", "Edit Shift"};
         String input;
         while(!quit){
             displayMenu(options);
             input=scanner.nextLine();
             switch (input){
                 case ("1"):
-                    flag = true;
                     instance.insertEmployee(scanner, mainBL);
                     break;
                 case ("2"):
-                    flag = true;
                     System.out.print("Please insert the employee's id number: ");
                     int id = isNumeric(scanner.nextLine());
                     if(id != -1){
@@ -56,15 +53,12 @@ public class Service {
                     }
                     break;
                 case ("3"):
-                    flag = true;
                     instance.insertShift(scanner, mainBL);
                     break;
                 case ("4"):
-                    flag = true;
                     instance.displayShift(scanner, mainBL);
                     break;
                 case ("5"):
-                    flag = true;
                     System.out.print("Please insert the employee's id number: ");
                     int employeeId = isNumeric(scanner.nextLine());
                     if(employeeId != -1){
@@ -78,24 +72,15 @@ public class Service {
                     quit = true;
                     break;
                 case ("7"):
-                    if(!flag){
-                        instance.dataLoad(mainBL);
-                    }
-                    else {
-                        System.out.println("Cannot use this function if it's not the first one to be called");
-                    }
-                    flag = true;
+                    instance.addDriverToShift(scanner);
                     break;
                 case ("8"):
-                    flag = true;
                     instance.editEmployee(scanner, mainBL);
                     break;
                 case ("9"):
-                    flag = true;
                     instance.displayAllEmployees(mainBL);
                     break;
                 case ("10"):
-                    flag = true;
                     System.out.print("Please insert the employee's id number: ");
                     int empId = isNumeric(scanner.nextLine());
                     if(empId != -1){
@@ -109,9 +94,10 @@ public class Service {
                     }
                     break;
                 case("11"):
-                    flag = true;
                     instance.editShift(scanner, mainBL);
                     break;
+                case("12"):
+                    instance.displayRequestedShiftDrivers();
                 default:
                     System.out.println ("Unrecognized option");
                     break;
@@ -467,7 +453,7 @@ public class Service {
         try {
             System.out.print("Please insert the shift's date in the format <dd/MM/yyyy> " +
                     "followed by a space and time of the shift (1 for day and 2 for night):\n");
-            String shiftTime = scanner.nextLine();//todo legal date and legal time
+            String shiftTime = scanner.nextLine();
             if (mainBL.searchShift(shiftTime, true)) {
                 System.out.println(mainBL.shiftInfo(shiftTime));
             }
@@ -482,6 +468,28 @@ public class Service {
 
     public boolean searchEmployee(int id) throws ApplicationException {
         return mainBL.searchEmployee(id, true);
+    }
+
+    public boolean addDriverToShift(Scanner scanner) throws ApplicationException {
+        System.out.println("Insert requested driver's id");
+        int id = isNumeric(scanner.nextLine());
+        if(id != -1){
+            try {
+                System.out.print("Please insert the shift's date in the format <dd/MM/yyyy> " +
+                        "followed by a space and time of the shift (1 for day and 2 for night):\n");
+                String shiftTime = scanner.nextLine();
+                if (mainBL.searchShift(shiftTime, true)) {
+                    return mainBL.addDriverToShift(shiftTime, id);
+                }
+            } catch (ApplicationException e){
+                System.out.println(e.getId());
+            }
+        }
+        return false;
+    }
+
+    public void displayRequestedShiftDrivers(){
+        //todo need delivery module function
     }
 
     private void dataLoad(mainBL mainBL) throws ApplicationException{
