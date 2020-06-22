@@ -195,7 +195,7 @@ public class SupplierCard {
 
     public void addToArrangement (List<Integer> products){
         for (int product: products){
-            _arrangement.getItems().put(product, ProductMapper.getInstance().getProduct(product));
+            //_arrangement.getItems().put(product, ProductMapper.getInstance().getProduct(product));
             ArrangementMapper.getInstance().insertProduct(this._companyId, product);
         }
     }

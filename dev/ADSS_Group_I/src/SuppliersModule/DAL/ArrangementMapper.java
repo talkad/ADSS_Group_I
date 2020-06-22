@@ -49,8 +49,8 @@ public class ArrangementMapper {
             pstmt.setInt(1,supplierId);
             ResultSet rs = pstmt.executeQuery();
             while(rs.next()){
-                Product product = ProductMapper.getInstance().getProduct(rs.getInt("productId"));
-                map.put(product.getId(),product);
+                //Product product = ProductMapper.getInstance().getProduct(rs.getInt("productId"));
+                //map.put(product.getId(),product);
             }
         }
         catch (Exception e){

@@ -45,7 +45,7 @@ public class Menu {
     private static void login(Scanner scanner) {
         System.out.println("Insert employee id: ");
         login = isNumeric(scanner.nextLine());
-        if(login != -1){
+        if(login > -1){
             try {
                 if(employeeMenu.searchEmployee(login))
                     System.out.println("Successfully logged in");
@@ -91,7 +91,7 @@ public class Menu {
                     break;
                 case ("3"):
                     try {
-                        if (isValidLogin() && employeeMenu.hasRole(login, "storekeeper") || employeeMenu.hasRole(login, "store manager")) {
+                        if (isValidLogin() && (employeeMenu.hasRole(login, "storekeeper") || employeeMenu.hasRole(login, "store manager"))) {
                             suppliersMenu.runMenu(scanner);
                         }
                     } catch (ApplicationException e){
