@@ -505,6 +505,10 @@ public class Service {
         return mainBL.searchEmployee(id, true);
     }
 
+    public boolean addDriverToShift(String shiftTime, int id) throws ApplicationException {
+        return mainBL.addDriverToShift(shiftTime, id);
+    }
+
     private void dataLoad(mainBL mainBL) throws ApplicationException{
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         try {

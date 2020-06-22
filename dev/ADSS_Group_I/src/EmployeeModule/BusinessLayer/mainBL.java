@@ -26,14 +26,14 @@ public class mainBL {
         Employee newEmp = new Employee(id, firstName, lastName, bankDetails, workConditions, startTime, salary, roles);
         if (!updateFlag && newEmp.getRoles().contains("driver")) {
             try {
-                //Connector.getInstance().addDriver(newEmp);
+                Connector.getInstance().addDriver(newEmp);
             } catch (Exception e) {
                 send(e.getMessage());
             }
         } else if (newEmp.getRoles().contains("driver")) {
-            //Connector.getInstance().AddOrEditDriver(newEmp.getId(), newEmp);
+            Connector.getInstance().AddOrEditDriver(newEmp.getId(), newEmp);
         } else {
-            //Connector.getInstance().RemoveDriver(newEmp.getId());
+            Connector.getInstance().RemoveDriver(newEmp.getId());
         }
 
         DALEmployee dalEmployee = new DALEmployee(id, firstName, lastName, bankDetails, workConditions, startTime, salary, roles);
@@ -138,7 +138,6 @@ public class mainBL {
     }
 
     public void removeShift(String shiftTime) {
-        //todo? mainDataInstance.removeShiftEmployees(shiftTime);
         mainDataInstance.removeShift(shiftTime);
     }
 
@@ -148,7 +147,39 @@ public class mainBL {
 
     public List<String> getAvailableDrivers(String shiftTime) throws ApplicationException {
         if(searchShift(shiftTime, true))
-            return mainDataInstance.getAvailableDrivers(shiftTime);
+            return mainDataInstance.getAvailableRoles(shiftTime, "driver");
         return null;
+    }
+
+    public boolean addDriverToShift(String shiftTime, int id) throws ApplicationException {
+        if(searchShift(shiftTime, true) && searchEmployee(id, true)){
+            String shiftDate = shiftTime.split(" ")[0];
+            String time = shiftTime.split(" ")[1];
+            if(mainDataInstance.canAddDriver(shiftTime)){
+               if(mainDataInstance.hasRole(id, "driver")) {
+                   mainDataInstance.writeUpdatedFreeTime(id, Integer.parseInt(time)-1, mainDataInstance.dayOfTheShift(shiftDate)-1, false);
+                   return mainDataInstance.addRole(shiftTime, id, "driver");
+               }
+           }
+           else{
+               List<String> storekeeperList = mainDataInstance.getAvailableRoles(shiftTime, "storekeeper");
+                if (storekeeperList != null){
+                    if(Integer.parseInt(storekeeperList.get(0)) != id) {
+                        mainDataInstance.addRole(shiftTime, Integer.parseInt(storekeeperList.get(0)), "storekeeper");
+                        mainDataInstance.writeUpdatedFreeTime(Integer.parseInt(storekeeperList.get(0)), Integer.parseInt(time)-1, mainDataInstance.dayOfTheShift(shiftDate)-1, false);
+                        mainDataInstance.writeUpdatedFreeTime(id, Integer.parseInt(time)-1, mainDataInstance.dayOfTheShift(shiftDate)-1, false);
+                        return mainDataInstance.addRole(shiftTime, id, "driver");
+                    }
+                    else if(storekeeperList.size() > 1){
+                        mainDataInstance.addRole(shiftTime, Integer.parseInt(storekeeperList.get(1)), "storekeeper");    //If the first available storekeeper is also the driver given, choose the next storekeeper if one such exists.
+                        mainDataInstance.writeUpdatedFreeTime(Integer.parseInt(storekeeperList.get(1)), Integer.parseInt(time)-1, mainDataInstance.dayOfTheShift(shiftDate)-1, false);
+                        mainDataInstance.writeUpdatedFreeTime(id, Integer.parseInt(time)-1, mainDataInstance.dayOfTheShift(shiftDate)-1 , false);
+                        return mainDataInstance.addRole(shiftTime, id, "driver");
+                    }
+                    return false; //if no available storekeeper was found, return false
+                }
+           }
+        }
+        return false;
     }
 }

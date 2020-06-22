@@ -94,7 +94,6 @@ public class FreeTimeMapper {
         try (Connection conn = dataInstance.connect();
              PreparedStatement ps = conn.prepareStatement(UPDATE_FREE_TIME)) {
             ps.executeUpdate();
-            //System.out.println(id);
             searchFreeTime(id);
             freeTimeMap.get(id)[period][day] = available;
         } catch (SQLException e) {
