@@ -114,20 +114,6 @@ public class mainBL {
         return mainDataInstance.getShift(key);
     }
 
-    public List<String> getDriversInShift(String shiftTime) {
-        List<String> driversIdList;
-        try {
-            if (searchShift(shiftTime, true)) {
-                driversIdList = mainDataInstance.getDriversInShift(shiftTime);
-                if(!driversIdList.isEmpty())
-                    return driversIdList;
-            }
-        } catch (ApplicationException e){
-            System.out.println(e.getId());
-        }
-        return null;
-    }
-
     public List<Integer> getEmployeesInShift(String key) {
         return mainDataInstance.getEmployeesInShift(key);
     }
@@ -159,6 +145,10 @@ public class mainBL {
         if(searchShift(shiftTime, true))
             return mainDataInstance.getAvailableRoles(shiftTime, "driver");
         return null;
+    }
+
+    public List<String> getDriversInShift(String shiftTime) {
+        return mainDataInstance.getDriversInShift(shiftTime);
     }
 
     public boolean addDriverToShift(String shiftTime, int id) throws ApplicationException {
