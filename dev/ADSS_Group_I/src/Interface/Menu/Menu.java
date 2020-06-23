@@ -2,6 +2,7 @@ package Interface.Menu;
 
 import EmployeeModule.InterfaceLayer.Service;
 import InventoryModule.PresentationLayer.InventoryMenu;
+import SuppliersModule.Interface.OrderMenu;
 import SuppliersModule.Presentation.MenuSuppliers;
 import org.omg.CORBA.portable.ApplicationException;
 
@@ -90,18 +91,27 @@ public class Menu {
                     }
                     break;
                 case ("3"):
-                    try {
-                        if (isValidLogin() && (employeeMenu.hasRole(login, "storekeeper") || employeeMenu.hasRole(login, "store manager"))) {
-                            suppliersMenu.runMenu(scanner);
+                    boolean flag = false;
+                        System.out.println(login);
+                        try {
+                            if (isValidLogin() && employeeMenu.hasRole(login, "storekeeper")) {
+                                suppliersMenu.runMenu(scanner);
+                            }
+                        } catch (ApplicationException ignored){ flag = true; }
+                        if(flag){
+                            try {
+                                if (isValidLogin() && employeeMenu.hasRole(login, "store manager")) {
+                                    OrderMenu.runMenu();
+                                }
+                            } catch (ApplicationException e){
+                                System.out.println(e.getId());
+                            }
                         }
-                    } catch (ApplicationException e){
-                        System.out.println(e.getId());
-                    }
                     break;
                 case ("4"):
                     try {
                         if (isValidLogin() && employeeMenu.hasRole(login, "logistics manager")) {
-                            suppliersMenu.runMenu(scanner);
+                            //suppliersMenu.runMenu(scanner);
                         }
                     } catch (ApplicationException e){
                         System.out.println(e.getId());
