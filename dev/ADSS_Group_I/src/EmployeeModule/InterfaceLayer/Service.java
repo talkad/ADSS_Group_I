@@ -30,7 +30,7 @@ public class Service {
         System.out.print("Selection: ");
     }
 
-    public void display(Scanner scanner) throws ApplicationException {
+    public void display(Scanner scanner)  {
         EmployeeModule.BusinessLayer.mainBL mainBL = EmployeeModule.BusinessLayer.mainBL.getInstance();
         boolean quit = false;
         String[] options = new String[] {"Add employee", "Edit employee free time", "Add shift", "Get shift history", "Get employee details", "Quit", "Edit employee's details", "Display all employees", "Remove employee", "Edit Shift"};
