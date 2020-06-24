@@ -107,6 +107,10 @@ public class Product {
         return inventoryCapacity + storeCapacity == minCapacity;
     }
 
+    public boolean equalOrLessThanTheMin(){
+        return inventoryCapacity + storeCapacity <= minCapacity;
+    }
+
 //    /**
 //     * checks if the given name and manufacturer represnt the current product
 //     * @param name the name of the product

@@ -24,6 +24,10 @@ public class Inventory {
     private Inventory(){
     }
 
+    public ProductMapper getProductMapper() {
+        return productMapper;
+    }
+
     /**
      * @return an instance of Inventory
      */
@@ -65,11 +69,11 @@ public class Inventory {
     /**
      * removes a product from the inventory
      * @param productID the id of the product to remove
-     * @return a Result object with information about the result of the operation 
+     * @return a Result object with information about the result of the operation
      */
     public Result removeProduct(int productID, int storeID){
         Result result = new Result();
-    
+
         Product toRemove = productMapper.getProduct(productID, storeID);
 
 
@@ -175,6 +179,16 @@ public class Inventory {
         return result;
     }
 
+    public double getProductsWeight(int productID, int storeID){
+        Product product = productMapper.getProduct(productID, storeID);
+
+        if(product != null){ // checking if the asked product exists
+            return product.getWeight();
+        }
+
+        return -1; // error the product does not exist
+    }
+
     /**
      * given a product, checks if the minimum quantity set for the product is reached
      * @param product the product to check
@@ -242,7 +256,7 @@ public class Inventory {
             return true;
         }
 
-       return false;
+        return false;
     }
 
     public void loadInventory(int orderID, Map<Integer, Integer> toLoad, int storeID){
@@ -261,6 +275,11 @@ public class Inventory {
                 if(confirmItem) {
                     product.addItem(toAdd);
                     itemMapper.addMapper(toAdd, productId);
+                }
+                else{
+                    if(product.equalOrLessThanTheMin()){ // if the manager declined the product, checking if there's less than the minimum of the product. if so, sending a lack order of the product
+                        sendLackOrder(product, storeID);
+                    }
                 }
             }
         }
@@ -436,8 +455,8 @@ public class Inventory {
 
     /**
      * creates an inventory report according to given catagories
-     * @param categories the catagories to include in the report 
-     * @return an inventory report according to the given {@code catagories} 
+     * @param categories the catagories to include in the report
+     * @return an inventory report according to the given {@code catagories}
      */
     public String getCategoriesReport(List<List<String>> categories, int storeID){
         //getting all the products from the db
@@ -457,7 +476,7 @@ public class Inventory {
                 isInAllCategories = true;
             }
 
-            
+
             if(isIncluded){
                 categoriesReport += product.toString() + "\n";
             }
@@ -472,7 +491,7 @@ public class Inventory {
     }
 
     /**
-     * 
+     *
      * @return a report listing all the defected and expired items in the inventory
      */
     public String getDefectsReports(int storeID){
