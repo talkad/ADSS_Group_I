@@ -1,4 +1,4 @@
-package SuppliersModule.DAL;
+package DAL;
 
 import Buisness.*;
 import BusinessLayer.Product;

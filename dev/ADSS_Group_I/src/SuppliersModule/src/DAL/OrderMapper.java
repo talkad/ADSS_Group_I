@@ -1,4 +1,4 @@
-package SuppliersModule.DAL;
+package DAL;
 
 import Buisness.Arrangement;
 import Buisness.Order;
@@ -22,45 +22,19 @@ public class OrderMapper {
 
     private static OrderMapper instance;
 
-    public OrderMapper(){
+    public OrderMapper() {
         identityOrderMap = new HashMap<>();
     }
 
-    public static OrderMapper getInstance(){
-        if(instance == null)
+    public static OrderMapper getInstance() {
+        if (instance == null)
             instance = new OrderMapper();
         return instance;
     }
 
-    // ------ insert - update - delete ----------
-    /**
-     * initiate the product list with the data in DB when the system starts
-     * doesn't import items into the system
-     */
-    /*
-    private void initOrderMap(){
-        String sql = "SELECT * FROM Order";
-        Order order;
-        try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-
-            // loop through the result set
-            while (rs.next()) {
-                order = new Order(rs.getInt("orderNum"),stringToDate(rs.getString("orderDate")),rs.getString("status"),null,
-                        stringToDate(rs.getString("dateCreated")));
-                order.setItemList(getItems(rs.getInt("orderNum")));
-                identityOrderMap.put(order.getOrderNum(), order);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }*/
-
-    //Map<ItemId,amount>
-    public Map<Integer,Integer> getItems(int orderId){
+    public Map<Integer, Integer> getItems(int orderId) {
         String sql = "SELECT * FROM OrderItems WHERE orderNum = ?";
-        Map <Integer, Integer> items = new HashMap<>();
+        Map<Integer, Integer> items = new HashMap<>();
         try {
 
             PreparedStatement categoryStatement = conn.prepareStatement(sql);
@@ -80,17 +54,17 @@ public class OrderMapper {
         return items;
     }
 
-    public Map<Integer,Order> getOrders(int supplierId){
-        Map<Integer,Order> orders = new HashMap<>();
+    public Map<Integer, Order> getOrders(int supplierId) {
+        Map<Integer, Order> orders = new HashMap<>();
         String sql = "SELECT orderNum FROM Orders WHERE supplierId =?";
         try {
             PreparedStatement categoryStatement = conn.prepareStatement(sql);
             categoryStatement.setInt(1, supplierId);
 
             ResultSet rs = categoryStatement.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 Order order = getOrder(rs.getInt("orderNum"));
-                orders.put(order.getOrderNum(),order);
+                orders.put(order.getOrderNum(), order);
             }
         } catch (SQLException e) {
             System.err.println(e.getMessage() + " from here");
@@ -99,8 +73,8 @@ public class OrderMapper {
         return orders;
     }
 
-    public Order getOrder(int orderNum){
-        String sql = "SELECT orderDate,Status,dateCreated,isPeriodic From Orders WHERE orderNum =?";
+    public Order getOrder(int orderNum) {
+        String sql = "SELECT orderDate,Status,dateCreated,supermarketId,supplierId, isPeriodic From Orders WHERE orderNum =?";
         Order order = null;
         try {
 
@@ -108,9 +82,9 @@ public class OrderMapper {
             categoryStatement.setInt(1, orderNum);
 
             ResultSet rs = categoryStatement.executeQuery();
-            while (rs.next()){
-                order = new Order(orderNum,stringToDate(rs.getString("orderDate")),rs.getString("status"), getItems(orderNum),
-                stringToDate(rs.getString("dateCreated")),rs.getInt("isPeriodic") == 1);
+            while (rs.next()) {
+                order = new Order(orderNum, stringToDate(rs.getString("orderDate")), rs.getString("status"), getItems(orderNum),
+                        stringToDate(rs.getString("dateCreated")), rs.getInt("supermarketId"), rs.getInt("isPeriodic") == 1);
             }
         } catch (SQLException e) {
             System.err.println(e.getMessage() + " from here");
@@ -119,30 +93,31 @@ public class OrderMapper {
         return order;
     }
 
-    public Result saveOrder(Order order, int supplierId){
+    public Result saveOrder(Order order, int supplierId) {
         Result result = new Result();
         int numRowsInserted;
 
-        String insertCommand = "INSERT INTO Orders (orderNum, orderDate, status, dateCreated, supplierId, isPeriodic)" +
-                "VALUES(?,?,?,?,?,?)";
+        String insertCommand = "INSERT INTO Orders (orderNum, orderDate, status, dateCreated, supplierId, supermarketId, isPeriodic)" +
+                "VALUES(?,?,?,?,?,?,?)";
 
         try {
             PreparedStatement statement = conn.prepareStatement(insertCommand);
             statement.setInt(1, order.getOrderNum());
             statement.setString(2, order.getOrderDate().toString());
-            statement.setString(3,order.getStatus());
+            statement.setString(3, order.getStatus());
             statement.setString(4, order.getDateCreated().toString());
             statement.setInt(5, supplierId);
-            statement.setInt(6, order.isPeriodic() ? 1 : 0);
+            statement.setInt(6, order.getSupermarketID());
+            statement.setInt(7, order.isPeriodic() ? 1 : 0);
             numRowsInserted = statement.executeUpdate();
 
 
-            if(numRowsInserted == 1)
+            if (numRowsInserted == 1)
                 result.successful();
             else
                 result.failure("Failed to insert Order");
 
-        }catch (java.sql.SQLException e){
+        } catch (java.sql.SQLException e) {
             result.failure("Failed to create a statement");
         }
         if (result.isSuccessful()) {
@@ -154,29 +129,27 @@ public class OrderMapper {
     }
 
 
-    public Result updateOrder(Order order, int supplierId){
+    public Result updateOrder(Order order, int supplierId) {
         Result result = new Result();
         int numRowsUpdated;
-        String updateCommand = "UPDATE Orders SET orderDate = ?, status = ?, dateCreated = ?, supplierId = ?" +
+        String updateCommand = "UPDATE Orders SET orderDate = ?, status = ?" +
                 " WHERE orderNum = ?";
 
         try {
             PreparedStatement statement = conn.prepareStatement(updateCommand);
             statement.setString(1, order.getOrderDate().toString());
             statement.setString(2, order.getStatus());
-            statement.setString(3, order.getDateCreated().toString());
-            statement.setInt(4, supplierId);
-            statement.setInt(5,order.getOrderNum());
+            statement.setInt(3, order.getOrderNum());
 
             numRowsUpdated = statement.executeUpdate();
 
 
-            if(numRowsUpdated == 1)
+            if (numRowsUpdated == 1)
                 result.successful();
             else
                 result.failure("Failed to update Order");
 
-        }catch (java.sql.SQLException e){
+        } catch (java.sql.SQLException e) {
             result.failure("Failed to create a statement");
         }
         updateDate(order.getOrderNum(), order.getOrderDate());
@@ -184,8 +157,7 @@ public class OrderMapper {
     }
 
 
-
-    public Result deleteOrder(int orderNum){
+    public Result deleteOrder(int orderNum) {
         Result result = new Result();
         int numRowsDeleted;
         String deleteCommand = "DELETE FROM Orders WHERE orderNum = ?";
@@ -205,14 +177,14 @@ public class OrderMapper {
         } catch (java.sql.SQLException e) {
             result.failure("Failed to create a statement");
         }
-         result = deleteOrderItems(orderNum);
+        result = deleteOrderItems(orderNum);
         return result;
     }
 
-    public Result deleteOrders(int supplierId){
+    public Result deleteOrders(int supplierId) {
         Result result = new Result();
-        Map<Integer,Order> map = getOrders(supplierId);
-        for (Order order:map.values()) {
+        Map<Integer, Order> map = getOrders(supplierId);
+        for (Order order : map.values()) {
             result = deleteOrder(order.getOrderNum());
         }
         return result;
@@ -220,7 +192,7 @@ public class OrderMapper {
 
     public LocalDate getDate(int orderID) {
         String date = null;
-        String sql = "SELECT * FROM Categories WHERE orderNum = ?";
+        String sql = "SELECT * FROM Order WHERE orderNum = ?";
         try {
             PreparedStatement categoryStatement = conn.prepareStatement(sql);
             categoryStatement.setInt(1, orderID);
@@ -237,7 +209,7 @@ public class OrderMapper {
 
     public int getSupplier(int orderID) {
         int supplierId = -1;
-        String sql = "SELECT * FROM Orders WHERE orderNum = ?";
+        String sql = "SELECT supplierId FROM Orders WHERE orderNum = ?";
         try {
             PreparedStatement categoryStatement = conn.prepareStatement(sql);
             categoryStatement.setInt(1, orderID);
@@ -253,12 +225,53 @@ public class OrderMapper {
         return supplierId;
     }
 
-    public Result saveOrderItems(int orderId, Map<Integer,Integer> itemMap){
+    public Map<String, Integer> getOrderAmount() {
+        Map<String, Integer> map = new HashMap<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        for (int i = 1; i < 8; i++) {
+            String sql = "SELECT COUNT(orderNum) FROM Orders WHERE status = ? AND orderDate = ?";
+            try {
+                PreparedStatement categoryStatement = conn.prepareStatement(sql);
+                categoryStatement.setString(1, "pending");
+                categoryStatement.setString(2, LocalDate.now().plusDays(i).format(formatter));
+                ResultSet rs = categoryStatement.executeQuery();
+
+                // loop through the result set
+                int data = rs.getInt(1);
+                map.put(LocalDate.now().plusDays(i).format(formatter), data);
+
+            } catch (SQLException e) {
+            }
+        }
+        return map;
+    }
+
+    public Map<Integer, String> getOrdersToSet() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        Map<Integer, String> map = new HashMap<>();
+        for (int i = 1; i < 8; i++) {
+            String sql = "SELECT orderNum FROM Orders WHERE status = ? AND orderDate = ?";
+            try {
+                PreparedStatement categoryStatement = conn.prepareStatement(sql);
+                categoryStatement.setString(1, "pending");
+                categoryStatement.setString(2, LocalDate.now().plusDays(i).format(formatter));
+                ResultSet rs = categoryStatement.executeQuery();
+                while (rs.next()) {
+                    map.put(rs.getInt("orderNum"), LocalDate.now().plusDays(i).format(formatter));
+                }
+            } catch (SQLException e) {
+                System.err.println(e.getMessage() + " from here");
+            }
+        }
+        return map;
+    }
+
+    public Result saveOrderItems(int orderId, Map<Integer, Integer> itemMap) {
         Result result = new Result();
         result.successful();
         String sql = "INSERT INTO OrderItems(OrderNum, productId, amount) VALUES(?,?,?)";
         int numRowsInserted;
-        for (int itemId: itemMap.keySet()) {
+        for (int itemId : itemMap.keySet()) {
             try {
                 PreparedStatement statement = conn.prepareStatement(sql);
                 statement.setInt(1, orderId);
@@ -275,16 +288,16 @@ public class OrderMapper {
         return result;
     }
 
-    public Result updateOrderItems(int orderId,Map<Integer,Integer> ItemMap){
+    public Result updateOrderItems(int orderId, Map<Integer, Integer> ItemMap) {
         Result result = new Result();
         result = deleteOrderItems(orderId);
         if (!result.isSuccessful())
             return result;
-        result = saveOrderItems(orderId,ItemMap);
+        result = saveOrderItems(orderId, ItemMap);
         return result;
     }// deletes all current orderItems and inserts the new ones
 
-    public Result deleteOrderItems(int orderId){
+    public Result deleteOrderItems(int orderId) {
         Result result = new Result();
         int numRowsDeleted;
 
@@ -295,19 +308,19 @@ public class OrderMapper {
             statement.setInt(1, orderId);
             numRowsDeleted = statement.executeUpdate();
 
-            if(numRowsDeleted >= 1)
+            if (numRowsDeleted >= 1)
                 result.successful();
             else
                 result.failure("Failed to update Arrangement");
-        }catch (java.sql.SQLException e){
+        } catch (java.sql.SQLException e) {
             result.failure("Failed to create a statement");
         }
         return result;
     }
 
-    public Result updateDate(int orderId, LocalDate date){
+    public Result updateDate(int orderId, LocalDate date) {
         Result result = new Result();
-        String sql = "UPDATE Orders SET , orderDate = ?" +
+        String sql = "UPDATE Orders SET orderDate = ?" +
                 " WHERE orderNum = ?";
         int numRowsUpdated = 0;
         try {
@@ -316,11 +329,11 @@ public class OrderMapper {
             statement.setInt(2, orderId);
 
             numRowsUpdated = statement.executeUpdate();
-            if(numRowsUpdated == 1)
+            if (numRowsUpdated == 1)
                 result.successful();
             else
                 result.failure("Failed to update Order Date");
-        }catch (java.sql.SQLException e){
+        } catch (java.sql.SQLException e) {
             result.failure("Failed to create a statement");
         }
         return result;
@@ -328,14 +341,14 @@ public class OrderMapper {
     }
 
     //date = "16/08/2016" ----- example
-    private LocalDate stringToDate(String date){
+    private LocalDate stringToDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         //String date = "16/08/2016";
         LocalDate localDate = LocalDate.parse(date, formatter);
         return localDate;
     }
 
-    public int  getMaxOrder(){
+    public int getMaxOrder() {
         String sql = "SELECT MAX(orderNum) AS maxOrder FROM Orders";
         int max;
         try {
@@ -351,38 +364,26 @@ public class OrderMapper {
         }
         return max;
     }
-/*
-    public Result addMapper(Order order,int supplierId){
-        initOrderMap();
-        Result result = insert(order,supplierId);
 
-        if(result.isSuccessful())
-            identityOrderMap.put(order.getOrderNum(), order);
+    public Result updateOrderStatus(int orderId, String status) {
+        Result result = new Result();
+        String sql = "UPDATE Orders SET status = ?" +
+                " WHERE orderNum = ?";
+        int numRowsUpdated = 0;
+        try {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, status);
+            statement.setInt(2, orderId);
 
-        return result;
-    }
-
-
-    public Result updateMapper(Order order, int supId){
-        initOrderMap();
-        Result result = update(order,supId);
-        if(result.isSuccessful()){
-            identityOrderMap.remove(order.getOrderNum());
-            identityOrderMap.put(order.getOrderNum(), order);
+            numRowsUpdated = statement.executeUpdate();
+            if (numRowsUpdated == 1)
+                result.successful();
+            else
+                result.failure("Failed to update Order status");
+        } catch (java.sql.SQLException e) {
+            result.failure("Failed to create a statement");
         }
         return result;
     }
-
-
-
-    public Result deleteMapper(int orderId){
-        initOrderMap();
-        Result result = delete(orderId);
-        if(result.isSuccessful()){
-            identityOrderMap.remove(orderId);
-        }
-        return result;
-    }
-    */
-
 }
+

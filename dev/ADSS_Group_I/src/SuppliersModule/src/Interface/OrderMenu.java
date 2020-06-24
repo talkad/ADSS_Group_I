@@ -1,9 +1,9 @@
-package SuppliersModule.Interface;
+package Interface;
 
-import SuppliersModule.Business.Order;
-import SuppliersModule.Business.SupplierCard;
-import SuppliersModule.Business.SupplierManager;
-import SuppliersModule.Presentation.MenuSuppliers;
+import Buisness.Order;
+import Buisness.SupplierCard;
+import Buisness.SupplierManager;
+import Presentation.MenuSuppliers;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -43,7 +43,17 @@ public class OrderMenu {
         MenuHandler.getInstance().handleOrderMenu(commands, companyID);
 
     }
-    public static void placeOrder(int companyID){
+    public static void placeOrder(int companyID){  //TODO
+        int supermarketId = -1;
+        System.out.println("Please enter the supermarket ID of the supermarket branch you wish to order to\n");
+        try {
+            supermarketId = scanner.nextInt();
+        }
+        catch (Exception e){
+            System.out.println("A Supermarket Id is an integer!");
+            runMenu();
+            return;
+        }
         SupplierCard supplier = SupplierManager.getSuppliers().get(companyID);
         Map<Integer,Integer> map = parseItems("Please enter the items you wish to order");
         if (map == null){
@@ -51,7 +61,7 @@ public class OrderMenu {
             runMenu();
             return;
         }
-        System.out.println("Please enter the items you wish to order in the following format: DD/MM/YYYY\n");
+        System.out.println("Please enter the date of the order in the following format: DD/MM/YYYY\n");
         String date = scanner.next();
         LocalDate dateTime;
         try{
@@ -64,7 +74,7 @@ public class OrderMenu {
             runMenu();
             return;
         }
-        if(supplier.placeOrder(map,dateTime))
+        if(supplier.placeOrder(map,dateTime,supermarketId))
             System.out.println("Order placed successfully!");
         else{
             System.out.println("One or more of the items specified are not part of the arrangement with the supplier\n" +
@@ -103,6 +113,7 @@ public class OrderMenu {
         System.out.println("Please enter the number of the order you would like to cancel");
         Scanner scanner = new Scanner((System.in));
         int choice;
+        String Id;
         try {
             choice = scanner.nextInt();
         }
@@ -115,6 +126,30 @@ public class OrderMenu {
         if (!supplier.getOrders().containsKey(choice)){
             System.out.println("error:404 - Order not found!");
             runMenu();
+        }
+        System.out.println("Please enter the ID of the Human Resource Manager that authorized the cancellation\n");
+        Id = scanner.next();
+        if (true) //TODO  talk to Employees
+        {
+        System.out.println("the Id supplier does not correspond with any Human Resource Managers");
+        runMenu();
+        return;
+        }
+        System.out.println("Please enter the ID of the Logistic Manager that authorized the cancellation\n");
+        Id = scanner.next();
+        if (true) // TODO talk to Employees
+        {
+            System.out.println("the Id supplier does not correspond with any Logistic Managers");
+            runMenu();
+            return;
+        }
+        System.out.println("Please enter the ID of the Warehouse Manager that authorized the cancellation\n");
+        Id = scanner.next();
+        if (true) // TODO talk to Employees
+        {
+            System.out.println("the Id supplier does not correspond with any Warehouse Managers");
+            runMenu();
+            return;
         }
         else{
             supplier.cancelOrder(choice);

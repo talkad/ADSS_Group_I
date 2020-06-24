@@ -1,6 +1,8 @@
 package SuppliersModule.Interface;
+//package SuppliersModule;
 
 import SuppliersModule.Business.SupplierManager;
+import SuppliersModule.Business.SupplierCard;
 import SuppliersModule.DAL.SupplierMapper;
 
 import java.sql.SQLOutput;
@@ -23,6 +25,14 @@ public class SupplierMenu {
     }
 
     public static void addSupplier(){
+        System.out.println("first, please enter address");
+        String address = scanner.nextLine();
+        if(!SuppliersDeliveryConnector.isAddressExist(address)) { //modify, use deliverY function thru connector
+            System.out.println("address doesnt exists...");
+            runMenu()
+            ;return;
+        }
+
         System.out.println("Please Enter the following (without spaces):\nSupplier's name : Manifacturer's name : Company id : Bank Account : Payments conditions : arrangment type (fixed/single) : Self Pickup(true/false)");
         String input = scanner.nextLine();
         String [] values = input.split(":");
@@ -44,8 +54,10 @@ public class SupplierMenu {
             runMenu();
             return;
         }
-        if(SupplierManager.addSupplier(values[0],values[1],companyID,bankAccount,values[4],values[5],selfPickup))
+        if(SupplierManager.addSupplier(values[0],values[1],companyID,bankAccount,values[4],values[5],selfPickup)) {
             System.out.println("Added Supplier successfully");
+            SupplierDeliveryConnector.addSupplierID(address,values[2]);
+        }
         else
             System.out.println("Supplier already existed in the System");
     }

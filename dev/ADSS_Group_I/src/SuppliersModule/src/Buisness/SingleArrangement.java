@@ -1,4 +1,4 @@
-package SuppliersModule.Business;
+package Buisness;
 
 public class SingleArrangement extends Arrangement {
 

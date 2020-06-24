@@ -1,4 +1,4 @@
-package SuppliersModule.Interface;
+package Interface;
 
 import Buisness.SupplierManager;
 import Presentation.MenuSuppliers;

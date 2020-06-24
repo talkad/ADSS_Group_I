@@ -1,4 +1,4 @@
-package SuppliersModule.Interface;
+package Interface;
 
 import Buisness.FixedArrangement;
 import Buisness.SupplierManager;

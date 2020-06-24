@@ -1,6 +1,6 @@
-package SuppliersModule.Business;
+package Buisness;
 
-import SuppliersModule.DAL.OrderMapper;
+import DAL.OrderMapper;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -12,23 +12,26 @@ public class Order {
     private String _status;
     private Map<Integer, Integer> _itemList;
     private LocalDate _dateCreated;
+    private int _supermarketID;
     private boolean _isPeriodic;
 
-    public Order(int orderNum, LocalDate orderDate, String status, Map<Integer, Integer> itemList, boolean isPeriodic) {
+    public Order(int orderNum, LocalDate orderDate, String status, Map<Integer, Integer> itemList, int supermarketID,boolean isPeriodic) {
         this._orderNum = orderNum;
         this._orderDate = orderDate;
         this._status = status;
         this._itemList = itemList;
         this._dateCreated = LocalDate.now();
+        this._supermarketID = supermarketID;
         this._isPeriodic = isPeriodic;
     }
 
-    public Order(int _orderNum, LocalDate _orderDate, String _status, Map<Integer, Integer> _itemList, LocalDate _dateCreated, boolean isPeriodic) {
+    public Order(int _orderNum, LocalDate _orderDate, String _status, Map<Integer, Integer> _itemList, LocalDate _dateCreated, int supermarketID, boolean isPeriodic) {
         this._orderNum = _orderNum;
         this._orderDate = _orderDate;
         this._status = _status;
         this._itemList = _itemList;
         this._dateCreated = _dateCreated;
+        this._supermarketID = supermarketID;
         this._isPeriodic = isPeriodic;
     }
 
@@ -71,6 +74,14 @@ public class Order {
 
     public LocalDate getDateCreated() {
         return _dateCreated;
+    }
+
+    public int getSupermarketID() {
+        return _supermarketID;
+    }
+
+    public void setSupermarketID(int _supermarketID) {
+        this._supermarketID = _supermarketID;
     }
 
     public void setDateCreated(LocalDate _dateCreated) {

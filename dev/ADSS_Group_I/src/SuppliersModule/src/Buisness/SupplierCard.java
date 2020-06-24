@@ -1,8 +1,9 @@
-package SuppliersModule.Business;
+package Buisness;
 
-import SuppliersModule.Business.*;
-import SuppliersModule.DAL.ArrangementMapper;
-import SuppliersModule.DAL.OrderMapper;
+import BusinessLayer.Product;
+import DAL.ArrangementMapper;
+import DAL.OrderMapper;
+import DAL.SupplierMapper;
 import DataAccessLayer.ProductMapper;
 
 import java.time.LocalDate;
@@ -119,12 +120,12 @@ public class SupplierCard {
             OrderMapper.getInstance().saveOrder(order,_companyId);
     }
 
-    public boolean placeOrder(Map<Integer, Integer> items, LocalDate date){
+    public boolean placeOrder(Map<Integer, Integer> items, LocalDate date, int supermarketId){
         for (int item: items.keySet()){
             if (!ArrangementMapper.getInstance().getArrangement(_companyId).getItems().containsKey(item))
                 return false;
         }
-        Order order = new Order(SupplierManager.get_orderNumIncrement(),date, "Pending", items, false);
+        Order order = new Order(SupplierManager.get_orderNumIncrement(),date, "pending", items,supermarketId, false);
         _orders.put(SupplierManager.get_orderNumIncrement(),order);
         _arrangement.get_deliveryDates().getDates().put(order.getOrderNum(),date);
         SupplierManager.incrementOrderNum();
@@ -133,10 +134,13 @@ public class SupplierCard {
     }
 
     public boolean addContact(ContactPerson contact){
+        if  (this.getContacts().isEmpty())
+            return false; //
         if (contact == null || _contacts.contains(contact))
             return false;
         else{
             _contacts.add(contact);
+            SupplierMapper.getInstance().addContact(this._companyId, contact);
             return true;
         }
     } //TODO
@@ -147,6 +151,7 @@ public class SupplierCard {
         for (ContactPerson person: _contacts){
             if (person.getName().equals(contact)){
                 _contacts.remove(person);
+                SupplierMapper.getInstance().deleteContact(this._companyId, person);
                 return true;
             }
         }

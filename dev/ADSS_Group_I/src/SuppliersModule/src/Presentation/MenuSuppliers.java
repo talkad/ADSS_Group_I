@@ -1,8 +1,8 @@
-package SuppliersModule.Presentation;
+package Presentation;
 
-import SuppliersModule.Interface.ArrangementMenu;
-import SuppliersModule.Interface.OrderMenu;
-import SuppliersModule.Interface.SupplierMenu;
+import Interface.ArrangementMenu;
+import Interface.OrderMenu;
+import Interface.SupplierMenu;
 
 import java.util.Scanner;
 
