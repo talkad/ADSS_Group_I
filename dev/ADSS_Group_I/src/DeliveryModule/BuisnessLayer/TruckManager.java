@@ -20,7 +20,7 @@ public class TruckManager {
         return DriverManager.CheckLicense(l1, driverId);
     }
 
-    public static boolean CheckWeight(int truckNumber, int NowWeight){
+    public static boolean CheckWeight(int truckNumber, double NowWeight){
         int weight = -1;
         for (Truck item : Trucks){
             if (item.getNumber() == truckNumber)
@@ -33,6 +33,28 @@ public class TruckManager {
     public static void addTruck(int Trucknumber, String model, int netWeight, int maxWeight, License lic)
     {
         Trucks.add(new Truck(Trucknumber, model, netWeight, maxWeight, lic));
+    }
+    
+    public static Truck getTruckByID(int ID){
+    	for (Truck truck : Trucks) {
+			if (truck.isMe(ID))
+				return truck;
+		}
+    	return null;
+    }
+    
+    public static List<Truck> getAvailiableTruck(List<Truck> busyTruck){
+    	List<Truck> ansTruck = new ArrayList<>();
+    	for(Truck truck : Trucks) {
+    		boolean flag = true;
+    		for(Truck Btruck : busyTruck) {
+    			if(truck.getNumber() == Btruck.getNumber())
+    				flag = false;
+    		}
+    		if(flag)
+    			ansTruck.add(truck);
+    	}
+    	return ansTruck;
     }
 
     public static void Loadall() throws ApplicationException

@@ -16,6 +16,7 @@ public class TruckDAL implements iDAL {
     	this.MaxWeight = maxWeight;
     	this.license = license;
     }
+    
 
 	@Override
 	public String getFields() {

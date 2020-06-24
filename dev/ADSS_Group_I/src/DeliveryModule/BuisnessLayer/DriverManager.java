@@ -4,7 +4,6 @@ import org.omg.CORBA.portable.ApplicationException;
 
 
 import DeliveryModule.DAL.DAL;
-import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,7 +49,7 @@ public class DriverManager {
 
     }
 
-    public static boolean CheckShift(String date, int time, int id) throws ApplicationException {
+    public static boolean CheckShift(String date, String time, int id) throws ApplicationException {
         return getDriver(id).checkShift(date, time);
     }
 

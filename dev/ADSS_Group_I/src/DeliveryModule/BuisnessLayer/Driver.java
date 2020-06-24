@@ -25,11 +25,18 @@ public class Driver {
     public int getID() { return this.employee.getId(); }
 
 
-    public boolean checkShift(String date, int time) throws ApplicationException {
+    public boolean checkShift(String date, String time) throws ApplicationException {
         String shiftTime = date + " " + time;
         return mainBL.getInstance().isEmployeeInShift(this.getID(), shiftTime);
     }
-
+    
+    public boolean isLicenseSet(License l) {
+    	for(License license : DriverLicense) {
+    		if(l.equals(license))
+    			return true;
+    	}
+    	return false;
+    }
 
     public void editEmployee(Employee newEmp)
     {

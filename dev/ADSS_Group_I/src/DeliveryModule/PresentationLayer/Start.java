@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
+import java.util.HashMap;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import DeliveryModule.BuisnessLayer.*;
 import DeliveryModule.DAL.DAL;
@@ -102,8 +104,6 @@ public class Start {
     
     private static void OrderStock() throws IOException, ParseException, ApplicationException {
     	CreateFrom();
-    	
-
     }
     
     private static void CreateFrom() throws IOException, ParseException, ApplicationException {
@@ -114,7 +114,7 @@ public class Start {
 		System.out.println("please enter departure date");
 		String date = buffer.readLine();
 
-		System.out.println("please enter departure time");
+		System.out.println("please enter departure time, 1 for morning delivery and 2 for evening delivery");
 		String time = buffer.readLine();
 		//String[] arr = timestring.split(":");
 		//LocalTime time = LocalTime.of(Integer.parseInt(arr[0]), Integer.parseInt(arr[1]),Integer.parseInt(arr[2]));
@@ -124,18 +124,20 @@ public class Start {
 		
 		System.out.println("please enter Source");	
 		String sourceAdd = buffer.readLine();
-		
+		/*
 		System.out.println("please enter item list: ");
 		ItemList items = getItemList();
-	
+	*/
 		System.out.println("please enter truck number");
 		Integer	truck = Integer.parseInt(buffer.readLine());
 
 		System.out.println("please enter driver id");
 		int driverId = Integer.parseInt(buffer.readLine());
 
+		System.out.println("please enter order ID");
+		Integer	orderID = Integer.parseInt(buffer.readLine());
 		
-		boolean succes = DoThinks.CreateForm(date, time, destinyAdd, sourceAdd, items, truck, driverId);
+		boolean succes = DoThinks.CreateForm(date, time, destinyAdd, sourceAdd, truck, driverId, orderID);
 		if(succes)
 			System.out.println("Form Created succesfully");
 		else
@@ -173,10 +175,10 @@ public class Start {
     	System.out.println("would you like to edit the Form? Y/N");
     	if(buffer.readLine().equals("Y"))
     	{
-    		Date dep;
+    		String dep;
     		System.out.println("would you like to Edit departure date? Y/N");
     		if(buffer.readLine().equals("Y"))
-    			dep = new SimpleDateFormat("dd/MM/yyyy").parse(buffer.readLine());
+    			dep = buffer.readLine();
     		else
     			dep = null;
     		
@@ -194,7 +196,7 @@ public class Start {
     		else
     			sourceAdd = null;
     		
-    		ItemList items;
+    		Map<Integer, Integer> items;
     		System.out.println("would you like to Edit items list? Y/N");
     		if(buffer.readLine().equals("Y"))
     			items = getItemList();
@@ -223,25 +225,26 @@ public class Start {
     
     
     
-    private static ItemList getItemList() throws IOException
+    private static Map<Integer, Integer> getItemList() throws IOException
     {
-    	ItemList ans = new ItemList();
-    	ans.addItem(getItem());
+    	Map<Integer, Integer> ans = new HashMap<Integer, Integer>();
+    	System.out.println("please enter Item id");
+    	Integer id = Integer.parseInt(buffer.readLine());
+    	System.out.println("please Enter Quantity");
+    	Integer quantity = Integer.parseInt(buffer.readLine());
+    	ans.put(id, quantity);
     	System.out.println("would you like to enter another item? Y/N");
     	while(buffer.readLine().equals("Y"))
     	{
-    		ans.addItem(getItem());
+    		System.out.println("please enter Item id");
+        	id = Integer.parseInt(buffer.readLine());
+        	System.out.println("please Enter Quantity");
+        	quantity = Integer.parseInt(buffer.readLine());
+        	ans.put(id, quantity);
     		System.out.println("would you like to enter another item? Y/N");
     	}
 
     	return ans;
-    }
-    private static Item getItem() throws IOException
-    {
-    	System.out.println("please enter Item name");
-    	String name = buffer.readLine();
-    	System.out.println("please Enter Quantity");
-    	return new Item(name, Integer.parseInt(buffer.readLine()));
     }
     
     

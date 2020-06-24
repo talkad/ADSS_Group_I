@@ -1,6 +1,8 @@
 package DeliveryModule.BuisnessLayer;
 import DeliveryModule.DAL.DAL;
 import DeliveryModule.DAL.SiteAreaDAL;
+import DeliveryModule.DAL.SiteDAL;
+
 import org.omg.CORBA.portable.ApplicationException;
 
 import java.sql.SQLException;
@@ -88,6 +90,12 @@ public class SiteManager {
 				return site;
 		}
 		return null;
+    }
+    
+    public static void addSupplierID(String address, int ID) throws ApplicationException {
+    	Site site = FindSite(address);
+    	SiteDAL newSite = new SiteDAL(site.Address, site.PhoneNumber, site.ContantName, ID);
+    	DAL.Update("Site", newSite, "Address = " + address);
     }
     
     public static List<DeliveryArea> FindAreasByName(List<String> Names)

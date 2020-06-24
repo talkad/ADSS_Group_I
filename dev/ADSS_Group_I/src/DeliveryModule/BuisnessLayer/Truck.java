@@ -18,5 +18,8 @@ public class Truck {
     public License getLicense(){ return license; }
     public int getNumber() { return TruckNumber; }
     public int getMaxWeight() { return MaxWeight; }
-
+    public boolean isMe(int Id)
+    {
+    	return this.TruckNumber == Id;
+    }
 }
