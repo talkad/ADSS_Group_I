@@ -2,8 +2,6 @@ package EmployeeModule.BusinessLayer;
 
 import DeliveryModule.InterfaceLayer.DoThinks;
 import EmployeeModule.DataAccessLayer.*;
-
-import EmployeeModule.Pair;
 import org.omg.CORBA.portable.ApplicationException;
 
 import java.util.*;
@@ -49,9 +47,15 @@ public class mainBL {
             mainDataInstance.editEmployee(dalEmployee);
     }
 
-    public void createShift(Date date, int time, int branch, int shiftId, List<String> roles, List<Pair<Integer, String>> employees){
-        mainDataInstance.writingShift(new DALShift(date, time, branch, shiftId, roles, employees));
-        mainDataInstance.writeShiftEmployees(shiftId, employees);
+    public void createShift(Date date, int time, int branch, int shiftId, List<String> roles, List<Pair<Integer, String>> employees, boolean updateFlag){
+        if(!updateFlag) {
+            mainDataInstance.writingShift(new DALShift(date, time, branch, shiftId, roles, employees));
+            mainDataInstance.writeShiftEmployees(shiftId, employees);
+        }
+        else{
+            mainDataInstance.writingShift(new DALShift(date, time, branch, shiftId, roles, employees));
+            mainDataInstance.writeShiftEmployees(shiftId, employees);
+        }
     }
 
     public boolean searchEmployee(int id, boolean flag) throws ApplicationException {
@@ -100,8 +104,8 @@ public class mainBL {
         mainDataInstance.writeFreeTime(id, freeTime);
     }
 
-    public void unFreeTime(int id, int period, int day){
-        mainDataInstance.writeUnFreeTime(id, period, day);
+    public void writeUpdatedFreeTime(int id, int period, int day, boolean available){
+        mainDataInstance.writeUpdatedFreeTime(id, period, day, available);
     }
 
     public String employeeInfo(int id){
@@ -120,6 +124,14 @@ public class mainBL {
         return mainDataInstance.getShift(key);
     }
 
+    public List<String> getDriversInShift(String key){
+        return mainDataInstance.getDriversInShift(key);
+    }
+
+    public List<Integer> getEmployeesInShift(String key){
+        return mainDataInstance.getEmployeesInShift(key);
+    }
+
     public boolean isEmployeeInShift(int id, String shiftTime) throws ApplicationException {
         if(searchShift(shiftTime, true)) {
             return mainDataInstance.isEmployeeInShift(id, shiftTime);
@@ -133,6 +145,15 @@ public class mainBL {
 
     public Employee GetEmployee(int id)
     {
-        return mainData.getInstance().GetEmployee(id);
+        return mainDataInstance.GetEmployee(id);
+    }
+
+    public void removeShift(String shiftTime) {
+        //todo? mainDataInstance.removeShiftEmployees(shiftTime);
+        mainDataInstance.removeShift(shiftTime);
+    }
+
+    public int getShiftCounter(){
+        return mainDataInstance.getShiftIdCounter();
     }
 }

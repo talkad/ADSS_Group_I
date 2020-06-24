@@ -1,7 +1,7 @@
-package DataAccessLayer;
+package InventoryModule.DataAccessLayer;
 
-import BusinessLayer.Result;
-import DAL_Connector.DatabaseManager;
+import Interface.DAL_Connector.DatabaseManager;
+import InventoryModule.Business.Result;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

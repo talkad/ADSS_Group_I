@@ -1,74 +1,126 @@
-package Menu;
+package Interface.Menu;
 
-import DAL_Connector.DatabaseManager;
-import Presentation.MenuSuppliers;
-import PresentationLayer.InventoryMenu;
+import EmployeeModule.InterfaceLayer.Service;
+import InventoryModule.PresentationLayer.InventoryMenu;
+import SuppliersModule.Presentation.MenuSuppliers;
+import org.omg.CORBA.portable.ApplicationException;
 
 import java.util.Scanner;
 
 public class Menu {
 
     private static InventoryMenu inventoryMenu = InventoryMenu.getInstance();
-    private static MenuSuppliers menu = MenuSuppliers.getInstance();
+    private static MenuSuppliers suppliersMenu = MenuSuppliers.getInstance();
+    private static Service employeeMenu = Service.getInstance();
+    protected static int login = -1;
+
 
     /**
      * This function displays the menu to the standard output stream
      */
     public static void displayMenu(String[] options){
-        System.out.println("\nMenu- choose an index:");
+        System.out.println("\nchoose action:");
         for(int i=0; i<options.length; i++)
-            System.out.println((i+1) +". "+ options[i]);
+            System.out.println((i+1) +") "+ options[i]);
 
         System.out.print("Selection: ");
     }
 
-    /**
-     * The function takes care on invalid inputs in order to make the menu algorithm more robust for invalid inputs.
-     * @param in get an input stream
-     * @return the input number. return 0 if the input wasn't a number.
-     */
-    public static int getInputIndex(Scanner in){
-        int input=0;
-        try{
-            input= in.nextInt();
-        } catch (Exception e){
-            System.out.println("Invalid input- this is not a number.");
+    public static int isNumeric(String str) {
+        try {
+            return Integer.parseInt(str);
+        } catch(NumberFormatException e){
+            return -1;
         }
-        return input;
     }
 
+    private static boolean isValidLogin(){
+        if(login < 0){
+            System.out.println("A valid employee must be logged in");
+            return false;
+        }
+        else return true;
+    }
 
-    public static void main(String[] args){
-        Scanner in = new Scanner(System.in);
+    private static void login(Scanner scanner) {
+        System.out.println("Insert employee id: ");
+        login = isNumeric(scanner.nextLine());
+        if(login != -1){
+            try {
+                if(employeeMenu.searchEmployee(login))
+                    System.out.println("Successfully logged in");
+                else login = -1;
+            } catch (ApplicationException e){
+                System.out.println(e.getId());
+            }
+        }
+        else{
+            System.out.println("Employee doesn't exists in the System");
+        }
+    }
 
-        String[] options=new String[]
-                {"Inventory menu", "Suppliers menu", "exit"};
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String[] options = new String[]
+                {"Employee menu", "Inventory menu", "Suppliers menu", "Delivery menu", "login",  "exit"};
+        String input;
+        boolean quit = false;
 
-        boolean shouldTerminate=false;
-        int input;
-
-        while(!shouldTerminate){
+        while(!quit){
             displayMenu(options);
-            input=getInputIndex(in);
+            input=scanner.nextLine();
 
             switch (input) {
-                case 1:
-                    inventoryMenu.display(in);
+                case ("1"):
+                    try {
+                        if (isValidLogin() && employeeMenu.hasRole(login, "hr manager")) {
+                            employeeMenu.display(scanner);
+                        }
+                    } catch (ApplicationException e){
+                        System.out.println(e.getId());
+                    }
                     break;
-                case 2:
-                    menu.runMenu(in);
+                case ("2"):
+                    try {
+                        if (isValidLogin() && employeeMenu.hasRole(login, "storekeeper")) {
+                            inventoryMenu.display(scanner);
+                        }
+                    } catch (ApplicationException e){
+                        System.out.println(e.getId());
+                    }
                     break;
-                case 3:
+                case ("3"):
+                    try {
+                        if (isValidLogin() && employeeMenu.hasRole(login, "storekeeper") || employeeMenu.hasRole(login, "store manager")) {
+                            suppliersMenu.runMenu(scanner);
+                        }
+                    } catch (ApplicationException e){
+                        System.out.println(e.getId());
+                    }
+                    break;
+                case ("4"):
+                    try {
+                        if (isValidLogin() && employeeMenu.hasRole(login, "logistics manager")) {
+                            suppliersMenu.runMenu(scanner);
+                        }
+                    } catch (ApplicationException e){
+                        System.out.println(e.getId());
+                    }//TODO NEEDS TO BE DELIVERY MENU
+                    break;
+                case("5"):
+                    login(scanner);
+                    break;
+                case ("6"):
                     System.out.println ( "Bye..." );
-                    DatabaseManager.getInstance().closeConnection();
-                    shouldTerminate=true;
+                    quit = true;
                     break;
+
                 default:
                     System.out.println ( "Unrecognized option" );
-                    DatabaseManager.getInstance().closeConnection();
-                    shouldTerminate=true;
                     break;
             }
         }
     }
+
+
 }

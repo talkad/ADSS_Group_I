@@ -3,6 +3,7 @@ package InventoryModule.DTO;
 import java.time.LocalDate;
 
 public class ItemDTO {
+
     private int orderID;
     private int count;
     private int numOfDefects;

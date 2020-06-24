@@ -1,6 +1,6 @@
-package Bussiness_Connector;
+package Interface.Bussiness_Connector;
 
-import Buisness.SupplierManager;
+
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -16,26 +16,26 @@ public class Connector {
         return instance;
     }
 
-    public int sendLackOfItemOrder(int productId, int amount, int price){
-        return SupplierManager.placeLackOfInventory( productId, amount, price);
+    public int sendLackOfItemOrder(int productId, int amount, int price, int storeID){
+        return Buisness.SupplierManager.placeLackOfInventory( productId, amount, price);
     }
 
-    public boolean setPeriodicOrder(int orderId, Map<Integer, Integer> toSet, int status){
+    public boolean setPeriodicOrder(int orderId, Map<Integer, Integer> toSet, int status, int storeID){
         if(status == 0){
-            SupplierManager.setPeriodicOrder(orderId,toSet,status);
+            Buisness.SupplierManager.setPeriodicOrder(orderId,toSet,status);
             return true;
         }
         else{
-            return  SupplierManager.setPeriodicOrder(orderId,toSet,status);
+            return  Buisness.SupplierManager.setPeriodicOrder(orderId,toSet,status);
         }
     }
 
-    public boolean changePeriodicOrderDate(int orderId, LocalDate newDate){
-        return SupplierManager.changePeriodicOrderDate(orderId,newDate);
+    public boolean changePeriodicOrderDate(int orderId, LocalDate newDate, int storeID){
+        return Buisness.SupplierManager.changePeriodicOrderDate(orderId,newDate);
     }
 
 
-    public Map<Integer,Integer> tryLoadInventory(int orderID){
-        return  SupplierManager.orderItems(orderID);
+    public Map<Integer,Integer> tryLoadInventory(int orderID, int storeID){
+        return  Buisness.SupplierManager.orderItems(orderID, storeID);
     }
 }

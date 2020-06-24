@@ -92,4 +92,44 @@ public class ShiftMapper {
         }
         return false;
     }
+
+    public List<String> getDriversInShift(String shiftTime) {
+        List<String> driver = new LinkedList<>();
+        for (Pair<Integer, String> p: this.shiftMap.get(shiftTime).getEmployees()) {
+            if(p.getSecond().equals("driver"))
+                driver.add(p.getFirst().toString());
+        }
+        return driver;
+    }
+
+    public List<Integer> getEmployeesInShift(String shiftTime) {
+        List<Integer> employees = new LinkedList<>();
+        for (Pair<Integer, String> p: this.shiftMap.get(shiftTime).getEmployees()) {
+            employees.add(p.getFirst());
+        }
+        return employees;
+    }
+
+    public void removeShift(String shiftTime) {
+        int shiftId = getShift(shiftTime).getShiftId();
+        shiftEmployeesInstance.removeShiftEmployees(shiftId);
+        String REMOVE_SHIFT = "DELETE FROM Shifts WHERE  shiftId = " + shiftId;
+        try (Connection conn = dataInstance.connect();
+             PreparedStatement ps = conn.prepareStatement(REMOVE_SHIFT)) {
+            ps.executeUpdate();
+            shiftMap.remove(shiftTime);
+        } catch (SQLException e) {e.printStackTrace();}
+    }
+
+    public int getShiftIdCounter() {
+        String GET_MAX_SHIFT_ID = "SELECT MAX(shiftId) FROM Shifts";
+        try (Connection conn = dataInstance.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(GET_MAX_SHIFT_ID)) {
+                return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

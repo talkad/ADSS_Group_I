@@ -5,6 +5,7 @@ import java.util.List;
 public class ProductDTO {
 
     private int id;
+    private int storeID;
     protected String name;
     private String manufacturer;
     private int minCapacity;
@@ -16,9 +17,10 @@ public class ProductDTO {
     private List<String> categories;
     private List<ItemDTO> itemDTOs;
 
-    public ProductDTO(int id, String name, String manufacturer, int minCapacity, int buyingPrice, int sellingPrice,
+    public ProductDTO(int id, int storeID, String name, String manufacturer, int minCapacity, int buyingPrice, int sellingPrice,
                       double weight, int inventoryCapacity, int storeCapacity, List<String> categories, List<ItemDTO> itemDTOs) {
         this.id = id;
+        this.storeID = storeID;
         this.name = name;
         this.manufacturer = manufacturer;
         this.minCapacity = minCapacity;
@@ -118,5 +120,13 @@ public class ProductDTO {
 
     public void setWeight(double weight) {
         this.weight = weight;
+    }
+
+    public int getStoreID() {
+        return storeID;
+    }
+
+    public void setStoreID(int storeID) {
+        this.storeID = storeID;
     }
 }

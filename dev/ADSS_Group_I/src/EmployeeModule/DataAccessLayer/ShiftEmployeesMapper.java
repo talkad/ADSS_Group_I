@@ -48,4 +48,12 @@ public class ShiftEmployeesMapper {
             e.printStackTrace();
         }
     }
+
+    public void removeShiftEmployees(int shiftId) {
+        String REMOVE_SHIFT_EMPLOYEES = "DELETE FROM ShiftEmployees WHERE shiftId = " + shiftId;
+        try (Connection conn = dataInstance.connect();
+             PreparedStatement ps = conn.prepareStatement(REMOVE_SHIFT_EMPLOYEES)) {
+            ps.executeUpdate();
+        } catch (SQLException e) {e.printStackTrace();}
+    }
 }
