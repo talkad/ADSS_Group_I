@@ -1,10 +1,11 @@
-package DeliveryModule.BusinessLayer;
+package DeliveryModule.BuisnessLayer;
 import java.util.ArrayList;
-
+import java.util.HashMap;
 import java.util.List;
 
 import org.omg.CORBA.portable.ApplicationException;
 
+import DeliveryModule.DAL.DAL;
 
 public class TruckManager {
     private static List<Truck> Trucks = new ArrayList<Truck>();

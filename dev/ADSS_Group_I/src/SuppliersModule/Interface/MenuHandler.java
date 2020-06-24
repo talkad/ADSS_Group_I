@@ -1,6 +1,6 @@
-package Interface;
+package SuppliersModule.Interface;
 
-import SuppliersModule.Business.SupplierManager;
+import SuppliersModule.Buisness.SupplierManager;
 import SuppliersModule.Presentation.MenuSuppliers;
 
 import java.util.Scanner;
@@ -23,7 +23,7 @@ public class MenuHandler {
     }
 
 
-    public int handleChoice (String [] commands){
+    public int handleChoice (String [] commands, boolean storeManager){
         for (String command : commands) System.out.println(command);
         int choice = -1;
         try {
@@ -32,131 +32,131 @@ public class MenuHandler {
         }
         catch (Exception e){
             System.out.println("Bad input, please try again");
-            MenuSuppliers.getInstance().runMenu(scanner);
+            MenuSuppliers.getInstance().runMenu(scanner, storeManager);
         }
         if(!(choice>=1 & choice<=commands.length-1)){
             System.out.println("Bad input, please try again");
-            MenuSuppliers.getInstance().runMenu(scanner);
+            MenuSuppliers.getInstance().runMenu(scanner, storeManager);
         }
         return choice;
     }
 
-    public void handleSupplierMenu(String [] commands){
-        int choice = handleChoice(commands);
+    public void handleSupplierMenu(String [] commands, boolean storeManager){
+        int choice = handleChoice(commands, storeManager);
 
         switch (choice){
             case 1:
-                SupplierMenu.addSupplier();
+                SupplierMenu.addSupplier(storeManager);
                 break;
             case 2:
-                SupplierMenu.deleteSupplier();
+                SupplierMenu.deleteSupplier(storeManager);
                 break;
             case 3:
-                SupplierMenu.runEditSupplierMenu();
+                SupplierMenu.runEditSupplierMenu(storeManager);
                 break;
             case 4:
-                MenuSuppliers.getInstance().runMenu(scanner);
+                MenuSuppliers.getInstance().runMenu(scanner, storeManager);
                 break;
         }
     }
 
-    public void handleEditSupplierMenu(String [] commands, int companyID) {
-        int choice = handleChoice(commands);
+    public void handleEditSupplierMenu(String [] commands, int companyID, boolean storeManager) {
+        int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
-                SupplierMenu.runContactMenu(companyID);
+                SupplierMenu.runContactMenu(companyID, storeManager);
                 break;
             case 2:
-                SupplierMenu.changePayment(companyID);
+                SupplierMenu.changePayment(companyID,storeManager);
                 break;
             case 3:
-                SupplierMenu.changeBank(companyID);
+                SupplierMenu.changeBank(companyID,storeManager);
                 break;
             case 4:
                 System.out.println(SupplierManager.getSuppliers().get(companyID).toString());
                 break;
             case 5:
-                MenuSuppliers.getInstance().runMenu(scanner);
+                MenuSuppliers.getInstance().runMenu(scanner,storeManager);
                 break;
         }
     }
 
-    public void handleContactMenu(String [] commands, int companyID) {
-        int choice = handleChoice(commands);
+    public void handleContactMenu(String [] commands, int companyID, boolean storeManager) {
+        int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
-                SupplierMenu.addContact(companyID);
+                SupplierMenu.addContact(companyID,storeManager);
                 break;
             case 2:
-                SupplierMenu.deleteContact(companyID);
+                SupplierMenu.deleteContact(companyID,storeManager);
                 break;
             case 3:
-                SupplierMenu.runEditContactMenu(companyID);
+                SupplierMenu.runEditContactMenu(companyID,storeManager);
                 break;
             case 4:
                 System.out.println(SupplierManager.getSuppliers().get(companyID).contactsToString());
                 break;
             case 5:
-                MenuSuppliers.getInstance().runMenu(scanner);
+                MenuSuppliers.getInstance().runMenu(scanner, storeManager);
                 break;
         }
     }
 
-    public void handleEditContactMenu(String [] commands, int companyID, String contactName) {
-        int choice = handleChoice(commands);
+    public void handleEditContactMenu(String [] commands, int companyID, String contactName, boolean storeManager) {
+        int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
-                SupplierMenu.addMethod(companyID,contactName);
+                SupplierMenu.addMethod(companyID,contactName, storeManager);
                 break;
             case 2:
-                SupplierMenu.deleteMethod(companyID,contactName);
+                SupplierMenu.deleteMethod(companyID,contactName,storeManager);
                 break;
             case 3:
-                SupplierMenu.editMethod(companyID,contactName);
+                SupplierMenu.editMethod(companyID,contactName,storeManager);
                 break;
             case 4:
-                SupplierMenu.runContactMenu(companyID);
+                SupplierMenu.runContactMenu(companyID,storeManager);
         }
     }
 
-    public void handleArrangementMenu(String [] commands, int companyID){
-        int choice = handleChoice(commands);
+    public void handleArrangementMenu(String [] commands, int companyID, boolean storeManager){
+        int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
-                ArrangementMenu.runQuantityAgreementMenu(companyID);
+                ArrangementMenu.runQuantityAgreementMenu(companyID,storeManager);
                 break;
             case 2:
-                ArrangementMenu.runItemMenu(companyID);
+                ArrangementMenu.runItemMenu(companyID,storeManager);
                 break;
             case 3:
-                ArrangementMenu.runDeliveryDateMenu(companyID);
+                ArrangementMenu.runDeliveryDateMenu(companyID,storeManager);
                 break;
             case 4:
                 System.out.println(SupplierManager.getSuppliers().get(companyID).getArrangement().toString());
                 break;
             case 5:
-                MenuSuppliers.getInstance().runMenu(scanner);
+                MenuSuppliers.getInstance().runMenu(scanner,storeManager);
                 break;
         }
     }
 
-    public void handleItemMenu(String [] commands, int companyID){
-        int choice = handleChoice(commands);
+    public void handleItemMenu(String [] commands, int companyID, boolean storeManager){
+        int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
-                ArrangementMenu.addItems(companyID);
+                ArrangementMenu.addItems(companyID,storeManager);
                 break;
             case 2:
-                ArrangementMenu.removeItems(companyID);
+                ArrangementMenu.removeItems(companyID,storeManager);
                 break;
             case 3:
-                MenuSuppliers.getInstance().runMenu(scanner);
+                MenuSuppliers.getInstance().runMenu(scanner,storeManager);
                 break;
          }
     }
 
-    public void handleDeliverDateMenu(String [] commands, int companyID){
-        int choice = handleChoice(commands);
+    public void handleDeliverDateMenu(String [] commands, int companyID, boolean storeManager){
+        int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
                 System.out.println(SupplierManager.getSuppliers().get(companyID).getArrangement().pastDateToString());
@@ -165,73 +165,85 @@ public class MenuHandler {
                 System.out.println(SupplierManager.getSuppliers().get(companyID).getArrangement().futureDateToString());
                 break;
             case 3:
-                ArrangementMenu.modifyDate(companyID);
+                ArrangementMenu.modifyDate(companyID,storeManager);
                 break;
             case 4:
-                MenuSuppliers.getInstance().runMenu(scanner);
+                MenuSuppliers.getInstance().runMenu(scanner,storeManager);
                 break;
         }
     }
 
-    public void handleQuantityAgreementMenu(String [] commands, int companyID) {
-        int choice = handleChoice(commands);
+    public void handleQuantityAgreementMenu(String [] commands, int companyID, boolean storeManager) {
+        int choice = handleChoice(commands, storeManager);
         switch (choice) {
             case 1:
-                ArrangementMenu.addQuantityAgreement(companyID);
+                ArrangementMenu.addQuantityAgreement(companyID,storeManager);
                 break;
             case 2:
-                ArrangementMenu.addItemsToQuantity(companyID);
+                ArrangementMenu.addItemsToQuantity(companyID,storeManager);
                 break;
             case 3:
-                ArrangementMenu.removeItemsFromQuantity(companyID);
+                ArrangementMenu.removeItemsFromQuantity(companyID,storeManager);
                 break;
             case 4:
-                ArrangementMenu.changePriceInAgreement(companyID);
+                ArrangementMenu.changePriceInAgreement(companyID,storeManager);
                 break;
             case 5:
-                MenuSuppliers.getInstance().runMenu(scanner);
+                MenuSuppliers.getInstance().runMenu(scanner,storeManager);
                 break;
         }
     }
 
-    public void handleOrderMenu(String [] commands, int companyID) {
-        int choice = handleChoice(commands);
+    public void handleOrderMenu(String [] commands, int companyID, boolean storeManager) {
+        int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
-                OrderMenu.placeOrder(companyID);
+                if (storeManager) {
+                    System.out.println("a store manager cannot edit orders!\n");
+                    break;
+                }
+                OrderMenu.placeOrder(companyID,storeManager);
                 break;
             case 2:
-                OrderMenu.runModifyOrderMenu(companyID);
+                if (storeManager) {
+                    System.out.println("a store manager cannot edit orders!\n");
+                    break;
+                }
+                OrderMenu.runModifyOrderMenu(companyID,storeManager);
                 break;
             case 3:
-                OrderMenu.cancelOrder(companyID);
+                if (storeManager) {
+                    System.out.println("a store manager cannot edit orders!\n");
+                    break;
+                }
+                OrderMenu.cancelOrder(companyID,storeManager);
                 break;
             case 4:
-                OrderMenu.printOrderHistory(companyID);
+                OrderMenu.printOrderHistory(companyID,storeManager);
                 break;
             case 5:
-                OrderMenu.printOrderDetails(companyID);
+                OrderMenu.printOrderDetails(companyID,storeManager);
                 break;
             case 6:
-                MenuSuppliers.getInstance().runMenu(scanner);
+                MenuSuppliers.getInstance().runMenu(scanner,storeManager);
                 break;
         }
     }
 
-    public void handleModifyOrderMenu(String [] commands, int companyID, int orderNumber) {
-        int choice = handleChoice(commands);
+    public void handleModifyOrderMenu(String [] commands, int companyID, int orderNumber, boolean storeManager) {
+        int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
-                OrderMenu.changeOrderDate(companyID, orderNumber);
+                OrderMenu.changeOrderDate(companyID, orderNumber,storeManager);
                 break;
             case 2:
-                OrderMenu.addItems(companyID, orderNumber);
+                OrderMenu.addItems(companyID, orderNumber,storeManager);
                 break;
             case 3:
-                OrderMenu.removeItems(companyID, orderNumber);
+                OrderMenu.removeItems(companyID, orderNumber,storeManager);
                 break;
             case 4:
-                MenuSuppliers.getInstance().runMenu(scanner);
+                MenuSuppliers.getInstance().runMenu(scanner,storeManager);
                 return;
         }
     }

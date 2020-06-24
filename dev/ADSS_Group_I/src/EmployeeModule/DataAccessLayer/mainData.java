@@ -4,6 +4,11 @@ import EmployeeModule.Pair;
 import EmployeeModule.BusinessLayer.Employee;
 
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 public class mainData {
@@ -147,5 +152,50 @@ public class mainData {
 
     public int getShiftIdCounter(){
        return shiftMapperInstance.getShiftIdCounter();
+    }
+
+    public List<String> getAvailableRoles(String shiftTime, String role){
+        if(shiftMapperInstance.searchShift(shiftTime)) {
+            int shiftId = shiftMapperInstance.getShift(shiftTime).getShiftId();
+            String shiftDay = "day";
+            if(shiftMapperInstance.getShift(shiftTime).getTime() == 1)
+                shiftDay = "night";
+            shiftDay+=dayOfTheShift(shiftTime.split(" ")[0]);
+            String sql = "SELECT Employees.id FROM (Employees JOIN FreeTime ON Employees.id = FreeTime.employeeId) WHERE " + shiftDay + " = 1 AND Employees.roles LIKE '%" + role + "%' AND Employees.id NOT IN \n" +
+                    "(SELECT Employees.id FROM Employees JOIN ShiftEmployees on Employees.id = ShiftEmployees.employeeId WHERE ShiftEmployees.shiftId = " + shiftId + ")";
+            try (Connection conn = connect();
+                 Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
+                // loop through the result set
+                List<String> employeesId = new LinkedList<>();
+                while (rs.next()) {
+                    employeesId.add(""+rs.getInt(1));
+                }
+                if(!employeesId.isEmpty())
+                    return employeesId;
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    public int dayOfTheShift(String strDate){
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            Date date = formatter.parse(strDate);
+            Calendar c = Calendar.getInstance();
+            c.setTime(date);
+            return c.get(Calendar.DAY_OF_WEEK);
+            } catch (ParseException ignored) {}
+        return -1;
+    }
+
+    public boolean canAddDriver(String shiftTime){
+        return shiftMapperInstance.canAddDriver(shiftTime);
+    }
+
+    public boolean addRole(String shiftTime, int id, String role){
+        return shiftMapperInstance.addRole(shiftTime, id, role);
     }
 }

@@ -1,8 +1,6 @@
 package SuppliersModule.Interface;
-//package SuppliersModule;
 
-import SuppliersModule.Business.SupplierManager;
-import SuppliersModule.Business.SupplierCard;
+import SuppliersModule.Buisness.SupplierManager;
 import SuppliersModule.DAL.SupplierMapper;
 
 import java.sql.SQLOutput;
@@ -14,7 +12,7 @@ public class SupplierMenu {
 
     static Scanner scanner = new Scanner(System.in);
 
-    public static void runMenu() {
+    public static void runMenu(boolean storeManager) {
         System.out.println("=====Supplier-Menu=====");
         String[] commands = {"Please choose a function:",
                 "1.Add new Supplier",
@@ -24,12 +22,12 @@ public class SupplierMenu {
         MenuHandler.getInstance().handleSupplierMenu(commands);
     }
 
-    public static void addSupplier(){
+    public static void addSupplier(boolean storeManager){
         System.out.println("first, please enter address");
         String address = scanner.nextLine();
         if(!SuppliersDeliveryConnector.isAddressExist(address)) { //modify, use deliverY function thru connector
             System.out.println("address doesnt exists...");
-            runMenu()
+            runMenu(storeManager)
             ;return;
         }
 
@@ -39,7 +37,7 @@ public class SupplierMenu {
         if(values.length!=7){
             System.out.println("too many/few arguments...\n" +
                     "returning to supplier menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         int companyID, bankAccount;
@@ -51,7 +49,7 @@ public class SupplierMenu {
         }
         catch (Exception e){
             System.out.println("Input was not of the right format\nReturning to Supplier Menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         if(SupplierManager.addSupplier(values[0],values[1],companyID,bankAccount,values[4],values[5],selfPickup)) {
@@ -62,7 +60,7 @@ public class SupplierMenu {
             System.out.println("Supplier already existed in the System");
     }
 
-    public static void deleteSupplier(){
+    public static void deleteSupplier(boolean storeManager){
         System.out.println("Please enter the Company Id of the supplier you wish to delete:\n");
         String input = scanner.next();
         int companyID;
@@ -71,7 +69,7 @@ public class SupplierMenu {
         }
         catch (Exception e){
             System.out.println("A Company ID is an integer\nReturning to Supplier Menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         if(SupplierManager.deleteSupplier(companyID))
@@ -80,14 +78,14 @@ public class SupplierMenu {
             System.out.println("Error 404: supplier not found");
     }
 
-    public static void runEditSupplierMenu(){
+    public static void runEditSupplierMenu(boolean storeManager){
         System.out.println("Please enter the Company Id of the supplier you wish to edit:\n");
         String input = scanner.nextLine();
         int companyID;
         try { companyID=Integer.parseInt(input); }
         catch (Exception e){
             System.out.println("A Company ID is an integer\nReturning to Supplier Menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         if (!SupplierManager.getSuppliers().containsKey(companyID)){
@@ -104,7 +102,7 @@ public class SupplierMenu {
         MenuHandler.getInstance().handleEditSupplierMenu(commands,companyID);
     }
 
-    public static void changePayment(int companyID){
+    public static void changePayment(int companyID, boolean storeManager){
         System.out.println("Please enter the new payment conditions\n");
         String input = scanner.nextLine();
         SupplierManager.getSuppliers().get(companyID).setPaymentConditions(input);
@@ -112,13 +110,13 @@ public class SupplierMenu {
         System.out.println("Supplier edited successfully\n");
     }
 
-    public static void changeBank(int companyID){
+    public static void changeBank(int companyID, boolean storeManager){
         System.out.println("Please enter the new bank account number:\n");
         String input = scanner.nextLine();
         input = input.replaceAll("\\s+","");
         if (input.length() != 9) {
             System.out.println("A bank account number is an integer with exactly 9 digits long!\nreturning to Supplier Menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         int bankNumber;
@@ -127,7 +125,7 @@ public class SupplierMenu {
         }
         catch (Exception e){
             System.out.println("A bank account is an integer\nReturning to Supplier Menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         SupplierManager.getSuppliers().get(companyID).setBankAccount(bankNumber);
@@ -135,7 +133,7 @@ public class SupplierMenu {
         System.out.println("Bank account number updated successfully!\n");
     }
 
-    public static void runContactMenu(int companyID){
+    public static void runContactMenu(int companyID, boolean storeManager){
         String[] commands = {"Please choose a function:",
                 "1.Add new Contact Person",
                 "2.Delete a Contact Person",
@@ -145,7 +143,7 @@ public class SupplierMenu {
         MenuHandler.getInstance().handleContactMenu(commands,companyID);
     }
 
-    public static void addContact(int companyID){
+    public static void addContact(int companyID, boolean storeManager){
         System.out.println("Please enter the new contact's name\n");
         String name = scanner.nextLine();
         System.out.println("Please enter the new contact's contact methods in the following format:\n" +
@@ -157,7 +155,7 @@ public class SupplierMenu {
             String[] methodsSplit = methods[i].split("-");
             if (methodsSplit.length != 2){
                 System.out.println("Input was of the wrong format\nreturning to Supplier Menu\n");
-                runMenu();
+                runMenu(storeManager);
                 return;
             }
             map.put(methodsSplit[0],methodsSplit[1]);
@@ -170,13 +168,13 @@ public class SupplierMenu {
         }
     }
 
-    public static void runEditContactMenu(int companyID){
+    public static void runEditContactMenu(int companyID, boolean storeManager){
         System.out.println("Please enter the name of the contact person you would like to modify");
         String contactName = scanner.nextLine();
 
         if (!SupplierManager.getSuppliers().get(companyID).getContacts().contains(contactName)){
             System.out.println("error:404 - contact not found!");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
 
@@ -188,7 +186,7 @@ public class SupplierMenu {
         MenuHandler.getInstance().handleEditContactMenu(commands,companyID,contactName);
     }
 
-    public static void addMethod(int companyID, String contact){
+    public static void addMethod(int companyID, String contact, boolean storeManager){
         System.out.println("Please enter the method you with to add in the following format:\n" +
                 "methodName:method (i.e like phone:051-1111111)\n");
         String method = scanner.nextLine();
@@ -196,7 +194,7 @@ public class SupplierMenu {
         if (details.length != 2){
             System.out.println("Input was of the wrong format\n" +
                     "returning to Supplier menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         else{
@@ -205,7 +203,7 @@ public class SupplierMenu {
         }
     }
 
-    public static void editMethod(int companyID, String contact){
+    public static void editMethod(int companyID, String contact, boolean storeManager){
         System.out.println("Please enter the method you with to edit in the following format:\n" +
                 "methodName:method (i.e like phone:051-1111111)\n");
         String method = scanner.nextLine();
@@ -213,7 +211,7 @@ public class SupplierMenu {
         if (details.length != 2){
             System.out.println("Input was of the wrong format\n" +
                     "returning to Supplier menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         else{
@@ -222,7 +220,7 @@ public class SupplierMenu {
         }
     }
 
-    public static void deleteMethod(int companyID, String contact){
+    public static void deleteMethod(int companyID, String contact,boolean storeManager){
         System.out.println("Please enter the method you with to delete\n");
         String method = scanner.nextLine();
         SupplierManager.getSuppliers().get(companyID).getContactByName(contact).deleteFromMethods(method);
@@ -239,7 +237,7 @@ public class SupplierMenu {
         else{
             System.out.println("error:404-contact not found\n" +
                     "returning to Supplier menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
 

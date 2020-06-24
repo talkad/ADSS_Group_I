@@ -1,15 +1,16 @@
-package SUppliersModule.Buisness;
+package SuppliersModule.Buisness;
 
-import DAL.ArrangementMapper;
-import DAL.OrderMapper;
-import DAL.SupplierMapper;
+
+import InventoryModule.DataAccessLayer.ProductMapper;
+import SuppliersModule.DAL.ArrangementMapper;
+import SuppliersModule.DAL.OrderMapper;
+import SuppliersModule.DAL.SupplierMapper;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 public class SupplierCard {
 
@@ -18,7 +19,7 @@ public class SupplierCard {
     private int _companyId;
     private int _bankAccount;
     private String _paymentConditions;
-    private Buisness.Arrangement _arrangement;
+    private Arrangement _arrangement;
     private ArrayList<ContactPerson> _contacts;
     private Map<Integer,Order> _orders;
 
@@ -109,7 +110,7 @@ public class SupplierCard {
     }
 
     public Map<Integer, Order> getOrders() {
-        Map<Integer,Order> map =OrderMapper.getInstance().getOrders(_companyId);
+        Map<Integer,Order> map = OrderMapper.getInstance().getOrders(_companyId);
         return map;
     }
 

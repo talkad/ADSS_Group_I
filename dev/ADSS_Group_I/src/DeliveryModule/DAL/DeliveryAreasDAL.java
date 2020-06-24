@@ -1,7 +1,7 @@
 package DeliveryModule.DAL;
 
 
-public class DeliveryAreasDAL implements  iDAL{
+public class DeliveryAreasDAL implements iDAL {
     protected String Name;
 
     public DeliveryAreasDAL(String name){

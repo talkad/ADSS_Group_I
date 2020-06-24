@@ -30,22 +30,19 @@ public class Service {
         System.out.print("Selection: ");
     }
 
-    public void display(Scanner scanner) throws ApplicationException {
+    public void display(Scanner scanner)  {
         EmployeeModule.BusinessLayer.mainBL mainBL = EmployeeModule.BusinessLayer.mainBL.getInstance();
         boolean quit = false;
-        boolean flag = false;
-        String[] options = new String[] {"Add employee", "Edit employee free time", "Add shift", "Get shift history", "Get employee details",  "Quit", "Load pre-made data", "Edit employee's details", "Display all employees", "Remove employee", "Edit Shift"};
+        String[] options = new String[] {"Add employee", "Edit employee free time", "Add shift", "Get shift history", "Get employee details", "Quit", "Edit employee's details", "Display all employees", "Remove employee", "Edit Shift"};
         String input;
         while(!quit){
             displayMenu(options);
             input=scanner.nextLine();
             switch (input){
                 case ("1"):
-                    flag = true;
                     instance.insertEmployee(scanner, mainBL);
                     break;
                 case ("2"):
-                    flag = true;
                     System.out.print("Please insert the employee's id number: ");
                     int id = isNumeric(scanner.nextLine());
                     if(id != -1){
@@ -56,15 +53,12 @@ public class Service {
                     }
                     break;
                 case ("3"):
-                    flag = true;
                     instance.insertShift(scanner, mainBL);
                     break;
                 case ("4"):
-                    flag = true;
                     instance.displayShift(scanner, mainBL);
                     break;
                 case ("5"):
-                    flag = true;
                     System.out.print("Please insert the employee's id number: ");
                     int employeeId = isNumeric(scanner.nextLine());
                     if(employeeId != -1){
@@ -78,24 +72,12 @@ public class Service {
                     quit = true;
                     break;
                 case ("7"):
-                    if(!flag){
-                        instance.dataLoad(mainBL);
-                    }
-                    else {
-                        System.out.println("Cannot use this function if it's not the first one to be called");
-                    }
-                    flag = true;
-                    break;
-                case ("8"):
-                    flag = true;
                     instance.editEmployee(scanner, mainBL);
                     break;
-                case ("9"):
-                    flag = true;
+                case ("8"):
                     instance.displayAllEmployees(mainBL);
                     break;
-                case ("10"):
-                    flag = true;
+                case ("9"):
                     System.out.print("Please insert the employee's id number: ");
                     int empId = isNumeric(scanner.nextLine());
                     if(empId != -1){
@@ -108,8 +90,7 @@ public class Service {
                         System.out.println("Id must be an integer");
                     }
                     break;
-                case("11"):
-                    flag = true;
+                case("10"):
                     instance.editShift(scanner, mainBL);
                     break;
                 default:
@@ -141,7 +122,7 @@ public class Service {
                             if (shift != null) {
                                 System.out.println("Successfully edited the shift's details");
                                 removeShift(shiftTime, mainBL);
-                                createShift(mainBL, shift, true);
+                                createShift(mainBL, shift);
                             }
                         }
                         else{
@@ -217,7 +198,7 @@ public class Service {
         mainBL.removeShift(shiftTime);
     }
 
-    private void displayAllEmployees(EmployeeModule.BusinessLayer.mainBL mainBL) {
+    private void displayAllEmployees(mainBL mainBL) {
         System.out.println(mainBL.displayAllEmployees());
     }
 
@@ -258,7 +239,7 @@ public class Service {
         return null;
     }
 
-    public void insertEmployee(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL) {
+    public void insertEmployee(Scanner scanner, mainBL mainBL) {
         try {
             System.out.print("Insert employee's id: ");
             int id = isNumeric(scanner.nextLine());
@@ -279,18 +260,21 @@ public class Service {
         }
     }
 
-    public void editEmployee(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL){
+    public void editEmployee(Scanner scanner, mainBL mainBL){
         try {
             System.out.print("Insert the id of the employee you wish to edit: ");
             int id = isNumeric(scanner.nextLine());
             if (id != -1) {
-                if (mainBL.searchEmployee(id, true)) {
-                    ILEmployee employee = generateEmployee(scanner, id);
-                    if (employee != null) {
-                        System.out.println("Successfully edited the employee's details");
-                        createEmployee(mainBL, employee, true);
+                if(id != 1){
+                    if (mainBL.searchEmployee(id, true)) {
+                        ILEmployee employee = generateEmployee(scanner, id);
+                        if (employee != null) {
+                            System.out.println("Successfully edited the employee's details");
+                            createEmployee(mainBL, employee, true);
+                        }
                     }
                 }
+                else System.out.println("You may not edit the Main HR Manager details");
             } else {
                 System.out.println("Id must be an integer");
             }
@@ -299,11 +283,11 @@ public class Service {
         }
     }
 
-    private void createEmployee(EmployeeModule.BusinessLayer.mainBL mainBL, ILEmployee employee, boolean updateFlag) throws ApplicationException{
+    private void createEmployee(mainBL mainBL, ILEmployee employee, boolean updateFlag) throws ApplicationException{
         mainBL.createEmployee(employee.getId(), employee.getFirstName(), employee.getLastName(), employee.getBankDetails(), employee.getWorkConditions(), employee.getStartTime(), employee.getSalary(), employee.getRoles(), updateFlag);
     }
 
-    public void insertShift(Scanner scanner, EmployeeModule.BusinessLayer.mainBL mainBL){
+    public void insertShift(Scanner scanner, mainBL mainBL){
         try {
             System.out.println("Insert shift's date in the format <dd/MM/yyyy>: ");
             String shiftDateStr = scanner.nextLine();
@@ -320,7 +304,7 @@ public class Service {
                                 ILShift shift = generateShift(scanner, shiftDateStr, mainBL);
                                 if(shift != null) {
                                     System.out.println("Successfully added the shift");
-                                    createShift(mainBL, shift, false);
+                                    createShift(mainBL, shift);
                                 }
                             }
                         } else {
@@ -340,12 +324,12 @@ public class Service {
         }
     }
 
-    private void createShift(EmployeeModule.BusinessLayer.mainBL mainBL, ILShift shift, boolean updateFlag){
-        mainBL.createShift(shift.getDate(), shift.getTime(), shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees(), updateFlag);
+    private void createShift(mainBL mainBL, ILShift shift){
+        mainBL.createShift(shift.getDate(), shift.getTime(), shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees());
         shiftCounter++;
     }
 
-    public void editFreeTime(Scanner scanner, int id, EmployeeModule.BusinessLayer.mainBL mainBL){
+    public void editFreeTime(Scanner scanner, int id, mainBL mainBL){
         try {
             if (mainBL.searchEmployee(id, true)) {
                 boolean[][] freeTime = new boolean[2][7];
@@ -396,7 +380,7 @@ public class Service {
         }
     }
 
-    private List<Pair<Integer, String>> addEmployeesToShift(Scanner scanner, List<String> roles, Date date, int time, EmployeeModule.BusinessLayer.mainBL mainBL){
+    private List<Pair<Integer, String>> addEmployeesToShift(Scanner scanner, List<String> roles, Date date, int time, mainBL mainBL){
         try {
             List<Pair<Integer, String>> shiftList = new LinkedList<>();
             List<String> checkRoles = new LinkedList<>(roles);
@@ -464,34 +448,13 @@ public class Service {
         try {
             System.out.print("Please insert the shift's date in the format <dd/MM/yyyy> " +
                     "followed by a space and time of the shift (1 for day and 2 for night):\n");
-            String shiftTime = scanner.nextLine();//todo legal date and legal time
+            String shiftTime = scanner.nextLine();
             if (mainBL.searchShift(shiftTime, true)) {
                 System.out.println(mainBL.shiftInfo(shiftTime));
             }
         } catch (ApplicationException e){
             System.out.println(e.getId());
         }
-    }
-
-    public boolean isEmployeeInShift(int id, String shiftTime, EmployeeModule.BusinessLayer.mainBL mainBL){
-        try{
-            return mainBL.isEmployeeInShift(id, shiftTime);
-        } catch (ApplicationException e){
-            System.out.println(e.getId());
-        }
-        return false;
-    }
-
-    public List<String> getDriversInShift (String shiftTime, EmployeeModule.BusinessLayer.mainBL mainBL){
-        List<String> driversIdList = null;
-        try {
-            if (mainBL.searchShift(shiftTime, true)) {
-                driversIdList = mainBL.getDriversInShift(shiftTime);
-            }
-        } catch (ApplicationException e){
-            System.out.println(e.getId());
-        }
-        return driversIdList;
     }
 
     public boolean hasRole(int id, String role) throws ApplicationException {
@@ -502,7 +465,7 @@ public class Service {
         return mainBL.searchEmployee(id, true);
     }
 
-    private void dataLoad(EmployeeModule.BusinessLayer.mainBL mainBL) throws ApplicationException{
+    private void dataLoad(mainBL mainBL) throws ApplicationException{
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         try {
             Date emp1 = formatter.parse("21/06/2018");
@@ -611,9 +574,9 @@ public class Service {
             ILShift ilShift1 = new ILShift(shift1, 1, 4, 1, reqRoles1, shift1Employees);
             ILShift ilShift2 = new ILShift(shift2, 2, 6, 2, reqRoles2, shift2Employees);
             ILShift ilShift3 = new ILShift(shift3, 1, 8, 3, reqRoles3, shift3Employees);
-            mainBL.createShift(ilShift1.getDate(), ilShift1.getTime(), ilShift1.getBranch(), ilShift1.getShiftId(), ilShift1.getRoles(), ilShift1.getEmployees(), false);
-            mainBL.createShift(ilShift2.getDate(), ilShift2.getTime(), ilShift2.getBranch(), ilShift2.getShiftId(), ilShift2.getRoles(), ilShift2.getEmployees(), false);
-            mainBL.createShift(ilShift3.getDate(), ilShift3.getTime(), ilShift3.getBranch(), ilShift3.getShiftId(), ilShift3.getRoles(), ilShift3.getEmployees(), false);
+            mainBL.createShift(ilShift1.getDate(), ilShift1.getTime(), ilShift1.getBranch(), ilShift1.getShiftId(), ilShift1.getRoles(), ilShift1.getEmployees());
+            mainBL.createShift(ilShift2.getDate(), ilShift2.getTime(), ilShift2.getBranch(), ilShift2.getShiftId(), ilShift2.getRoles(), ilShift2.getEmployees());
+            mainBL.createShift(ilShift3.getDate(), ilShift3.getTime(), ilShift3.getBranch(), ilShift3.getShiftId(), ilShift3.getRoles(), ilShift3.getEmployees());
             mainBL.writeUpdatedFreeTime(1, 0, 0, false);
             mainBL.writeUpdatedFreeTime(1, 0, 2, false);
             mainBL.writeUpdatedFreeTime(3, 0, 0, false);

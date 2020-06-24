@@ -132,4 +132,40 @@ public class ShiftMapper {
         }
         return 0;
     }
+
+    public boolean canAddDriver(String shiftTime){
+        if(searchShift(shiftTime)){
+            int driverCounter = 0;
+            int storeKeeperCounter = 0;
+            for (Pair<Integer, String> p : shiftMap.get(shiftTime).getEmployees()) {
+               if(p.getSecond().equals("driver"))
+                   driverCounter++;
+               if(p.getSecond().equals("storekeeper"))
+                   storeKeeperCounter++;
+            }
+            return driverCounter < storeKeeperCounter;
+        }
+        return false;
+    }
+
+    public boolean addRole(String shiftTime, int id, String role){
+        List<Pair<Integer, String>> list = new LinkedList<>();
+        List<String> roles = shiftMap.get(shiftTime).getRoles();
+        roles.add(role);
+        list.add(new Pair<>(id, role));
+
+        shiftMap.get(shiftTime).setRoles(roles);
+        shiftMap.get(shiftTime).getEmployees().add(new Pair<>(id, role));
+        shiftEmployeesInstance.writeShiftEmployees(shiftMap.get(shiftTime).getShiftId(), list);
+
+        String UPDATE_SHIFTS = "UPDATE Shifts SET roles = " + "'" + shiftMap.get(shiftTime).getRolesString() + "'" + "WHERE date = " + "'" + shiftTime.split(" ")[0] + "'";
+        try (Connection conn = dataInstance.connect();
+             PreparedStatement ps = conn.prepareStatement(UPDATE_SHIFTS)) {
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

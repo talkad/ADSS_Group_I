@@ -1,6 +1,7 @@
-package Buisness;
+package SuppliersModule.Buisness;
 
-import DAL.OrderMapper;
+
+import SuppliersModule.DAL.OrderMapper;
 
 import java.time.LocalDate;
 import java.util.Map;

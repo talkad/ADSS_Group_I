@@ -111,6 +111,7 @@ public class EmployeeMapper {
     }
 
     public boolean hasRole(int id, String role) {
+        searchEmployee(id);
         return this.employeeMap.get(id).getRoles().contains(role);
     }
 

@@ -1,10 +1,10 @@
-package Buisness;
+package SuppliersModule.Buisness;
 
-import Bussiness_Connector.Connector;
-import DAL.ArrangementMapper;
-import DAL.OrderMapper;
-import DAL.SupplierMapper;
-import DataAccessLayer.ProductMapper;
+
+import InventoryModule.DataAccessLayer.ProductMapper;
+import SuppliersModule.DAL.ArrangementMapper;
+import SuppliersModule.DAL.OrderMapper;
+import SuppliersModule.DAL.SupplierMapper;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

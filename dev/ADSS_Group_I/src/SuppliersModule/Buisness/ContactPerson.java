@@ -1,4 +1,4 @@
-package SuppliersModule.Business;
+package SuppliersModule.Buisness;
 
 import java.util.Map;
 

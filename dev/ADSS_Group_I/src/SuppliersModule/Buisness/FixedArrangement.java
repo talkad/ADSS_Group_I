@@ -1,8 +1,7 @@
-package Buisness;
+package SuppliersModule.Buisness;
 
-import DAL.ArrangementMapper;
-import DAL.OrderMapper;
-
+import SuppliersModule.DAL.ArrangementMapper;
+import SuppliersModule.DAL.OrderMapper;
 import java.time.LocalDate;
 
 public class FixedArrangement extends Arrangement{

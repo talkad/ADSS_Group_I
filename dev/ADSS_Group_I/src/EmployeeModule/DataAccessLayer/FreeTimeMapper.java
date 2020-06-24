@@ -70,7 +70,7 @@ public class FreeTimeMapper {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return false; //todo weird return is irrelevant
+        return false;
     }
 
     public void createFreeTime(ResultSet rs) throws SQLException {
@@ -94,9 +94,10 @@ public class FreeTimeMapper {
         try (Connection conn = dataInstance.connect();
              PreparedStatement ps = conn.prepareStatement(UPDATE_FREE_TIME)) {
             ps.executeUpdate();
-            //System.out.println(id);
             searchFreeTime(id);
-            freeTimeMap.get(id)[period][day] = available;
+            boolean[][] array = freeTimeMap.get(id);
+            array[period][day] = available;
+            freeTimeMap.replace(id, array);
         } catch (SQLException e) {
             e.printStackTrace();
         }

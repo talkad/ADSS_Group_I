@@ -1,9 +1,9 @@
-package Interface;
+package SuppliersModule.Interface;
 
-import Buisness.Order;
-import Buisness.SupplierCard;
-import Buisness.SupplierManager;
-import Presentation.MenuSuppliers;
+import SuppliersModule.Buisness.Order;
+import SuppliersModule.Buisness.SupplierCard;
+import SuppliersModule.Buisness.SupplierManager;
+import SuppliersModule.Presentation.MenuSuppliers;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,7 +15,7 @@ public class OrderMenu {
 
     private static Scanner scanner = new Scanner(System.in);
 
-    public static void runMenu(){
+    public static void runMenu(boolean storeManager){
         System.out.println("=====Order-Menu=====\n" +
                 "Please enter a Supplier's Company Id:\n");
         int companyID;
@@ -24,12 +24,12 @@ public class OrderMenu {
         }
         catch (Exception e){
             System.out.println("A Supplier's Company Id is an integer!");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         if (!SupplierManager.getSuppliers().containsKey(companyID)){
             System.out.println("error:404 - Supplier not found!");
-            MenuSuppliers.getInstance().runMenu(scanner);
+            MenuSuppliers.getInstance().runMenu(scanner, storeManager);
             return;
         }
 
@@ -40,10 +40,10 @@ public class OrderMenu {
                 "4.Print Order History",
                 "5.Print Order Details",
                 "6.Return to Main Menu"};
-        MenuHandler.getInstance().handleOrderMenu(commands, companyID);
+        MenuHandler.getInstance().handleOrderMenu(commands, companyID,storeManager);
 
     }
-    public static void placeOrder(int companyID){  //TODO
+    public static void placeOrder(int companyID, boolean storeManager){
         int supermarketId = -1;
         System.out.println("Please enter the supermarket ID of the supermarket branch you wish to order to\n");
         try {
@@ -51,14 +51,14 @@ public class OrderMenu {
         }
         catch (Exception e){
             System.out.println("A Supermarket Id is an integer!");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         SupplierCard supplier = SupplierManager.getSuppliers().get(companyID);
         Map<Integer,Integer> map = parseItems("Please enter the items you wish to order");
         if (map == null){
             System.out.println("Wrong input supplied, place order failed. returning to order menu");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         System.out.println("Please enter the date of the order in the following format: DD/MM/YYYY\n");
@@ -71,7 +71,7 @@ public class OrderMenu {
         catch (Exception e){
             System.out.println("Input was not of the right format!\n" +
                     "returning to Order Menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         if(supplier.placeOrder(map,dateTime,supermarketId))
@@ -79,11 +79,11 @@ public class OrderMenu {
         else{
             System.out.println("One or more of the items specified are not part of the arrangement with the supplier\n" +
                     "Placing order failed, returning to Order Menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
     }
-    public static void printOrderHistory(int companyID){
+    public static void printOrderHistory(int companyID, boolean storeManager){
         System.out.println("Order Number | Date Created | Order Date | Status");
         System.out.println("-------------------------------------------------");
 
@@ -107,9 +107,9 @@ public class OrderMenu {
         }
 
         System.out.println("\n\n");
-        runMenu();
+        runMenu(storeManager);
     }
-    public static void cancelOrder(int companyID){
+    public static void cancelOrder(int companyID, boolean storeManager){
         System.out.println("Please enter the number of the order you would like to cancel");
         Scanner scanner = new Scanner((System.in));
         int choice;
@@ -119,20 +119,20 @@ public class OrderMenu {
         }
         catch (Exception e){
             System.out.println("an order number is an Integer");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         SupplierCard supplier = SupplierManager.getSuppliers().get(companyID);
         if (!supplier.getOrders().containsKey(choice)){
             System.out.println("error:404 - Order not found!");
-            runMenu();
+            runMenu(storeManager);
         }
         System.out.println("Please enter the ID of the Human Resource Manager that authorized the cancellation\n");
         Id = scanner.next();
         if (true) //TODO  talk to Employees
         {
         System.out.println("the Id supplier does not correspond with any Human Resource Managers");
-        runMenu();
+        runMenu(storeManager);
         return;
         }
         System.out.println("Please enter the ID of the Logistic Manager that authorized the cancellation\n");
@@ -140,7 +140,7 @@ public class OrderMenu {
         if (true) // TODO talk to Employees
         {
             System.out.println("the Id supplier does not correspond with any Logistic Managers");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         System.out.println("Please enter the ID of the Warehouse Manager that authorized the cancellation\n");
@@ -148,17 +148,17 @@ public class OrderMenu {
         if (true) // TODO talk to Employees
         {
             System.out.println("the Id supplier does not correspond with any Warehouse Managers");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         else{
             supplier.cancelOrder(choice);
             System.out.println("Order canceled successfully!");
-            MenuSuppliers.getInstance().runMenu(scanner);
+            MenuSuppliers.getInstance().runMenu(scanner, storeManager);
         }
         return;
     }
-    public static void runModifyOrderMenu(int companyID){
+    public static void runModifyOrderMenu(int companyID, boolean storeManager){
         System.out.println("Please enter the number of the order you would like to modify");
         int orderNumber;
         try {
@@ -166,12 +166,12 @@ public class OrderMenu {
         }
         catch (Exception e){
             System.out.println("An order number is an integer!");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         if (!SupplierManager.getSuppliers().get(companyID).getOrders().containsKey(orderNumber)){
             System.out.println("error:404 - order not found!");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
 
@@ -180,10 +180,10 @@ public class OrderMenu {
                 "2.Add items to order",
                 "3.Remove Items from order",
                 "4.Return to Main Menu"};
-        MenuHandler.getInstance().handleModifyOrderMenu(commands, companyID, orderNumber);
+        MenuHandler.getInstance().handleModifyOrderMenu(commands, companyID, orderNumber, storeManager);
     }
 
-    public static void changeOrderDate(int companyID, int order){
+    public static void changeOrderDate(int companyID, int order, boolean storeManager){
         System.out.println("Please enter the new date in the following format: DD/MM/YYYY");
         String dateInput = scanner.next();
         LocalDate datetime;
@@ -194,7 +194,7 @@ public class OrderMenu {
         catch (Exception e){
             System.out.println("Input was not of the right format!\n" +
                     "returning to Order Menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         SupplierManager.getSuppliers().get(companyID).changeOrderDate(order, datetime);
@@ -219,11 +219,11 @@ public class OrderMenu {
         return map;
     }
 
-    public static void addItems(int companyID, int orderNumber){
+    public static void addItems(int companyID, int orderNumber, boolean storeManager){
         HashMap<Integer,Integer> map = parseItems("Please enter the items you wish to add to the order");
         if (map == null){
             System.out.println("Wrong input supplied, adding items failed. returning to order menu");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         if (SupplierManager.getSuppliers().get(companyID).addItemsToOrder(map, orderNumber)){
@@ -233,15 +233,15 @@ public class OrderMenu {
         else{
             System.out.println("One of the specified items is not a part of the arrangement with this supplier\n" +
                     "Adding items failed, returning to Order Menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
     }
-    public static void removeItems(int companyID, int orderNumber){
+    public static void removeItems(int companyID, int orderNumber, boolean storeManager){
         HashMap<Integer,Integer> map = parseItems("Please enter the items you wish to remove from the order");
         if (map == null){
             System.out.println("Wrong input supplied, removing items failed. returning to order menu");
-            runMenu();
+            runMenu(storeManager);
         }
         else if (SupplierManager.getSuppliers().get(companyID).deleteItemsFromOrder(map, orderNumber)){
             System.out.println("Items removed successfully!");
@@ -249,10 +249,10 @@ public class OrderMenu {
         else{
             System.out.println("One of the specified items is not a part of the order specified or attempted to remove more than ordered\n" +
                     "Adding items failed, returning to Order Menu\n");
-            runMenu();
+            runMenu(storeManager);
         }
     }
-    public static void printOrderDetails(int companyID){
+    public static void printOrderDetails(int companyID, boolean storeManager){
         System.out.println("Please enter the number of the order you would like to print");
         int orderNumber;
         try {
@@ -260,12 +260,12 @@ public class OrderMenu {
         }
         catch (Exception e){
             System.out.println("An order number is an integer!");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         if (!SupplierManager.getSuppliers().get(companyID).getOrders().containsKey(orderNumber)){
             System.out.println("error:404 - order not found!");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         Order order = SupplierManager.getSuppliers().get(companyID).getOrders().get(orderNumber);

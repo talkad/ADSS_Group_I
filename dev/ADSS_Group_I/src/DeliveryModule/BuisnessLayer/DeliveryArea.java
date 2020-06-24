@@ -1,7 +1,8 @@
-package DeliveryModule.BusinessLayer;
+package DeliveryModule.BuisnessLayer;
 
+import DeliveryModule.DAL.DAL;
+import DeliveryModule.DAL.DeliveryAreasDAL;
 import org.omg.CORBA.portable.ApplicationException;
-import DeliveryModule.DAL.*;
 
 public class DeliveryArea {
     protected String Name;

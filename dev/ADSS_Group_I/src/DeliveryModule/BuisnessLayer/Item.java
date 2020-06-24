@@ -1,4 +1,4 @@
-package DeliveryModule.BusinessLayer;
+package DeliveryModule.BuisnessLayer;
 
 public class Item {
     private String Name;

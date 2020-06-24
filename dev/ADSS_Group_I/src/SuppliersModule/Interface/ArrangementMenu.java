@@ -1,8 +1,8 @@
-package Interface;
+package SuppliersModule.Interface;
 
 
-import SuppliersModule.Business.FixedArrangement;
-import SuppliersModule.Business.SupplierManager;
+import SuppliersModule.Buisness.FixedArrangement;
+import SuppliersModule.Buisness.SupplierManager;
 import SuppliersModule.Presentation.MenuSuppliers;
 
 import java.time.LocalDate;
@@ -16,7 +16,7 @@ public class ArrangementMenu {
 
     private static Scanner scanner = new Scanner(System.in);
 
-    public static void runMenu() {
+    public static void runMenu(boolean storeManager) {
         System.out.println("=====Arrangement-Menu=====\n" +
                 "Please enter a Supplier's Company Id:\n");
         int companyID;
@@ -25,7 +25,7 @@ public class ArrangementMenu {
         }
         catch (Exception e){
             System.out.println("A Supplier's Company Id is an integer!");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         if (!SupplierManager.getSuppliers().containsKey(companyID)){
@@ -40,18 +40,18 @@ public class ArrangementMenu {
                 "3.Modify Delivery Dates",
                 "4.Print Arrangement",
                 "5.Return to Main Menu"};
-        MenuHandler.getInstance().handleArrangementMenu(commands,companyID);
+        MenuHandler.getInstance().handleArrangementMenu(commands,companyID,storeManager);
     }
-    public static void runItemMenu(int companyID){
+    public static void runItemMenu(int companyID,boolean storeManager){
         String[] commands = {"Please choose a function:",
                 "1.Add items to the arrangement",
                 "2.Remove items from the arrangement",
                 "3.Return to Main Menu"};
-        MenuHandler.getInstance().handleItemMenu(commands,companyID);
+        MenuHandler.getInstance().handleItemMenu(commands,companyID,storeManager);
     }
 
 
-    public static void addItems(int companyId){
+    public static void addItems(int companyId,boolean storeManager){
         System.out.println("Please enter the items you wish to add to the arrangement in the following format:\n" +
                 "productID:productId...");
         String input = scanner.next();
@@ -65,7 +65,7 @@ public class ArrangementMenu {
             catch (Exception e){
                 System.out.println("Input was not of the right format!\n" +
                         "returning to Arrangement Menu\n");
-                runMenu();
+                runMenu(storeManager);
                 return;
             }
         }
@@ -73,7 +73,7 @@ public class ArrangementMenu {
         System.out.println("Items added successfully!");
     }
 
-    public static void removeItems (int commanyId){
+    public static void removeItems (int commanyId,boolean storeManager){
         System.out.println("Please enter the items you wish to remove from the arrangement in the following format:\n" +
                 "itemID:itemID:itemID:...");
         String input = scanner.next();
@@ -87,7 +87,7 @@ public class ArrangementMenu {
             catch (Exception e){
                 System.out.println("Input was not of the right format!\n" +
                         "returning to Arrangement Menu\n");
-                runMenu();
+                runMenu(storeManager);
                 return;
             }
         }
@@ -95,14 +95,14 @@ public class ArrangementMenu {
         System.out.println("Deleted Items successfully");
     }
 
-    public static void runQuantityAgreementMenu(int companyID){
+    public static void runQuantityAgreementMenu(int companyID,boolean storeManager){
         String [] commands = {"Please choose a function:" ,
                 "1.Add a quantity agreement",
                 "2.Add items' discounts to agreement",
                 "3.Remove items from agreement",
                 "4.Change items' discounts",
                 "5.Return to Main Menu"};
-        MenuHandler.getInstance().handleQuantityAgreementMenu(commands, companyID);
+        MenuHandler.getInstance().handleQuantityAgreementMenu(commands, companyID,storeManager);
     }
     public static Map<Integer,Map<Integer,Double>> parseQuantity(String msg){
         System.out.println(msg+ " by this format:\n" +
@@ -136,12 +136,12 @@ public class ArrangementMenu {
         return map;
     }
 
-    public static void addQuantityAgreement(int companyID){
+    public static void addQuantityAgreement(int companyID,boolean storeManager){
         Map<Integer,Map<Integer,Double>> map = parseQuantity("Please enter the items you with to add to the agreement");
         if (map == null){
             System.out.println("Error - input was not of the right format!\n" +
                     "Returning to arrangement menu");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         if (SupplierManager.getSuppliers().get(companyID).getArrangement().addNewAgreement(map, companyID))
@@ -150,12 +150,12 @@ public class ArrangementMenu {
             System.out.println("Adding quantity agreement failed, item is not in the arrangement, agreement already exists or price is invalid");
     }
 
-    public static void addItemsToQuantity(int companyID){
+    public static void addItemsToQuantity(int companyID,boolean storeManager){
         Map<Integer,Map<Integer,Double>> map = parseQuantity("Please enter the items you with to add to the agreement");
         if (map == null){
             System.out.println("Error - input was not of the right format!\n" +
                     "Returning to arrangement menu");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         if (SupplierManager.getSuppliers().get(companyID).getArrangement().addItemsToAgreement(map,companyID))
@@ -164,12 +164,12 @@ public class ArrangementMenu {
             System.out.println("Updating quantity agreement failed, item is not in the arrangement or price is invalid");
     }
 
-    public static void changePriceInAgreement(int companyID){
+    public static void changePriceInAgreement(int companyID,boolean storeManager){
         Map<Integer,Map<Integer,Double>> map = parseQuantity("Please enter the items whose price you want to update the agreement");
         if (map == null){
             System.out.println("Error - input was not of the right format!\n" +
                     "Returning to arrangement menu");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         if (SupplierManager.getSuppliers().get(companyID).getArrangement().editItemInAgreement(map,companyID))
@@ -178,7 +178,7 @@ public class ArrangementMenu {
             System.out.println("Updating quantity agreement failed, item is not in the arrangement or price is invalid");
     }
 
-    public static void removeItemsFromQuantity(int companyId){
+    public static void removeItemsFromQuantity(int companyId,boolean storeManager){
         System.out.println("Please enter the items you wish to remove from the agreement in the following format:\n" +
                 "itemID:itemID:itemID:...");
         String input = scanner.next();
@@ -192,7 +192,7 @@ public class ArrangementMenu {
             catch (Exception e){
                 System.out.println("Input was not of the right format!\n" +
                         "returning to Arrangement Menu\n");
-                runMenu();
+                runMenu(storeManager);
                 return;
             }
         }
@@ -200,20 +200,20 @@ public class ArrangementMenu {
         System.out.println("Deleted Items successfully");
     }
 
-    public static void runDeliveryDateMenu(int companyID){
+    public static void runDeliveryDateMenu(int companyID,boolean storeManager){
         String [] commands = {"Please choose a function:",
                 "1.Print past delivery dates",
                 "2.Print future delivery dates",
                 "3.Modify date",
                 "4.Return to Main Menu"};
-        MenuHandler.getInstance().handleDeliverDateMenu(commands, companyID);
+        MenuHandler.getInstance().handleDeliverDateMenu(commands, companyID,storeManager);
     }
 
-    public static void modifyDate(int companyID){ //TODO maybe remove
+    public static void modifyDate(int companyID,boolean storeManager){
         if (!(SupplierManager.getSuppliers().get(companyID).getArrangement() instanceof FixedArrangement)) {
             System.out.println("Error - cannot modify date of a non fixed arrangement. go to Order Menu to place orders!\n" +
                     "returning to Arrangement Menu\n");
-            runMenu();
+            runMenu(storeManager);
             return;
         }
         else{
@@ -227,7 +227,7 @@ public class ArrangementMenu {
             catch (Exception e){
                 System.out.println("Input was not of the right format!\n" +
                         "returning to Arrangement Menu\n");
-                runMenu();
+                runMenu(storeManager);
                 return;
             }
             FixedArrangement arr = (FixedArrangement) SupplierManager.getSuppliers().get(companyID).getArrangement();

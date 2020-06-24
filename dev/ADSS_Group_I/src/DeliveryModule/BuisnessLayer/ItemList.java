@@ -1,4 +1,4 @@
-package DeliveryModule.BusinessLayer;
+package DeliveryModule.BuisnessLayer;
 
 import java.util.ArrayList;
 import java.util.List;

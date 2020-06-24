@@ -67,6 +67,10 @@ public class DTOShift {
         return str.toString();
     }
 
+    public void setRoles(List<String> roles){
+        this.roles = roles;
+    }
+
     public String toString(){
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         String period = "day";

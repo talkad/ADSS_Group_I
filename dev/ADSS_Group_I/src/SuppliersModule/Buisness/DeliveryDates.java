@@ -1,4 +1,4 @@
-package Buisness;
+package SuppliersModule.Buisness;
 
 import java.time.LocalDate;
 import java.util.HashMap;

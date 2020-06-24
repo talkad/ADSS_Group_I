@@ -1,4 +1,4 @@
-package DeliveryModule.BusinessLayer;
+package DeliveryModule.BuisnessLayer;
 
 public class Truck {
     private int TruckNumber;

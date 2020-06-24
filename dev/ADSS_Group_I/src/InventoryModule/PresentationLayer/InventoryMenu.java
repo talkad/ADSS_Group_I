@@ -1,6 +1,5 @@
 package InventoryModule.PresentationLayer;
 
-
 import Interface.Menu.Menu;
 
 import java.util.Scanner;

@@ -1,10 +1,11 @@
-package DAL;
+package SuppliersModule.DAL;
 
-
-
-import Interface.DAL_Connector.DatabaseManager;
-import InventoryModule.Business.Result;
-import SuppliersModule.Business.Order;
+import Buisness.Arrangement;
+import Buisness.Order;
+import Buisness.Result;
+import BusinessLayer.Product;
+import DAL_Connector.DatabaseManager;
+import DataAccessLayer.ProductMapper;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -121,7 +122,7 @@ public class OrderMapper {
         }
         if (result.isSuccessful()) {
             saveOrderItems(order.getOrderNum(), order.getItemList());
-            //result = ArrangementMapper.getInstance().insertItemToDelivery(order.getOrderDate(), supplierId, order.getOrderNum());
+            result = ArrangementMapper.getInstance().insertItemToDelivery(order.getOrderDate(), supplierId, order.getOrderNum());
         }
 
         return result;

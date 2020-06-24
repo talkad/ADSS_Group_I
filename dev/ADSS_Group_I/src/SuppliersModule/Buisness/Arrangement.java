@@ -1,7 +1,7 @@
-package Buisness;
+package SuppliersModule.Buisness;
 
-import BusinessLayer.Product;
-import DAL.ArrangementMapper;
+import InventoryModule.Business.Product;
+import SuppliersModule.DAL.ArrangementMapper;
 
 import java.util.HashMap;
 import java.util.List;
