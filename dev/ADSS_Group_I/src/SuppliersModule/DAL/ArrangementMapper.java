@@ -1,11 +1,11 @@
 package SuppliersModule.DAL;
 
-import Buisness.*;
-import BusinessLayer.Product;
-import DAL_Connector.DatabaseManager;
-import DataAccessLayer.ProductMapper;
 
-import java.lang.reflect.Executable;
+import Interface.DAL_Connector.DatabaseManager;
+import InventoryModule.Business.Product;
+import InventoryModule.DataAccessLayer.ProductMapper;
+import SuppliersModule.Buisness.*;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -38,7 +38,7 @@ public class ArrangementMapper {
         return instance;
     }
 
-    public Map<Integer,Product> getItems(int supplierId){
+    public Map<Integer, Product> getItems(int supplierId){
         Map<Integer, Product> map = new HashMap<>();
         String sql = "SELECT productId from Arrangement WHERE supplierId = ?";
         PreparedStatement pstmt;
@@ -84,7 +84,7 @@ public class ArrangementMapper {
         return arrangement;
     }
 
-    public  QuantityAgreement getQuantity(int supplierId){
+    public QuantityAgreement getQuantity(int supplierId){
         Map<Integer,Map<Integer,Double>> qA = new HashMap<>();
         int productId, amount;
         double discount;

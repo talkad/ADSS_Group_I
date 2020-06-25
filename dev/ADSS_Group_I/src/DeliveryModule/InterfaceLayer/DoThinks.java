@@ -4,19 +4,20 @@ import DeliveryModule.BuisnessLayer.DeliveryArea;
 import DeliveryModule.BuisnessLayer.DeliveryForm;
 import DeliveryModule.BuisnessLayer.DeliveryManager;
 import DeliveryModule.BuisnessLayer.DriverManager;
+import DeliveryModule.BuisnessLayer.ItemList;
 import DeliveryModule.BuisnessLayer.License;
 import DeliveryModule.BuisnessLayer.Site;
 import DeliveryModule.BuisnessLayer.SiteManager;
 import DeliveryModule.BuisnessLayer.Truck;
 import DeliveryModule.BuisnessLayer.TruckManager;
 import EmployeeModule.BusinessLayer.Employee;
+import SuppliersModule.Buisness.*;
 
 import org.omg.CORBA.portable.ApplicationException;
 
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
-import Interface.Bussiness_Connector.Connector;
-import SuppliersModule.Buisness.Order;
+import Interface.Bussiness_Connector.*;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -61,10 +62,11 @@ public class DoThinks {
     	if (!TruckManager.CheckWeight(form.getTruckNumber(), truckWeight))
             return null;
         DeliveryManager.addWeghit(truckWeight, LocalTime.now(), form);
-        // send OrderID
-        // _Inventory_.receiveOrder(form.getOrderID());
-        return ""; //form.getItemList().toString();// print item list to driver
-    } // ????????????????????????????????????????????????
+        
+        Connector.deliverOrder(form.getOrderID());
+        
+        return Connector.getItemListString(form.getOrderID());
+    } 
     
     // if the delivery can happened, you need to change something 
     public static boolean EditForm(int FormID, String date,  String Destiny, String Source, Map<Integer, Integer> itemList, Integer truckNumber,  int driverId)
@@ -144,17 +146,25 @@ public class DoThinks {
     {
     	DriverManager.AddLicense(id, License.valueOf(license));
     }
+    
+    // update supplier id 
+    public static void addSupplierID(String address, int SupplierID) throws ApplicationException {
+    	SiteManager.FindSite(address).setSiteID(SupplierID);
+    	SiteManager.FindSite(address).save(SupplierID);
+    }
 
     // delete form
     public static void DeleteForm(int OrderID) throws ApplicationException {
         DeliveryManager.DeleteForm(OrderID);
     }
+    
 
+    
     // set delivery for waiting order
     public static void DetermineDelivery()throws ApplicationException, ParseException, IOException{
     	List<Integer> FailOrder = new ArrayList<>(); // all the order we can't delivery
     	// get all the order we need to set
-        Map<Integer, String> orderToSet = null;//SuppliersModules.DAL.OrderMapper.getInstance().getOrdersToSet();
+        Map<Integer, String> orderToSet = Connector.getInstance().getOrdersToSet();
         
         for(int orderID : orderToSet.keySet()){ // get the order
         	Order order = null;//SuppliersModules.DAL.OrderMapper.getInstance().GetOrder(orderID);
@@ -226,7 +236,7 @@ public class DoThinks {
             		}
             		if(toSave) {// create the form
             			if(truckID != -1) {  // check if the truck can delivery items
-                			keepSearchEmployee = !CreateForm(date, shift, "dest", "source", truckID, Integer.valueOf(employeeID), orderID);
+                			keepSearchEmployee = !CreateForm(date, shift, SiteManager.getShopAddressbyID(Connector.getDest(orderID)), SiteManager.getSupplierddressbyID(Connector.getSource(orderID)), truckID, Integer.valueOf(employeeID), orderID);
                 			DeliveryInfo[0] = date;
             				DeliveryInfo[1] = shift;
             				DeliveryInfo[2] = truckID + "";
@@ -255,7 +265,7 @@ public class DoThinks {
     }
     public static boolean isPossibleUpdateForm(Map<Integer, Integer> newItems, int orderID) throws ApplicationException {
         DeliveryForm form = DeliveryManager.getFormByOrderID(orderID);
-        int storeID = -1;//Connector.getInstance().getOrder(orderID).getStoreID();
+        int storeID = Connector.getInstance().getSitebyOrder(orderID);
         // get weight of the item list
         double weight = 0;
         for(int itemID : newItems.keySet()) {
@@ -264,6 +274,8 @@ public class DoThinks {
         return TruckManager.CheckWeight(form.getTruckNumber(), weight);
     }// ????????????????????????????????????????????????
 
+    
+    
     public static String[] getPreviousDateForDelivery(Map<Integer, Integer> itemList, int storeID)throws ApplicationException, ParseException, IOException{
     	String[] setDelivery = new String[4];
     	// get weight of the item list
@@ -311,9 +323,17 @@ public class DoThinks {
         return setDelivery; // delivery don't Succeeded
     }
     
+    // create delivery for deficiency
+    public static void insertPlannedDelivery(String[] setDelivery, int orderID) throws NumberFormatException, IOException, ParseException, ApplicationException {
+    	CreateForm(setDelivery[0], setDelivery[1], SiteManager.getShopAddressbyID(Connector.getDest(orderID)), SiteManager.getSupplierddressbyID(Connector.getSource(orderID)), Integer.parseInt(setDelivery[2]), Integer.parseInt(setDelivery[3]) , orderID);
+    }
+    
     public static boolean isAddressExist(String Address) {
     	return (SiteManager.FindSite(Address) != null);
     }
+    
+
+    
     public static void Load() throws ApplicationException
     {
     	DriverManager.Loadall();

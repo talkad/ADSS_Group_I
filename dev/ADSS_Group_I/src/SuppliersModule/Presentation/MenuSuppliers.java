@@ -49,7 +49,7 @@ public class MenuSuppliers {
         }
         switch (choice){
             case 1:
-                SupplierMenu.runMenustoreManager();
+                SupplierMenu.runMenu(storeManager);
                 break;
             case 2:
                 ArrangementMenu.runMenu(storeManager);

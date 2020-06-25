@@ -30,7 +30,7 @@ public class ArrangementMenu {
         }
         if (!SupplierManager.getSuppliers().containsKey(companyID)){
             System.out.println("error:404 - Supplier not found");
-            MenuSuppliers.getInstance().runMenu(scanner);
+            MenuSuppliers.getInstance().runMenu(scanner, storeManager);
             return;
         }
 

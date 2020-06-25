@@ -1,11 +1,9 @@
 package SuppliersModule.DAL;
 
-import Buisness.Arrangement;
-import Buisness.Order;
-import Buisness.Result;
-import BusinessLayer.Product;
-import DAL_Connector.DatabaseManager;
-import DataAccessLayer.ProductMapper;
+
+import Interface.DAL_Connector.DatabaseManager;
+import SuppliersModule.Buisness.Order;
+import SuppliersModule.Buisness.Result;
 
 import java.sql.*;
 import java.time.LocalDate;

@@ -35,7 +35,7 @@ public class SiteManager {
 	}
     public static void addSite(String Address, String PhoneNumber, String ContantName, List<DeliveryArea> DeliveryArea, int isSupplier, boolean toSave) throws ApplicationException {
 		Site s;
-    	if (isSupplier == 0)
+    	if (isSupplier > 0)
 			s = new Supplier(Address, PhoneNumber, ContantName, DeliveryArea);
     	else
 			s = new Shop(Address, PhoneNumber, ContantName, DeliveryArea);
@@ -117,6 +117,50 @@ public class SiteManager {
 		}
     	return null;
     }
+    
+    public static Site getSupplierByID( int siteID) {
+   
+    
+    		
+		for (Site site : Sites) {
+			if(site.isMe(siteID) && site instanceof Supplier )
+				return site;
+		}
+		
+    	return null;
+	
+    }
+    
+    public static Site getShopByID( int siteID) {
+    	   
+        
+		
+		for (Site site : Sites) {
+			if(site.isMe(siteID) && site instanceof Shop )
+				return site;
+		}
+		
+    	return null;
+	
+    }
+    
+    public static String getShopAddressbyID(int siteID)
+    {
+    	Site site = getShopByID(siteID);
+		if(site == null)
+				return null;
+    	return site.Address;
+    }
+    public static String getSupplierddressbyID(int siteID)
+    {
+    	Site site =  getSupplierByID(siteID);
+		if(site == null)
+			return null;
+	return site.Address;
+    }
+    
+    
+    
     
 
 }

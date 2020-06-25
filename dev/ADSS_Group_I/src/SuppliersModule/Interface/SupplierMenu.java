@@ -1,5 +1,6 @@
 package SuppliersModule.Interface;
 
+import Interface.Bussiness_Connector.Connector;
 import SuppliersModule.Buisness.SupplierManager;
 import SuppliersModule.DAL.SupplierMapper;
 
@@ -19,13 +20,13 @@ public class SupplierMenu {
                 "2.Delete a Supplier card",
                 "3.Edit a Supplier card",
                 "4.Return to Main Menu"};
-        MenuHandler.getInstance().handleSupplierMenu(commands);
+        MenuHandler.getInstance().handleSupplierMenu(commands, storeManager);
     }
 
     public static void addSupplier(boolean storeManager){
         System.out.println("first, please enter address");
         String address = scanner.nextLine();
-        if(!SuppliersDeliveryConnector.isAddressExist(address)) { //modify, use deliverY function thru connector
+        if(!Connector.isAddressExist(address)) { //modify, use deliverY function thru connector
             System.out.println("address doesnt exists...");
             runMenu(storeManager)
             ;return;
@@ -54,7 +55,7 @@ public class SupplierMenu {
         }
         if(SupplierManager.addSupplier(values[0],values[1],companyID,bankAccount,values[4],values[5],selfPickup)) {
             System.out.println("Added Supplier successfully");
-            SupplierDeliveryConnector.addSupplierID(address,values[2]);
+            Connector.addSupplierID(address,values[2]);
         }
         else
             System.out.println("Supplier already existed in the System");
@@ -90,7 +91,7 @@ public class SupplierMenu {
         }
         if (!SupplierManager.getSuppliers().containsKey(companyID)){
             System.out.println("error:404 - Supplier not found");
-            runMenu();
+            runMenu(storeManager);
         }
 
         String[] commands = {"Please choose a function:" ,
@@ -99,7 +100,7 @@ public class SupplierMenu {
                 "3.Change Supplier Bank account number" ,
                 "4.Print Supplier card" ,
                 "5.Return to Main Menu"};
-        MenuHandler.getInstance().handleEditSupplierMenu(commands,companyID);
+        MenuHandler.getInstance().handleEditSupplierMenu(commands,companyID,storeManager);
     }
 
     public static void changePayment(int companyID, boolean storeManager){
@@ -140,7 +141,7 @@ public class SupplierMenu {
                 "3.Edit a Contact Person",
                 "4.Print all contacts",
                 "5.Return to Main Menu"};
-        MenuHandler.getInstance().handleContactMenu(commands,companyID);
+        MenuHandler.getInstance().handleContactMenu(commands,companyID,storeManager);
     }
 
     public static void addContact(int companyID, boolean storeManager){
@@ -183,7 +184,7 @@ public class SupplierMenu {
                 "2.Delete method from contact",
                 "3.Edit details of method",
                 "4.Return to Contact Menu"};
-        MenuHandler.getInstance().handleEditContactMenu(commands,companyID,contactName);
+        MenuHandler.getInstance().handleEditContactMenu(commands,companyID,contactName,storeManager);
     }
 
     public static void addMethod(int companyID, String contact, boolean storeManager){
@@ -220,14 +221,14 @@ public class SupplierMenu {
         }
     }
 
-    public static void deleteMethod(int companyID, String contact,boolean storeManager){
+    public static void deleteMethod(int companyID, String contact){
         System.out.println("Please enter the method you with to delete\n");
         String method = scanner.nextLine();
         SupplierManager.getSuppliers().get(companyID).getContactByName(contact).deleteFromMethods(method);
         System.out.println("Contact method deleted successfully\n");
     }
 
-    public static void deleteContact(int companyID){
+    public static void deleteContact(int companyID,boolean storeManager){
         System.out.println("Please enter the name of the contact person you would like to delete");
         String contactName;
         contactName = scanner.nextLine();

@@ -109,7 +109,7 @@ public class MenuHandler {
                 SupplierMenu.addMethod(companyID,contactName, storeManager);
                 break;
             case 2:
-                SupplierMenu.deleteMethod(companyID,contactName,storeManager);
+                SupplierMenu.deleteMethod(companyID,contactName);
                 break;
             case 3:
                 SupplierMenu.editMethod(companyID,contactName,storeManager);

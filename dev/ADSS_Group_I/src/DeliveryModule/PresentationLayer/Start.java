@@ -292,9 +292,9 @@ public class Start {
     	System.out.println("would you like to add a Supplier or a Shop? for Suplier enter Y. for Shop enter N");
     	String name = buffer.readLine();
     	boolean isSupplie = name == "Y";
-    	int isSupplier = 1;
+    	int isSupplier = 0;
     	if(isSupplie)
-    		isSupplier = 0;
+    		isSupplier = 1;
     	System.out.println("please enter the site Address");
     	String address = buffer.readLine();
     	System.out.println("please enter phone number");

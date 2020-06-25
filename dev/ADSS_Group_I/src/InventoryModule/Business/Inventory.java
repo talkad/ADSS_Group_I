@@ -510,4 +510,11 @@ public class Inventory {
         }
         return defectsReport;
     }
+    
+    
+    public static String getItemName(int itemid)
+    {
+    	Product p = ProductMapper.getInstance().getProduct(itemid);
+    	return p.getName() + " " + p.getManufacturer();
+    }
 }

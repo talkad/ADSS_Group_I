@@ -6,8 +6,12 @@ import EmployeeModule.BusinessLayer.Employee;
 import EmployeeModule.BusinessLayer.mainBL;
 import InventoryModule.Business.Inventory;
 import SuppliersModule.Buisness.SupplierManager;
+import SuppliersModule.DAL.OrderMapper;
+
 import org.omg.CORBA.portable.ApplicationException;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +28,7 @@ public class Connector {
         return instance;
     }
 
-    public int sendLackOfItemOrder(int productId, int amount, int price, int storeID){
+    public  int sendLackOfItemOrder(int productId, int amount, int price, int storeID){
         return SupplierManager.placeLackOfInventory( productId, amount, price);
     }
 
@@ -80,4 +84,58 @@ public class Connector {
     public double getWeightItem(int itemID, int storeID) {
         return Inventory.getInstance().getProductsWeight(itemID,storeID);
     }
+    public static boolean isAddressExist(String Address) {
+    	return DoThinks.isAddressExist(Address);
+    }
+    public static String[] getPreviousDateForDelivery(Map<Integer, Integer> itemList, int storeID)throws ApplicationException, ParseException, IOException{
+    	return DoThinks.getPreviousDateForDelivery(itemList, storeID);
+    }
+    
+    public static void addSupplierID(String address, int SupplierID) throws ApplicationException {
+    	DoThinks.addSupplierID(address, SupplierID);
+    }
+    public static boolean isPossibleUpdateForm(Map<Integer, Integer> newItems, int orderID) throws ApplicationException { 
+    	return DoThinks.isPossibleUpdateForm(newItems, orderID);
+    }
+    
+    public static void createFormFinal(String[] setDelivery, int orderID) throws NumberFormatException, IOException, ParseException, ApplicationException { 
+    	DoThinks.insertPlannedDelivery(setDelivery, orderID);
+    }
+    public static int getSitebyOrder(int orderID)
+    {
+    	return SupplierManager.getSitebyOrder(orderID);
+    }
+    public Map<Integer, String> getOrdersToSet() {
+    	return OrderMapper.getInstance().getOrdersToSet();
+    }
+    
+    public static String getItemListString(int orderid) {
+    	Map<Integer, Integer> m = SupplierManager.getItemListString(orderid);
+    	String str = "";
+    	for (Integer product : m.keySet()) {
+			str += getItemListString(product);
+			str += " X " + m.get(product) + "\n";
+		}
+    	return str;
+    }
+    
+    
+    public static String getItemName(int itemid)
+    {
+    	return Inventory.getInstance().getItemName(itemid);
+    }
+    public static void deliverOrder(int orderID)
+    {
+    	SupplierManager.DeliverOrder(orderID);
+    }
+    
+    public static int getSource(int orderID)
+    {
+		return SupplierManager.getSupplierbyOrder(orderID);
+    }
+    public static int getDest(int orderID)
+    {
+    	return getSitebyOrder(orderID);
+    }
+
 }

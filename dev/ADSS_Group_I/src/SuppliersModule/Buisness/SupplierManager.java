@@ -1,10 +1,14 @@
 package SuppliersModule.Buisness;
 
 
+import DeliveryModule.BuisnessLayer.Supplier;
 import InventoryModule.DataAccessLayer.ProductMapper;
 import SuppliersModule.DAL.ArrangementMapper;
 import SuppliersModule.DAL.OrderMapper;
 import SuppliersModule.DAL.SupplierMapper;
+import SuppliersModule.Buisness.Arrangement;
+import Interface.Bussiness_Connector.Connector;
+import SuppliersModule.Buisness.Order;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -76,13 +80,13 @@ public class SupplierManager {
         return _suppliers.get(companyId).removeContact(contactName);
     }
 
-    public static int findCheapestSupplier(int itemId, int amount){
+    public static int findCheapestSupplier(int itemId, int amount, int supermarketId){
         int supplierId = -1;
         boolean QE = false;
-        double cheapestPrice = ProductMapper.getInstance().getProduct(itemId).getBuyingPrice();
+        double cheapestPrice = ProductMapper.getInstance().getProduct(itemId, supermarketId).getBuyingPrice();
         double discount = 0;
         for (SupplierCard supplier: SupplierMapper.getInstance().getAll().values()) {
-            Arrangement arr = ArrangementMapper.getInstance().getArrangement(supplier.getCompanyId());
+            Arrangement arr = ArrangementMapper.getInstance().getArrangement(supplierId);
             if (arr != null && !arr.getItems().containsKey(itemId))
                 continue;
             if (QE && supplier.getArrangement().get_quantityAgreement() == null)
@@ -109,7 +113,7 @@ public class SupplierManager {
 
     public static int placeLackOfInventory(int itemID, int amount,int supermarketId){
         int orderID = -1;
-        int supplierID = findCheapestSupplier(itemID,amount);
+        int supplierID = findCheapestSupplier(itemID,amount,supermarketId);
         if (supplierID == -1)
             return -1;
         Map<Integer,Integer> map = new HashMap<>();
@@ -186,4 +190,22 @@ public class SupplierManager {
     public static Result VerifyOrder(int orderId){
         return OrderMapper.getInstance().updateOrderStatus(orderId, "accepted");
     }
+    
+    public static Order getOrder(int orderID)
+    {
+    	return OrderMapper.getInstance().getOrder(orderID);
+    }
+    public static int getSitebyOrder(int orderID)
+    {
+    	return OrderMapper.getInstance().getOrder(orderID).getSupermarketID();
+    }
+    public static int getSupplierbyOrder(int orderID)
+    {
+    	return OrderMapper.getInstance().getSupplier(orderID);
+    } 
+    
+    public static Map<Integer, Integer> getItemListString(int orderid) {
+    	return OrderMapper.getInstance().getItems(orderid);
+    }
+    
 }

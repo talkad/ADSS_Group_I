@@ -216,6 +216,30 @@ public class ProductMapper {
 
         return product;
     }
+    
+    
+    /**
+     * given a productID, returns a product with id {@param productID}
+     * @param productID the id of the product
+     * @return product with id {@param productID}. or null if no such entry exists
+     */
+    public Product getProduct(int productID){
+
+        Product product = null;
+
+        if(identityProductMap.size() == 0)
+            initProductMap();
+
+        if(identityProductMap.containsKey(productID))
+        {
+            product = identityProductMap.get(productID);
+        	if(product.getItems() == null) {
+        		product.setItems(ItemMapper.getInstance().getItems(productID));
+        	}
+        }
+
+        return product;
+    }
 
     /**
      * checks whether there's already a product with the same name and manufacturer name
