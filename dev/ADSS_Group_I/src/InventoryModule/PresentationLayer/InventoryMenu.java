@@ -2,7 +2,11 @@ package InventoryModule.PresentationLayer;
 
 import Interface.Menu.Menu;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Scanner;
+
+import org.omg.CORBA.portable.ApplicationException;
 
 public class InventoryMenu {
 
@@ -37,7 +41,7 @@ public class InventoryMenu {
 
     }
 
-    public void display(Scanner in){
+    public void display(Scanner in) throws NumberFormatException, IOException, ParseException, ApplicationException{
         String[] mainMenu = new String[] {"Add to Inventory", "Remove from Inventory", "Update Inventory",
                 "Inventory reports", "Orders menu", "Return to main menu"};
         String[] addMenu = new String[] {"Add product", "Add item"};

@@ -7,9 +7,13 @@ import InventoryModule.Business.Result;
 import InventoryModule.DTO.ItemDTO;
 import InventoryModule.DTO.ProductDTO;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import org.omg.CORBA.portable.ApplicationException;
 
 /**
  * This class provides services for menu
@@ -136,8 +140,12 @@ public class Controller{
     /**
      * This function get as input id of an item, and removes it if the item exists
      * @param in  standard input stream
+     * @throws ApplicationException 
+     * @throws ParseException 
+     * @throws IOException 
+     * @throws NumberFormatException 
      */
-    public void removeItem(Scanner in){
+    public void removeItem(Scanner in) throws NumberFormatException, IOException, ParseException, ApplicationException{
         int productId;
         int itemId;
         Result result;
@@ -508,7 +516,7 @@ public class Controller{
         }
     }
 
-    public void loadInventory(Scanner in) {
+    public void loadInventory(Scanner in) throws NumberFormatException, IOException, ParseException, ApplicationException {
         int orderId;
         boolean result;
         int storeID;

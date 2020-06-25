@@ -10,11 +10,15 @@ import SuppliersModule.Buisness.Arrangement;
 import Interface.Bussiness_Connector.Connector;
 import SuppliersModule.Buisness.Order;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.omg.CORBA.portable.ApplicationException;
 
 public class SupplierManager {
 
@@ -111,7 +115,7 @@ public class SupplierManager {
         return supplierId;
     }
 
-    public static int placeLackOfInventory(int itemID, int amount,int supermarketId){
+    public static int placeLackOfInventory(int itemID, int amount,int supermarketId) throws NumberFormatException, IOException, ParseException, ApplicationException{
         int orderID = -1;
         int supplierID = findCheapestSupplier(itemID,amount,supermarketId);
         if (supplierID == -1)
@@ -140,7 +144,7 @@ public class SupplierManager {
         }
         if(newOrder){
             if(SupplierManager.getSuppliers().get(supplierID).placeOrder(map, closestDate, supermarketId))
-                Connector.CreateFormFinal(closestOrderValues, _orderNumIncrement - 1);
+                Connector.createFormFinal(closestOrderValues, _orderNumIncrement - 1);
         }
         else{
             SupplierManager.getSuppliers().get(supplierID).getOrders().get(orderID).addItems(map);
@@ -184,6 +188,10 @@ public class SupplierManager {
     }
 
     public static Result DeliverOrder (int orderId){
+        Order order = OrderMapper.getInstance().getOrder(orderId);
+        if (order.isPeriodic()){
+            SupplierManager.getSuppliers().get(OrderMapper.getInstance().getSupplier(orderId)).placeOrder(order.getItemList(),order.getOrderDate().plusDays(7),order.getSupermarketID());
+        }
         return OrderMapper.getInstance().updateOrderStatus(orderId, "delivered");
     }
 

@@ -5,6 +5,8 @@ import SuppliersModule.Presentation.MenuSuppliers;
 
 import java.util.Scanner;
 
+import org.omg.CORBA.portable.ApplicationException;
+
 public class MenuHandler {
 
     private Scanner scanner;
@@ -41,7 +43,7 @@ public class MenuHandler {
         return choice;
     }
 
-    public void handleSupplierMenu(String [] commands, boolean storeManager){
+    public void handleSupplierMenu(String [] commands, boolean storeManager) throws ApplicationException{
         int choice = handleChoice(commands, storeManager);
 
         switch (choice){

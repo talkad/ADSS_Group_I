@@ -28,7 +28,7 @@ public class Connector {
         return instance;
     }
 
-    public  int sendLackOfItemOrder(int productId, int amount, int price, int storeID){
+    public  int sendLackOfItemOrder(int productId, int amount, int price, int storeID) throws NumberFormatException, IOException, ParseException, ApplicationException{
         return SupplierManager.placeLackOfInventory( productId, amount, price);
     }
 

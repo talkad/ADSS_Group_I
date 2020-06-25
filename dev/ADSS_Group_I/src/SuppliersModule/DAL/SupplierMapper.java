@@ -14,7 +14,7 @@ public class SupplierMapper {
     private static Connection conn = DatabaseManager.getInstance().getConnection();
 
     private Map<Integer, SupplierCard> identitySupplierMap;
-    private Map<Integer, ContactPerson> identityContactMap;
+    private Map<Integer, ArrayList<ContactPerson>> identityContactMap;
 
     private static SupplierMapper instance;
 
@@ -53,6 +53,37 @@ public class SupplierMapper {
             System.out.println(e.getMessage());
         }
     }
+
+
+    private void initContactMap(){
+        String sql = "SELECT * FROM ContactPerson";
+
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            // loop through the result set
+            while (rs.next()) {
+                Map<String,String> map = new HashMap<>();
+                map.put(rs.getString("methodName"),rs.getString("method"));
+                ContactPerson contactPerson = new ContactPerson(rs.getString("name"),map);
+                int supId = rs.getInt("supplierId");
+
+                if(!identityContactMap.containsKey(supId)){
+                    ArrayList<ContactPerson> l = new ArrayList<>();
+                    l.add(contactPerson);
+                    identityContactMap.put(rs.getInt("supplierId"), l);
+                }
+                else {
+                    identityContactMap.get(supId).add(contactPerson);
+                }
+
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 
     /**
      * insert a given supplier to DB
@@ -301,6 +332,14 @@ public class SupplierMapper {
         }
         return result;
     }
+    public ArrayList<ContactPerson> getContacts(int companyId){
+        initContactMap();
+        if(identitySupplierMap.containsKey(companyId)) {
+            return identityContactMap.get(companyId);
+        }
+        return null;
+    }
+
 
 
 

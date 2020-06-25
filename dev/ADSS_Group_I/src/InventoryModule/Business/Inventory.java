@@ -7,9 +7,13 @@ import InventoryModule.DataAccessLayer.ItemMapper;
 import InventoryModule.DataAccessLayer.ProductMapper;
 import InventoryModule.PresentationLayer.Controller;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+
+import org.omg.CORBA.portable.ApplicationException;
 /**
  * a singleton class
  */
@@ -145,8 +149,12 @@ public class Inventory {
      * @param productID the id of the product to remove from
      * @param itemID the order ID of the item
      * @return a Result object with information about the result of the operation
+     * @throws ApplicationException 
+     * @throws ParseException 
+     * @throws IOException 
+     * @throws NumberFormatException 
      */
-    public Result removeOneItem(int productID, int itemID, int storeID){
+    public Result removeOneItem(int productID, int itemID, int storeID) throws NumberFormatException, IOException, ParseException, ApplicationException{
         Result result = new Result();
 
         Product productToRemoveFrom = productMapper.getProduct(productID, storeID);
@@ -193,8 +201,12 @@ public class Inventory {
      * given a product, checks if the minimum quantity set for the product is reached
      * @param product the product to check
      * @return a String saying the minimum quantity is reached if so or null if the quantity hasn't reached yet
+     * @throws ApplicationException 
+     * @throws ParseException 
+     * @throws IOException 
+     * @throws NumberFormatException 
      */
-    public String minQuantityNotification(Product product, int storeID){
+    public String minQuantityNotification(Product product, int storeID) throws NumberFormatException, IOException, ParseException, ApplicationException{
         if(product.hasMinQuantityReached()){
             return sendLackOrder(product, storeID);
         }
@@ -204,7 +216,7 @@ public class Inventory {
 
     //TODO: change this to work with the storeID
     //TODO: i dont think that we need to add right away the requested item
-    public String sendLackOrder(Product product, int storeID){
+    public String sendLackOrder(Product product, int storeID) throws NumberFormatException, IOException, ParseException, ApplicationException{
         int orderId;
         if((orderId = Connector.getInstance().sendLackOfItemOrder(product.getId(),
                 product.getMinCapacity()*2, product.getBuyingPrice(), storeID)) != -1){
@@ -246,7 +258,7 @@ public class Inventory {
         return result;
     }
 
-    public boolean tryLoadInventory(int orderID, int storeID){
+    public boolean tryLoadInventory(int orderID, int storeID) throws NumberFormatException, IOException, ParseException, ApplicationException{
         Map<Integer,Integer> order;
 
         order = Connector.getInstance().tryLoadInventory(orderID, storeID);
@@ -259,7 +271,7 @@ public class Inventory {
         return false;
     }
 
-    public void loadInventory(int orderID, Map<Integer, Integer> toLoad, int storeID){
+    public void loadInventory(int orderID, Map<Integer, Integer> toLoad, int storeID) throws NumberFormatException, IOException, ParseException, ApplicationException{
         boolean confirmItem;
         for(int productId: toLoad.keySet()){
             Product product = productMapper.getProduct(productId, storeID);

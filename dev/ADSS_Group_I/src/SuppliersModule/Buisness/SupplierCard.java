@@ -1,6 +1,7 @@
 package SuppliersModule.Buisness;
 
 
+import DeliveryModule.BuisnessLayer.Supplier;
 import InventoryModule.DataAccessLayer.ProductMapper;
 import SuppliersModule.DAL.ArrangementMapper;
 import SuppliersModule.DAL.OrderMapper;
@@ -135,7 +136,7 @@ public class SupplierCard {
 
     public boolean addContact(ContactPerson contact){
         if  (this.getContacts().isEmpty())
-            return false; //
+            this.setContacts(SupplierMapper.getInstance().getContacts(this._companyId));
         if (contact == null || _contacts.contains(contact))
             return false;
         else{
@@ -143,7 +144,7 @@ public class SupplierCard {
             SupplierMapper.getInstance().addContact(this._companyId, contact);
             return true;
         }
-    } //TODO
+    }
 
     public boolean removeContact(String contact){
         if (contact == null)
@@ -156,7 +157,7 @@ public class SupplierCard {
             }
         }
         return false;
-    } //TODO
+    }
 
     public boolean cancelOrder (int orderNum){
         if (_orders.size() == 0)
@@ -213,7 +214,7 @@ public class SupplierCard {
         }
     }
 
-    public void changePriceInArrangement (Map<Integer,Integer> products){ //TODO talk to tal
+    public void changePriceInArrangement (Map<Integer,Integer> products){
         for (Integer item: products.keySet()){
             _arrangement.getItems().get(item).setBuyingPrice(products.get(item));
         }

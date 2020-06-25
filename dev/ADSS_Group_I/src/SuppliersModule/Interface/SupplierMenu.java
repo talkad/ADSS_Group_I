@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.zip.CheckedOutputStream;
 
+import org.omg.CORBA.portable.ApplicationException;
+
 public class SupplierMenu {
 
     static Scanner scanner = new Scanner(System.in);
@@ -20,10 +22,17 @@ public class SupplierMenu {
                 "2.Delete a Supplier card",
                 "3.Edit a Supplier card",
                 "4.Return to Main Menu"};
+        try {
         MenuHandler.getInstance().handleSupplierMenu(commands, storeManager);
+        }
+        catch (ApplicationException e)
+        {
+        	System.out.println("encounterd a problem" );
+        	e.printStackTrace();
+        }
     }
 
-    public static void addSupplier(boolean storeManager){
+    public static void addSupplier(boolean storeManager) throws  ApplicationException{
         System.out.println("first, please enter address");
         String address = scanner.nextLine();
         if(!Connector.isAddressExist(address)) { //modify, use deliverY function thru connector
@@ -55,7 +64,7 @@ public class SupplierMenu {
         }
         if(SupplierManager.addSupplier(values[0],values[1],companyID,bankAccount,values[4],values[5],selfPickup)) {
             System.out.println("Added Supplier successfully");
-            Connector.addSupplierID(address,values[2]);
+            Connector.addSupplierID(address, companyID);
         }
         else
             System.out.println("Supplier already existed in the System");

@@ -6,6 +6,8 @@ import SuppliersModule.Interface.OrderMenu;
 import SuppliersModule.Presentation.MenuSuppliers;
 import org.omg.CORBA.portable.ApplicationException;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.Scanner;
 
 public class Menu {
@@ -60,7 +62,7 @@ public class Menu {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NumberFormatException, IOException, ParseException {
         Scanner scanner = new Scanner(System.in);
         String[] options = new String[]
                 {"Employee menu", "Inventory menu", "Suppliers menu", "Delivery menu", "login",  "exit"};
@@ -95,13 +97,13 @@ public class Menu {
                         System.out.println(login);
                         try {
                             if (isValidLogin() && employeeMenu.hasRole(login, "storekeeper")) {
-                                suppliersMenu.runMenu(scanner);
+                                suppliersMenu.runMenu(scanner, false);
                             }
                         } catch (ApplicationException ignored){ flag = true; }
                         if(flag){
                             try {
                                 if (isValidLogin() && employeeMenu.hasRole(login, "store manager")) {
-                                    OrderMenu.runMenu();
+                                	suppliersMenu.runMenu(scanner,true);
                                 }
                             } catch (ApplicationException e){
                                 System.out.println(e.getId());
