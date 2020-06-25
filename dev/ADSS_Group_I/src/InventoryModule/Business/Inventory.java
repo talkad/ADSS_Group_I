@@ -210,22 +210,17 @@ public class Inventory {
         if(product.hasMinQuantityReached()){
             return sendLackOrder(product, storeID);
         }
-
         return null;
     }
 
-    //TODO: change this to work with the storeID
-    //TODO: i dont think that we need to add right away the requested item
     public String sendLackOrder(Product product, int storeID) throws NumberFormatException, IOException, ParseException, ApplicationException{
-        int orderId;
-        if((orderId = Connector.getInstance().sendLackOfItemOrder(product.getId(),
-                product.getMinCapacity()*2, product.getBuyingPrice(), storeID)) != -1){
+        if(Connector.getInstance().sendLackOfItemOrder(product.getId(),product.getMinCapacity()*2, storeID) != -1){
 
             return "Minimum quantity for product " + product.getName() + " by " + product.getManufacturer() +
                     " reached is store " + storeID + "! Sent an order to fill the need!";
         }
 
-        return "Minimum quantity for product " + product.getName() + " by " + product.getManufacturer() + " reached!" +
+        return "Minimum quantity for product " + product.getName() + " by " + product.getManufacturer() + " reached!\n" +
                 "Couldn't send an order to fill the lack cause there is no supplier to supply the need.";
     }
 
@@ -241,7 +236,6 @@ public class Inventory {
         else{
             result.failure("Couldn't change the order");
         }
-
         return result;
     }
 
@@ -295,6 +289,7 @@ public class Inventory {
                 }
             }
         }
+        Connector.VerifyOrder(orderID);
     }
 
     /**

@@ -76,7 +76,7 @@ public class DeliveryForm {
     public String getDate() {return date;}
     public int getID() { return this.Id; }
     public DeliveryForm getPrevForm() { return this.PrevForm; }
-    public int getOrderID() { return OrderID; }
+    public int getOrderID() { return this.OrderID; }
 
     public boolean equal(DeliveryForm other){
        return this.Id == other.Id;

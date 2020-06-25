@@ -36,9 +36,9 @@ public class SupplierMenu {
         System.out.println("first, please enter address");
         String address = scanner.nextLine();
         if(!Connector.isAddressExist(address)) { //modify, use deliverY function thru connector
-            System.out.println("address doesnt exists...");
-            runMenu(storeManager)
-            ;return;
+            System.out.println("address doesn't exists...");
+            runMenu(storeManager);
+            return;
         }
 
         System.out.println("Please Enter the following (without spaces):\nSupplier's name : Manifacturer's name : Company id : Bank Account : Payments conditions : arrangment type (fixed/single) : Self Pickup(true/false)");
@@ -88,7 +88,7 @@ public class SupplierMenu {
             System.out.println("Error 404: supplier not found");
     }
 
-    public static void runEditSupplierMenu(boolean storeManager){
+    public static void runEditSupplierMenu(boolean storeManager) throws ApplicationException {
         System.out.println("Please enter the Company Id of the supplier you wish to edit:\n");
         String input = scanner.nextLine();
         int companyID;
@@ -143,7 +143,7 @@ public class SupplierMenu {
         System.out.println("Bank account number updated successfully!\n");
     }
 
-    public static void runContactMenu(int companyID, boolean storeManager){
+    public static void runContactMenu(int companyID, boolean storeManager) throws ApplicationException {
         String[] commands = {"Please choose a function:",
                 "1.Add new Contact Person",
                 "2.Delete a Contact Person",
@@ -178,7 +178,7 @@ public class SupplierMenu {
         }
     }
 
-    public static void runEditContactMenu(int companyID, boolean storeManager){
+    public static void runEditContactMenu(int companyID, boolean storeManager) throws ApplicationException {
         System.out.println("Please enter the name of the contact person you would like to modify");
         String contactName = scanner.nextLine();
 
@@ -250,7 +250,6 @@ public class SupplierMenu {
             runMenu(storeManager);
             return;
         }
-
     }
 }
 

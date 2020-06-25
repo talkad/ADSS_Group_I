@@ -1,6 +1,8 @@
 package Interface.Menu;
 
+import DeliveryModule.PresentationLayer.Start;
 import EmployeeModule.InterfaceLayer.Service;
+import Interface.Bussiness_Connector.Connector;
 import InventoryModule.PresentationLayer.InventoryMenu;
 import SuppliersModule.Interface.OrderMenu;
 import SuppliersModule.Presentation.MenuSuppliers;
@@ -15,6 +17,7 @@ public class Menu {
     private static InventoryMenu inventoryMenu = InventoryMenu.getInstance();
     private static MenuSuppliers suppliersMenu = MenuSuppliers.getInstance();
     private static Service employeeMenu = Service.getInstance();
+    private static Start deliveryMenu = new Start();
     protected static int login = -1;
 
 
@@ -62,12 +65,13 @@ public class Menu {
         }
     }
 
-    public static void main(String[] args) throws NumberFormatException, IOException, ParseException {
+    public static void main(String[] args) throws NumberFormatException, IOException, ParseException, ApplicationException {
         Scanner scanner = new Scanner(System.in);
         String[] options = new String[]
                 {"Employee menu", "Inventory menu", "Suppliers menu", "Delivery menu", "login",  "exit"};
         String input;
         boolean quit = false;
+        Connector.Load();
 
         while(!quit){
             displayMenu(options);
@@ -113,7 +117,7 @@ public class Menu {
                 case ("4"):
                     try {
                         if (isValidLogin() && employeeMenu.hasRole(login, "logistics manager")) {
-                            //suppliersMenu.runMenu(scanner);
+                            deliveryMenu.StartDelivery();
                         }
                     } catch (ApplicationException e){
                         System.out.println(e.getId());
@@ -126,7 +130,6 @@ public class Menu {
                     System.out.println ( "Bye..." );
                     quit = true;
                     break;
-
                 default:
                     System.out.println ( "Unrecognized option" );
                     break;

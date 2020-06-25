@@ -349,7 +349,6 @@ public class ProductMapper {
             if(nextID < id)
                 nextID = id;
         }
-
         return nextID+1;
     }
 

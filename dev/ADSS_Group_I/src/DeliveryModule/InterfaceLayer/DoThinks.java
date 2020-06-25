@@ -26,26 +26,24 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DoThinks {
 
 	// create form and save it on the Delivery manager and DB
-    public static boolean CreateForm(String date, String time, String Destiny, String Source, int truckNumber, int driverId, int orderID) throws IOException, ParseException, ApplicationException {
-        if (!TruckManager.CheckLicense(truckNumber, driverId))
-            return false;
-        
-        if (!CheckShift(date, time, DriverManager.getDriver(driverId).getID()))
-            return false;
-
+    public static boolean CreateForm(String date, String time, String Destiny, String Source, int truckNumber, int driverId, int orderID) throws ApplicationException {
+    	if (!TruckManager.CheckLicense(truckNumber, driverId)) {
+			return false;
+		}
+		if (!CheckShift(date, time, DriverManager.getDriver(driverId).getID())) {
+			return false;
+		}
         Site dest, source;
-        if((dest =SiteManager.FindSite(Destiny)) == null ||(source = SiteManager.FindSite(Source)) == null)
-        	return false;
-        // save to delivery manager
+        if((dest = SiteManager.FindSite(Destiny)) == null ||(source = SiteManager.FindSite(Source)) == null) {
+			return false;
+		}
+
+		// save to delivery manager
         DeliveryManager.CreateForm(-1, date, time, dest, source, truckNumber, driverId, true, orderID);
         return true;
     }
@@ -59,12 +57,11 @@ public class DoThinks {
     public static String Departure(int formID, int truckWeight) throws ApplicationException {
     	DeliveryForm form = DeliveryManager.FindForm(formID);
     	// check if the truck can take all the items
-    	if (!TruckManager.CheckWeight(form.getTruckNumber(), truckWeight))
-            return null;
-        DeliveryManager.addWeghit(truckWeight, LocalTime.now(), form);
-        
-        Connector.deliverOrder(form.getOrderID());
-        
+    	if (!TruckManager.CheckWeight(form.getTruckNumber(), truckWeight)) {
+			return null;
+		}
+		//DeliveryManager.addWeghit(truckWeight, LocalTime.now(), form);
+		Connector.deliverOrder(form.getOrderID());
         return Connector.getItemListString(form.getOrderID());
     } 
     
@@ -109,8 +106,7 @@ public class DoThinks {
     }
     
     // add new truck
-    public static void addTruck(int Trucknumber, String model, int netWeight, int maxWeight, String lic)
-    {
+    public static void addTruck(int Trucknumber, String model, int netWeight, int maxWeight, String lic) throws ApplicationException {
     	License licen = License.valueOf(lic);
     	TruckManager.addTruck(Trucknumber, model, netWeight, maxWeight, licen);
     	
@@ -161,7 +157,7 @@ public class DoThinks {
 
     
     // set delivery for waiting order
-    public static void DetermineDelivery()throws ApplicationException, ParseException, IOException{
+    public static void DetermineDelivery() throws ApplicationException, ParseException, IOException{
     	List<Integer> FailOrder = new ArrayList<>(); // all the order we can't delivery
     	// get all the order we need to set
         Map<Integer, String> orderToSet = Connector.getInstance().getOrdersToSet();
@@ -190,12 +186,19 @@ public class DoThinks {
         // send Suppliers all the order we can't set delivery
         //postponeOrders(FailOrder);
     }// ????????????????????????????????????????????????
-    
-    public static String[] checkOrderToDelivery(String date, double weightItemList, int orderID, String shift, boolean toSave) throws ApplicationException, ParseException, IOException {
-    	String[] DeliveryInfo = new String[4];
-    	String dateShift = date + " " + shift;
-    	
-    	List<String> employees = Connector.getInstance().getDriversInShift(dateShift);
+
+	public static String[] checkOrderToDelivery(String date, double weightItemList, int orderID, String shift, boolean toSave) throws ApplicationException, ParseException, IOException {
+		String dateShift = date + " " + shift;
+		List<String> employee = Connector.getInstance().getDriversInShift(dateShift);
+		if(employee == null)
+			employee = new ArrayList<>();
+		return checkOrderToDelivery(date, weightItemList, orderID, shift, toSave, employee );
+	}
+
+
+	public static String[] checkOrderToDelivery(String date, double weightItemList, int orderID, String shift, boolean toSave, List<String> employees) throws ApplicationException, ParseException, IOException {
+		String[] DeliveryInfo = new String[4];
+		DeliveryInfo[0] = "";
         // get all the drivers in shift that day
         List<DeliveryForm> forms = DeliveryManager.getFormByDate(date, shift);
         List<Truck> busyTruck = new ArrayList<>();
@@ -292,48 +295,64 @@ public class DoThinks {
     	for(Date setDate : dates) { // search previous date
     		String date = dateFormat.format(setDate);
     		setDelivery = checkOrderToDelivery(date, weightItemList, -1, "1", false); // set appropriate delivery
-    		if(setDelivery[0].length() != 0) // if the delivery Succeeded
-        		return setDelivery;
-    		else
-    			setDelivery = checkOrderToDelivery(date, weightItemList, -1, "2", false);
-    		if(setDelivery[0].length() != 0)
-    			return setDelivery;
+    		if(setDelivery[0].length() != 0){
+				return setDelivery;	// if the delivery Succeeded
+			}
+    		else {
+				setDelivery = checkOrderToDelivery(date, weightItemList, -1, "2", false);
+				if (setDelivery[0].length() != 0)
+					return setDelivery; // if the delivery Succeeded
+			}
     	}
     	
     	// check the possibility the employees add driver
-    	for(Date setDate : dates) {
-    		List<String> AvailableEmployee = Connector.getInstance().getAvailableDrivers(setDate + " 1");
-    		String date = dateFormat.format(setDate);
-    		setDelivery = checkOrderToDelivery(date, weightItemList, -1, "1", false);
-    		if(setDelivery[0].length() != 0) { // try to change the employee to add driver to shift
-    			setDelivery = checkOrderToDelivery(date, weightItemList, -1, "2", false);
-    			if( Connector.getInstance().addDriverToShift(setDelivery[0] + " " + setDelivery[1], Integer.parseInt(setDelivery[3]))) {
-    				setDelivery[0] = date;
-    				return setDelivery;
-    			}
-    		}
-    		else {
-    			if( Connector.getInstance().addDriverToShift(setDelivery[0] + " " + setDelivery[1], Integer.parseInt(setDelivery[3]))) {
-    				setDelivery[0] = date;
-    				return setDelivery;
-    			}
-    		}
-    	}
-    	setDelivery[0] = dateFormat.format(DeliveryManager.addDays(now, 8)); // tell suppliers that the delivery can happens only in next week
+		for(Date setDate : dates) {
+			String date = dateFormat.format(setDate);
+			List<String> AvailableEmployee = Connector.getInstance().getAvailableDrivers(date + " 1");
+			if(AvailableEmployee != null)
+			{
+				setDelivery = checkOrderToDelivery(date, weightItemList, -1, "1", false, AvailableEmployee);
+				if(setDelivery[0].length() != 0) {
+					Connector.getInstance().addDriverToShift(setDelivery[0] + " " + 1, Integer.parseInt(setDelivery[3]));
+					return setDelivery;
+				}
+			}
+			else {
+				AvailableEmployee = Connector.getInstance().getAvailableDrivers(date + " 2");
+				// try to change the employee to add driver to shift
+				if(AvailableEmployee != null)
+				{
+					setDelivery = checkOrderToDelivery(date, weightItemList, -1, "2", false);
+					if (Connector.getInstance().addDriverToShift(setDelivery[0] + " " + setDelivery[1], Integer.parseInt(setDelivery[3]))) {
+						setDelivery[0] = date;
+						return setDelivery;
+					}
+					else {
+						if (setDelivery[3] != null && Connector.getInstance().addDriverToShift(setDelivery[0] + " " + setDelivery[1], Integer.parseInt(setDelivery[3]))) {
+							setDelivery[0] = date;
+							return setDelivery;
+						}
+					}
+				}
+			}
+		}
+		setDelivery[0] = dateFormat.format(DeliveryManager.addDays(now, 8)); // tell suppliers that the delivery can happens only in next week
         return setDelivery; // delivery don't Succeeded
     }
     
     // create delivery for deficiency
     public static void insertPlannedDelivery(String[] setDelivery, int orderID) throws NumberFormatException, IOException, ParseException, ApplicationException {
-    	CreateForm(setDelivery[0], setDelivery[1], SiteManager.getShopAddressbyID(Connector.getDest(orderID)), SiteManager.getSupplierddressbyID(Connector.getSource(orderID)), Integer.parseInt(setDelivery[2]), Integer.parseInt(setDelivery[3]) , orderID);
+    	CreateForm(setDelivery[0], setDelivery[1], SiteManager.getShopAddressbyID(Connector.getDest(orderID)), SiteManager.getSupplierddressbyID(Connector.getSource(orderID)), Integer.parseInt(setDelivery[2]), Integer.parseInt(setDelivery[3]) ,orderID);
     }
     
-    public static boolean isAddressExist(String Address) {
+    public static boolean isAddressExist(String Address) throws ApplicationException {
+    	if(SiteManager.getSite().isEmpty()){
+    		SiteManager.init();
+		}
+    	System.out.println(SiteManager.getSite().size());
     	return (SiteManager.FindSite(Address) != null);
     }
-    
 
-    
     public static void Load() throws ApplicationException
     {
     	DriverManager.Loadall();
@@ -341,8 +360,4 @@ public class DoThinks {
     	SiteManager.init();
     	DeliveryManager.init();
     }
-    
-    
-    
-    
 }

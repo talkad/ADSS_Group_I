@@ -40,15 +40,12 @@ public class ArrangementMapper {
 
     public Map<Integer, Product> getItems(int supplierId){
         Map<Integer, Product> map = new HashMap<>();
-        String sql = "SELECT productId from Arrangement WHERE supplierId = ?";
-        PreparedStatement pstmt;
-        try {
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1,supplierId);
-            ResultSet rs = pstmt.executeQuery();
+        String sql = "SELECT productId from Arrangement WHERE supplierId = " + supplierId;
+        try (Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql)){
             while(rs.next()){
                 Product product = ProductMapper.getInstance().getProduct(rs.getInt("productId"));
-                map.put(product.getId(),product);
+                map.put(product.getId(), product);
             }
         }
         catch (Exception e){
@@ -62,7 +59,7 @@ public class ArrangementMapper {
         Arrangement arrangement;
         PreparedStatement pstmt;
 
-        String sql = "SELECT selfpickup, arrangementType FROM Supplier WHERE companyId = ?";
+        String sql = "SELECT selfPickup, arrangementType FROM Supplier WHERE companyId = ?";
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1,supplierId);
@@ -115,26 +112,6 @@ public class ArrangementMapper {
             return null;
         return new QuantityAgreement(qA);
     }
-/*
-    private void initQuantityMap(){
-        String sql = "SELECT * FROM QuantityAgreement";
-        Map<Integer,Integer> map1;
-        Map<Integer,Double> map2;
-        try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            // loop through the result set
-            while (rs.next()) {
-                map1 = new HashMap<>();
-                map1.put(rs.getInt("supplierId"),rs.getInt("productId"));
-                map2 = new HashMap<>();
-                map2.put(rs.getInt("amount"),rs.getDouble("discount"));
-                identityQuantityMap.put(map1,map2);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }*/
 
     public DeliveryDates getDeliveryDates(int supplierId){
         String sql = "SELECT date, orderNum FROM DeliveryDates WHERE supplierId = ?";
@@ -158,22 +135,6 @@ public class ArrangementMapper {
         }
         return dDates;
     }
-
-/*
-    private void initArrangementMap(){
-        String sql = "SELECT * FROM Arrangement";
-        try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            // loop through the result set
-            while (rs.next()) {
-                identityArrangementMap.put(rs.getInt("supplierId"),rs.getInt("productId"));
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-*/
 
     public boolean insertArrangement(Arrangement arrangement, int supplierId){
         //add items to arrangement table

@@ -4,6 +4,7 @@ package SuppliersModule.DAL;
 import Interface.DAL_Connector.DatabaseManager;
 import SuppliersModule.Buisness.Order;
 import SuppliersModule.Buisness.Result;
+import SuppliersModule.Buisness.SupplierManager;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -72,7 +73,7 @@ public class OrderMapper {
     }
 
     public Order getOrder(int orderNum) {
-        String sql = "SELECT orderDate,Status,dateCreated,supermarketId,supplierId, isPeriodic From Orders WHERE orderNum =?";
+        String sql = "SELECT orderDate, status, dateCreated, supplierId, isPeriodic, supermarketId From Orders WHERE orderNum = ?";
         Order order = null;
         try {
 
@@ -225,7 +226,7 @@ public class OrderMapper {
 
     public Map<String, Integer> getOrderAmount() {
         Map<String, Integer> map = new HashMap<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         for (int i = 1; i < 8; i++) {
             String sql = "SELECT COUNT(orderNum) FROM Orders WHERE status = ? AND orderDate = ?";
             try {
@@ -248,14 +249,15 @@ public class OrderMapper {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         Map<Integer, String> map = new HashMap<>();
         for (int i = 1; i < 8; i++) {
-            String sql = "SELECT orderNum FROM Orders WHERE status = ? AND orderDate = ?";
+            String sql = "SELECT orderNum, supplierId FROM Orders WHERE status = ? AND orderDate = ?";
             try {
                 PreparedStatement categoryStatement = conn.prepareStatement(sql);
                 categoryStatement.setString(1, "pending");
                 categoryStatement.setString(2, LocalDate.now().plusDays(i).format(formatter));
                 ResultSet rs = categoryStatement.executeQuery();
                 while (rs.next()) {
-                    map.put(rs.getInt("orderNum"), LocalDate.now().plusDays(i).format(formatter));
+                    if(!SupplierManager.getSuppliers().get(rs.getInt("supplierId")).getArrangement().isSelfPickup())
+                        map.put(rs.getInt("orderNum"), LocalDate.now().plusDays(i).format(formatter));
                 }
             } catch (SQLException e) {
                 System.err.println(e.getMessage() + " from here");

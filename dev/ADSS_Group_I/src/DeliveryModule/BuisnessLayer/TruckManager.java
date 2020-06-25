@@ -1,6 +1,5 @@
 package DeliveryModule.BuisnessLayer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.omg.CORBA.portable.ApplicationException;
@@ -8,7 +7,7 @@ import org.omg.CORBA.portable.ApplicationException;
 import DeliveryModule.DAL.DAL;
 
 public class TruckManager {
-    private static List<Truck> Trucks = new ArrayList<Truck>();
+    private static List<Truck> Trucks = new ArrayList<>();
 
     public static boolean CheckLicense(int truckNumber, int driverId){
         License l1 = null;
@@ -29,10 +28,11 @@ public class TruckManager {
         return NowWeight <= weight;
     }
 
-
-    public static void addTruck(int Trucknumber, String model, int netWeight, int maxWeight, License lic)
+    public static void addTruck(int Trucknumber, String model, int netWeight, int maxWeight, License lic) throws ApplicationException
     {
-        Trucks.add(new Truck(Trucknumber, model, netWeight, maxWeight, lic));
+        Truck newbie = new Truck(Trucknumber, model, netWeight, maxWeight, lic);
+        Trucks.add(newbie);
+        newbie.Save();
     }
     
     public static Truck getTruckByID(int ID){
@@ -59,13 +59,10 @@ public class TruckManager {
 
     public static void Loadall() throws ApplicationException
     {
-
         List<Object[]> trucks = DAL.LoadAll("Truck");
         for (Object[] truckarr : trucks) {
             Truck truck = new Truck((int)truckarr[0], (String)truckarr[1], (int)truckarr[2], (int)truckarr[3], License.valueOf((String)truckarr[4]));
             Trucks.add(truck);
         }
-
-
     }
 }

@@ -3,6 +3,7 @@ package DeliveryModule.BuisnessLayer;
 
 import EmployeeModule.BusinessLayer.Employee;
 import EmployeeModule.BusinessLayer.mainBL;
+import Interface.Bussiness_Connector.Connector;
 import org.omg.CORBA.portable.ApplicationException;
 
 import DeliveryModule.DAL.DAL;
@@ -25,9 +26,9 @@ public class Driver {
     public int getID() { return this.employee.getId(); }
 
 
-    public boolean checkShift(String date, String time) throws ApplicationException {
+    public boolean checkShift(String date, String time, int id) throws ApplicationException {
         String shiftTime = date + " " + time;
-        return mainBL.getInstance().isEmployeeInShift(this.getID(), shiftTime);
+        return Connector.getInstance().isEmployeeInShift(id, shiftTime);
     }
     
     public boolean isLicenseSet(License l) {
@@ -55,7 +56,7 @@ public class Driver {
     {
         this.DriverLicense.add(licenese);
         LicenseDAL licensedal = new LicenseDAL(getID(), licenese.name());
-        DAL.Insert("DriverLicses", licensedal);
+        DAL.Insert("DriverLicense", licensedal);
     }
     public void saveDriver() throws ApplicationException
     {

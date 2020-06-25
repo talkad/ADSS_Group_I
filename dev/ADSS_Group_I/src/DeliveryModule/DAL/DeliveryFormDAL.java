@@ -40,6 +40,6 @@ public class DeliveryFormDAL implements iDAL {
     }
 
     public String getValues(){
-        return Id + ", '" + date + "', '" + DepTime + "', " + TruckWeight + ", '" + Source.getAddress() + "', '" + Destiny.getAddress() + "', " + DriverID + ", " + TruckNumber + ", '" + /*itemList.toString() +*/ "', " + PrevForm + ", " + OrderID;
+        return Id + ", '" + date + "', '" + DepTime + "', " + TruckWeight + ", '" + Source.getAddress() + "', '" + Destiny.getAddress() + "', " + DriverID + ", " + TruckNumber + ", " + PrevForm + ", " + OrderID;
     }
 }

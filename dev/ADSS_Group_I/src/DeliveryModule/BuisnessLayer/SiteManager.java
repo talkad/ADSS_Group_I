@@ -14,31 +14,28 @@ public class SiteManager {
     private static List<DeliveryArea> Area = new ArrayList<>();
 
     public static void init() throws ApplicationException {
-
-			List<Object[]> l = DAL.LoadAll("Site");
-			List<Object[]> l2 = DAL.LoadAll("Site_Areas");
-			List<Object[]> l3 = DAL.LoadAll("Delivery_Areas");
-			for (Object[] area : l3) {
-				createDeliveryArea((String)area[0], null, false);
+		List<Object[]> l = DAL.LoadAll("Site");
+		List<Object[]> l2 = DAL.LoadAll("Site_Areas");
+		List<Object[]> l3 = DAL.LoadAll("Delivery_Areas");
+		for (Object[] area : l3) {
+			createDeliveryArea((String)area[0], null, false);
+		}
+		for (Object[] site : l) {
+			List<DeliveryArea> areas = new ArrayList<>();
+			for (Object[] area : l2) {
+				if (area[0].equals(site[0]))
+					areas.add(FindArea((String) area[1]));
 			}
-			for (Object[] site : l) {
-				List<DeliveryArea> areas = new ArrayList<>();
-				for (Object[] area : l2) {
-					if (area[0].equals(site[0]))
-						areas.add(FindArea((String) area[1]));
-				}
-				addSite((String) site[0], (String) site[2], (String) site[1], areas, (int)site[3], false);
-
-			}
-
-
+			addSite((String) site[0], (String) site[2], (String) site[1], areas, (int)site[3], false);
+		}
 	}
+
     public static void addSite(String Address, String PhoneNumber, String ContantName, List<DeliveryArea> DeliveryArea, int isSupplier, boolean toSave) throws ApplicationException {
 		Site s;
     	if (isSupplier > 0)
-			s = new Supplier(Address, PhoneNumber, ContantName, DeliveryArea);
+			s = new Supplier(Address, PhoneNumber, ContantName, DeliveryArea, isSupplier);
     	else
-			s = new Shop(Address, PhoneNumber, ContantName, DeliveryArea);
+			s = new Shop(Address, PhoneNumber, ContantName, DeliveryArea, -isSupplier);
 		if(toSave) {
 			s.save(isSupplier);
 			if(DeliveryArea != null) {

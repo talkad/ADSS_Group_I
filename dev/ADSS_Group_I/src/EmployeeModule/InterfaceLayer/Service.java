@@ -2,8 +2,10 @@ package EmployeeModule.InterfaceLayer;
 
 import EmployeeModule.BusinessLayer.mainBL;
 import EmployeeModule.Pair;
+import Interface.Bussiness_Connector.Connector;
 import org.omg.CORBA.portable.ApplicationException;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -30,10 +32,10 @@ public class Service {
         System.out.print("Selection: ");
     }
 
-    public void display(Scanner scanner)  {
+    public void display(Scanner scanner) throws ParseException, IOException, ApplicationException {
         EmployeeModule.BusinessLayer.mainBL mainBL = EmployeeModule.BusinessLayer.mainBL.getInstance();
         boolean quit = false;
-        String[] options = new String[] {"Add employee", "Edit employee free time", "Add shift", "Get shift history", "Get employee details", "Quit", "Edit employee's details", "Display all employees", "Remove employee", "Edit Shift"};
+        String[] options = new String[] {"Add employee", "Edit employee free time", "Add shift", "Get shift history", "Get employee details", "Quit", "Edit employee's details", "Display all employees", "Remove employee", "Edit Shift", "Display Requested Shifts"};
         String input;
         while(!quit){
             displayMenu(options);
@@ -93,6 +95,9 @@ public class Service {
                 case("10"):
                     instance.editShift(scanner, mainBL);
                     break;
+                case("11"):
+                    instance.getRequestedOrders();
+                    break;
                 default:
                     System.out.println ("Unrecognized option");
                     break;
@@ -130,6 +135,8 @@ public class Service {
                         }
                     }catch (ParseException e) {
                         System.out.println("Invalid date format");
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
         } catch (ApplicationException e){
@@ -316,7 +323,7 @@ public class Service {
                 } else {
                     System.out.println("Invalid date, date must be at least 1 day ahead of current date");
                 }
-            } catch (ParseException e) {
+            } catch (ParseException | IOException e) {
                 System.out.println("Invalid date format");
             }
         } catch (ApplicationException e){
@@ -324,7 +331,7 @@ public class Service {
         }
     }
 
-    private void createShift(mainBL mainBL, ILShift shift){
+    private void createShift(mainBL mainBL, ILShift shift) throws ParseException, IOException, ApplicationException {
         mainBL.createShift(shift.getDate(), shift.getTime(), shift.getBranch(), shift.getShiftId(), shift.getRoles(), shift.getEmployees());
         shiftCounter++;
     }
@@ -465,6 +472,13 @@ public class Service {
         return mainBL.searchEmployee(id, true);
     }
 
+    public void getRequestedOrders(){
+        Map<String, Integer> map = Connector.getInstance().getRequestedOrders();
+        for (String key: map.keySet()) {
+            System.out.println("date: " + key + " order amount: " + map.get(key));
+        }
+    }
+
     private void dataLoad(mainBL mainBL) throws ApplicationException{
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         try {
@@ -490,6 +504,7 @@ public class Service {
             List<String> roles3 = new LinkedList<>();
             roles3.add("storekeeper");
             roles3.add("shift manager");
+            roles3.add("driver");
             List<String> roles4 = new LinkedList<>();
             roles4.add("cashier");
             boolean[][] freeTime1 = new boolean[2][7];
@@ -589,6 +604,6 @@ public class Service {
             mainBL.writeUpdatedFreeTime(9, 0, 2, false);
             shiftCounter = shiftCounter + 3;
             System.out.println("Successfully loaded pre-made data");
-        }catch (ParseException ignored){}
+        }catch (ParseException | IOException ignored){}
     }
 }

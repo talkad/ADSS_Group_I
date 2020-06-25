@@ -4,10 +4,8 @@ import org.omg.CORBA.portable.ApplicationException;
 
 
 import DeliveryModule.DAL.DAL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+
+import java.util.*;
 
 public class DriverManager {
     private static List<Driver> Drivers = new ArrayList<Driver>();
@@ -50,7 +48,7 @@ public class DriverManager {
     }
 
     public static boolean CheckShift(String date, String time, int id) throws ApplicationException {
-        return getDriver(id).checkShift(date, time);
+        return getDriver(id).checkShift(date, time, id);
     }
 
 
@@ -64,7 +62,7 @@ public class DriverManager {
         if(getDriver(id) != null)
             EditEmployee(id, newEmp);
         else
-            addDriver(newEmp, null);
+            addDriver(newEmp, new LinkedList<>());
     }
 
     public static void AddLicense(int DriverID, List<License> licenses) throws ApplicationException
@@ -81,7 +79,6 @@ public class DriverManager {
 
     public static void Loadall() throws ApplicationException
     {
-
         List<Object[]> licenses = DAL.LoadAll("DriverLicense");
         List<Object[]> drivers = DAL.LoadAll("Driver");
         HashMap<Integer, List<License>> mapper = new HashMap<Integer, List<License>>();

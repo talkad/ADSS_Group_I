@@ -121,12 +121,12 @@ public class SupplierCard {
             OrderMapper.getInstance().saveOrder(order,_companyId);
     }
 
-    public boolean placeOrder(Map<Integer, Integer> items, LocalDate date, int supermarketId){
+    public boolean placeOrder(Map<Integer, Integer> items, LocalDate date, int supermarketId, boolean isPeriodic){
         for (int item: items.keySet()){
             if (!ArrangementMapper.getInstance().getArrangement(_companyId).getItems().containsKey(item))
                 return false;
         }
-        Order order = new Order(SupplierManager.get_orderNumIncrement(),date, "pending", items,supermarketId, false);
+        Order order = new Order(SupplierManager.get_orderNumIncrement(),date, "pending", items,supermarketId, isPeriodic);
         _orders.put(SupplierManager.get_orderNumIncrement(),order);
         _arrangement.get_deliveryDates().getDates().put(order.getOrderNum(),date);
         SupplierManager.incrementOrderNum();
@@ -235,5 +235,4 @@ public class SupplierCard {
             output += person.toString();
         return output;
     }
-
 }

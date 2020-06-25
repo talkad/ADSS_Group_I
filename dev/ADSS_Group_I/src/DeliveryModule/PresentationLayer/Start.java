@@ -3,16 +3,12 @@ package DeliveryModule.PresentationLayer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Date;
 import java.util.HashMap;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import DeliveryModule.BuisnessLayer.*;
-import DeliveryModule.DAL.DAL;
 import DeliveryModule.InterfaceLayer.DoThinks;
 import org.omg.CORBA.portable.ApplicationException;
 
@@ -30,10 +26,9 @@ public class Start {
 								"3. Create Delivery Form\n" +
 								"4. Departure for delivery\n" +
 								"5. Add Truck\n" +
-								"6. Add Driver (does nothing)\n" +
-								"7. Add Site\n" +
-								"8. Add License\n" +
-								"9. Exit");
+								"6. Add Site\n" +
+								"7. Add License\n" +
+								"8. Exit");
 				//String input =
 
 				String line = buffer.readLine();
@@ -54,23 +49,17 @@ public class Start {
 						AddTruck();
 						break;
 					case ("6"):
-						AddDriver();
-						break;
-					case ("7"):
 						AddSite();
 						break;
-					case ("8"):
+					case ("7"):
 						AddLicense();
 						break;
-					case("9"):
+					case("8"):
 						return;
-					
-
 				}
 			}
     		catch (ApplicationException e){
 				System.out.println(e.getId());
-
 			}
     		catch(Exception e)
     		{
@@ -78,12 +67,7 @@ public class Start {
     		}
     	}
     }
-    public static void main2(String[] args){
-    	StartDelivery();
-    }
-    
-    
-    
+
     private static void InsertDeliveryArea() throws IOException, ApplicationException
     {
     	System.out.println();
@@ -91,7 +75,7 @@ public class Start {
     	String name = buffer.readLine();
 		List<String> Areas = new ArrayList<String>();
     	System.out.println("would you like to enter sites in the Area? Y/N");
-    	while( buffer.readLine() == "Y")
+    	while(buffer.readLine().equals("Y"))
     	{
     		System.out.println("Please enter the site address:");
     		Areas.add(buffer.readLine());
@@ -124,10 +108,7 @@ public class Start {
 		
 		System.out.println("please enter Source");	
 		String sourceAdd = buffer.readLine();
-		/*
-		System.out.println("please enter item list: ");
-		ItemList items = getItemList();
-	*/
+
 		System.out.println("please enter truck number");
 		Integer	truck = Integer.parseInt(buffer.readLine());
 
@@ -139,9 +120,9 @@ public class Start {
 		
 		boolean succes = DoThinks.CreateForm(date, time, destinyAdd, sourceAdd, truck, driverId, orderID);
 		if(succes)
-			System.out.println("Form Created succesfully");
+			System.out.println("Form Created successfully");
 		else
-			System.out.println("Creation faild");
+			System.out.println("Creation failed");
 		System.out.println("\n");
     	
     	
@@ -151,7 +132,7 @@ public class Start {
     {
     	System.out.println();
     	System.out.println("please enter Form number");
-    	int form = Integer.parseInt( buffer.readLine());
+    	int form = Integer.parseInt(buffer.readLine());
     	System.out.println("Please enter truck Weight");
     	int weight = Integer.parseInt(buffer.readLine());
     	String result = DoThinks.Departure(form, weight);
@@ -160,11 +141,9 @@ public class Start {
     	else
     	{
     		System.out.println();
-    		System.out.println("Item List detils:");
+    		System.out.println("Item List details:");
     		System.out.println(result);
-    		System.out.println("/n please Confirm by pressing any button \n\n");
-    		buffer.read();
-    	}
+		}
     	
     	
     }
@@ -251,8 +230,7 @@ public class Start {
 
     
     
-    private static void AddTruck() throws IOException
-    {
+    private static void AddTruck() throws IOException, ApplicationException {
     	System.out.println("please enter truck number");
     	int num = Integer.parseInt(buffer.readLine());
     	System.out.println("please enter model");
@@ -266,40 +244,19 @@ public class Start {
     	DoThinks.addTruck(num, model, netWeight, maxWeight, license);
     }
     
-    
-    
-    
-    private static void AddDriver() throws IOException
-    {
-    	/*
-    	System.out.println("please enter Driver name");
-    	String name = buffer.readLine();
-		System.out.println("please enter Driver ID");
-		String id = buffer.readLine();
-    	System.out.println("please enter licenses");
-    	String license = buffer.readLine();
-    	String[] arr = license.split(", ");
-    	List<String> lic = new ArrayList<>();
-    	for(int i=0; i<arr.length;i++)
-    		lic.add(arr[i]);
-    	DoThinks.addDriver(name, id, lic);
-    	*/
-    
-    }
-    
     private static void AddSite() throws IOException, ApplicationException
     {
-    	System.out.println("would you like to add a Supplier or a Shop? for Suplier enter Y. for Shop enter N");
+    	System.out.println("would you like to add a Supplier or a Shop? for Supplier enter Y. for Shop enter N");
     	String name = buffer.readLine();
-    	boolean isSupplie = name == "Y";
-    	int isSupplier = 0;
+    	boolean isSupplie = name.equals("Y");
+    	int isSupplier = -1;
     	if(isSupplie)
     		isSupplier = 1;
     	System.out.println("please enter the site Address");
     	String address = buffer.readLine();
     	System.out.println("please enter phone number");
     	String phone = buffer.readLine();
-    	System.out.println("pleae enter the contact name");
+    	System.out.println("please enter the contact name");
     	String contact = buffer.readLine();
     	System.out.println("would you like to add a Delivery Area? Y/N");
     	List<String> areas = new ArrayList<>();
@@ -317,7 +274,7 @@ public class Start {
     	System.out.println("please enter Driver ID");
     	int ID = Integer.parseInt(buffer.readLine());
     	
-    	System.out.println("please enter the Licnese");
+    	System.out.println("please enter the License");
     	String Licnese = buffer.readLine();
     	
     	DoThinks.addLicense(ID, Licnese);

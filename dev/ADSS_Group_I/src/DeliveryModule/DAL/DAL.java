@@ -11,7 +11,7 @@ import org.omg.CORBA.portable.ApplicationException;
 public class DAL
 {
 
-    private static final String DB = "jdbc:sqlite:Delivery.db";
+    private static final String DB = "jdbc:sqlite:src/Delivery.db";
     private static final String Connection_String = "Data Source=DataName.db;Version=3;";
 
     public static Connection connection = null;
@@ -84,7 +84,7 @@ public class DAL
     public static void Update(String TableName, iDAL obj) throws ApplicationException
     {
         OpenConnect();
-        String str = "INSERT INTO" + TableName + "(" + obj.getFields() + ") VALUES( " + obj.getValues() +")";
+        String str = "INSERT OR REPLACE INTO " + TableName + "(" + obj.getFields() + ") VALUES( " + obj.getValues() +")";
         try (Connection conn = connection;
              PreparedStatement pstmt = conn.prepareStatement(str)) {
             pstmt.executeUpdate();
@@ -100,8 +100,8 @@ public class DAL
         OpenConnect();
         String[] fields = obj.getFields().split(", ");
         String[] values = obj.getValues().split(", ");
-        String str = "UPDATE INTO" + TableName + "SET " + fields[0] + " = " + values[0];
-        for(int i=1; i<fields.length; i++) {
+        String str = "UPDATE " + TableName + " SET " + fields[0] + " = " + values[0];
+        for(int i=1; i < fields.length; i++) {
         	str += ", " + fields[i] + " = " + values[i];
         }
         str += " WHERE " + condition;
@@ -185,11 +185,11 @@ public class DAL
 
     }
     
-    public static List<Object[]> Select(String TableName, iDAL obj, int key, String date) throws ApplicationException
+    public static List<Object[]> Select(String TableName, iDAL obj, String date) throws ApplicationException
     {
         OpenConnect();
         List<Object[]> ans = new ArrayList<>();
-        String sql = "SELECT * FROM " + TableName;
+        String sql = "SELECT * FROM " + TableName + " WHERE Date = " + "'" + date + "'";
         try (Connection conn = connection;
              PreparedStatement pstmt  = conn.prepareStatement(sql)){
 

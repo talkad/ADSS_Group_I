@@ -6,6 +6,8 @@ import EmployeeModule.Pair;
 import Interface.Bussiness_Connector.Connector;
 import org.omg.CORBA.portable.ApplicationException;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
 public class mainBL {
@@ -32,10 +34,7 @@ public class mainBL {
             }
         } else if (newEmp.getRoles().contains("driver")) {
             Connector.getInstance().AddOrEditDriver(newEmp.getId(), newEmp);
-        } else {
-            Connector.getInstance().RemoveDriver(newEmp.getId());
         }
-
         DALEmployee dalEmployee = new DALEmployee(id, firstName, lastName, bankDetails, workConditions, startTime, salary, roles);
         if (!updateFlag) {
             mainDataInstance.writeEmployee(dalEmployee);
@@ -44,7 +43,8 @@ public class mainBL {
             mainDataInstance.editEmployee(dalEmployee);
     }
 
-    public void createShift(Date date, int time, int branch, int shiftId, List<String> roles, List<Pair<Integer, String>> employees) {
+    public void createShift(Date date, int time, int branch, int shiftId, List<String> roles, List<Pair<Integer, String>> employees) throws ParseException, IOException, ApplicationException {
+        Connector.DetermineDelivery();
         mainDataInstance.writingShift(new DALShift(date, time, branch, shiftId, roles, employees));
         mainDataInstance.writeShiftEmployees(shiftId, employees);
     }
@@ -60,6 +60,7 @@ public class mainBL {
 
     public void removeEmployee(int id) throws ApplicationException {
         if (searchEmployee(id, true)) {
+            Connector.getInstance().RemoveDriver(id);
             mainDataInstance.removeEmployee(id);
         } else
             send("Error: Employee doesn't exist in the system");
@@ -148,7 +149,9 @@ public class mainBL {
     }
 
     public List<String> getDriversInShift(String shiftTime) {
-        return mainDataInstance.getDriversInShift(shiftTime);
+        if(mainDataInstance.searchShift(shiftTime))
+            return mainDataInstance.getDriversInShift(shiftTime);
+        else return null;
     }
 
     public boolean addDriverToShift(String shiftTime, int id) throws ApplicationException {

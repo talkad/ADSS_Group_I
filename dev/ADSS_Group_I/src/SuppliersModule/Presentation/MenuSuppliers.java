@@ -4,6 +4,7 @@ package SuppliersModule.Presentation;
 import SuppliersModule.Interface.ArrangementMenu;
 import SuppliersModule.Interface.OrderMenu;
 import SuppliersModule.Interface.SupplierMenu;
+import org.omg.CORBA.portable.ApplicationException;
 
 import java.util.Scanner;
 
@@ -26,7 +27,7 @@ public class MenuSuppliers {
     }
 
 
-    public void runMenu(Scanner scanner, boolean storeManager){
+    public void runMenu(Scanner scanner, boolean storeManager) throws ApplicationException {
         System.out.println("=====Main-Menu=====\n" +
                 "Choose a function:\n" +
                 "1.Manage Suppliers\n" +
@@ -58,7 +59,8 @@ public class MenuSuppliers {
                 OrderMenu.runMenu(storeManager);
                 break;
             case 4:
-                exit(0);
+            default:
+                System.out.println ("Unrecognized option");
                 break;
         }
 

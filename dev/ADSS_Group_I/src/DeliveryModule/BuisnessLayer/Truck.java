@@ -1,5 +1,9 @@
 package DeliveryModule.BuisnessLayer;
 
+import DeliveryModule.DAL.DAL;
+import DeliveryModule.DAL.TruckDAL;
+import org.omg.CORBA.portable.ApplicationException;
+
 public class Truck {
     private int TruckNumber;
     private String Model;
@@ -21,5 +25,9 @@ public class Truck {
     public boolean isMe(int Id)
     {
     	return this.TruckNumber == Id;
+    }
+
+    public void Save() throws ApplicationException {
+        DAL.Insert("Truck", new TruckDAL(this.TruckNumber, this.Model, this.NetWeight, this.MaxWeight, this.license.toString()));
     }
 }

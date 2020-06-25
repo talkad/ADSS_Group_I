@@ -5,6 +5,7 @@ import DeliveryModule.InterfaceLayer.DoThinks;
 import EmployeeModule.BusinessLayer.Employee;
 import EmployeeModule.BusinessLayer.mainBL;
 import InventoryModule.Business.Inventory;
+import SuppliersModule.Buisness.Result;
 import SuppliersModule.Buisness.SupplierManager;
 import SuppliersModule.DAL.OrderMapper;
 
@@ -28,8 +29,8 @@ public class Connector {
         return instance;
     }
 
-    public  int sendLackOfItemOrder(int productId, int amount, int price, int storeID) throws NumberFormatException, IOException, ParseException, ApplicationException{
-        return SupplierManager.placeLackOfInventory( productId, amount, price);
+    public  int sendLackOfItemOrder(int productId, int amount, int storeID) throws NumberFormatException, IOException, ParseException, ApplicationException{
+        return SupplierManager.placeLackOfInventory(productId, amount, storeID);
     }
 
     public boolean setPeriodicOrder(int orderId, Map<Integer, Integer> toSet, int status, int storeID){
@@ -40,6 +41,10 @@ public class Connector {
         else{
             return  SupplierManager.setPeriodicOrder(orderId,toSet,status);
         }
+    }
+
+    public boolean hasRole(int id, String role) throws ApplicationException {
+        return mainBL.getInstance().hasRole(id, role);
     }
 
     public boolean changePeriodicOrderDate(int orderId, LocalDate newDate, int storeID){
@@ -84,7 +89,7 @@ public class Connector {
     public double getWeightItem(int itemID, int storeID) {
         return Inventory.getInstance().getProductsWeight(itemID,storeID);
     }
-    public static boolean isAddressExist(String Address) {
+    public static boolean isAddressExist(String Address) throws ApplicationException {
     	return DoThinks.isAddressExist(Address);
     }
     public static String[] getPreviousDateForDelivery(Map<Integer, Integer> itemList, int storeID)throws ApplicationException, ParseException, IOException{
@@ -111,16 +116,22 @@ public class Connector {
     
     public static String getItemListString(int orderid) {
     	Map<Integer, Integer> m = SupplierManager.getItemListString(orderid);
-    	String str = "";
+    	StringBuilder str = new StringBuilder();
     	for (Integer product : m.keySet()) {
-			str += getItemListString(product);
-			str += " X " + m.get(product) + "\n";
+			str.append(product.toString());
+			str.append(" X ").append(m.get(product)).append("\n");
 		}
-    	return str;
+    	return str.toString();
     }
-    
-    
-    public static String getItemName(int itemid)
+
+    public static void Load() throws ApplicationException {
+        DoThinks.Load();
+    }
+
+    public static Result VerifyOrder(int orderId) {
+        return SupplierManager.VerifyOrder(orderId);
+    }
+        public static String getItemName(int itemid)
     {
     	return Inventory.getInstance().getItemName(itemid);
     }
@@ -138,5 +149,11 @@ public class Connector {
     	return getSitebyOrder(orderID);
     }
 
+    public static Map<String, Integer> getRequestedOrders(){
+        return SupplierManager.getOrderAmount();
+    }
 
+    public static void DetermineDelivery() throws ApplicationException, ParseException, IOException {
+        DoThinks.DetermineDelivery();
+    }
 }

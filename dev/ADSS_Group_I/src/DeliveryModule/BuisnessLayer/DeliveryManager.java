@@ -24,7 +24,7 @@ public class DeliveryManager {
 
             List<Object[]> l = DAL.LoadAll("DeliveryForm");
             for (Object[] item : l) {
-                CreateForm(Integer.parseInt((String) item[0]), (String) item[1], (String) item[2], SiteManager.FindSite((String) item[5]), SiteManager.FindSite((String) item[4]), Integer.parseInt((String) item[7]), Integer.parseInt((String) item[6]), false, Integer.parseInt((String) item[7]));
+                CreateForm((int)item[0], (String) item[1], (String) item[2], SiteManager.FindSite((String) item[5]), SiteManager.FindSite((String) item[4]), (int) item[7], (int) item[6], false, (int) item[9]);
             }
 
 
@@ -42,7 +42,7 @@ public class DeliveryManager {
         if(deliveryForm.getPrevForm() != null)
             prev = deliveryForm.getPrevForm().getID();
         if(toSave)
-            DAL.Insert("DeliveryForm", new DeliveryFormDAL(deliveryForm.getID(), prev, date, time, Destiny, Source, truckNumber, -1, driverId, deliveryForm.getOrderID()));
+            DAL.Insert("DeliveryForm", new DeliveryFormDAL(deliveryForm.getID(), prev, date, time, Destiny, Source, truckNumber, -1, driverId, orderID));
     }
     public static void addWeghit(int truckWeight, LocalTime depTime, DeliveryForm form) throws ApplicationException
     {
@@ -88,8 +88,8 @@ public class DeliveryManager {
     	int[] arr = new int[2];
     	arr[0] = 1;
     	arr[1] = 2;
-    	List<Object[]> forms = DAL.Select("DeliveryForm", new DeliveryFormDAL(date), arr);
-    	for (Object[] item : forms) {
+    	List<Object[]> forms = DAL.Select("DeliveryForm", new DeliveryFormDAL(date), date);
+        for (Object[] item : forms) {
             String[] items = ((String) item[8]).split("\n");
             ItemList list = new ItemList(Integer.parseInt(items[0].split(": ")[1]));
             for (int i = 1; i < items.length; i++) {
@@ -97,8 +97,8 @@ public class DeliveryManager {
                 list.addItem(new Item(ma[0].substring(3), Integer.parseInt(ma[1])));
             }
             ans.add(new DeliveryForm(Integer.parseInt((String) item[0]), (String) item[1], (String) item[2], SiteManager.FindSite((String) item[5]), SiteManager.FindSite((String) item[4]), Integer.parseInt((String) item[7]), Integer.parseInt((String) item[6]), Integer.parseInt((String) item[7])));
-    	}
-    	return ans;
+        }
+        return ans;
     }
 
     public static DeliveryForm getFormByOrderID(int orderID) throws ApplicationException {

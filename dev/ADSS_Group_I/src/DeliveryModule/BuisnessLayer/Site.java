@@ -19,7 +19,15 @@ public abstract class Site {
         this.ContantName = ContantName;
         this.DeliveryArea = DeliveryArea;
         this.PhoneNumber = PhoneNumber;
-        this.SiteID = 1;
+        this.SiteID = 0;
+    }
+
+    public Site(String Address, String PhoneNumber, String ContantName, List<DeliveryArea> DeliveryArea, int siteID){
+        this.Address = Address;
+        this.ContantName = ContantName;
+        this.DeliveryArea = DeliveryArea;
+        this.PhoneNumber = PhoneNumber;
+        this.SiteID = siteID;
     }
 
     public void AddArea(DeliveryArea area){
@@ -33,7 +41,7 @@ public abstract class Site {
     
     public boolean isMe(String Address)
     {
-		return this.Address == Address;
+		return this.Address.equals(Address);
     }
     public boolean isMe(int siteID)
     {
@@ -43,10 +51,13 @@ public abstract class Site {
     public void setSiteID(int SiteID) {
     	this.SiteID = SiteID;
     }
+
     public void save(int isSupplier) throws ApplicationException {
-    	if(isSupplier == 1)
-    		isSupplier = this.SiteID;
         SiteDAL siteDAL = new SiteDAL(Address, PhoneNumber, ContantName, isSupplier);
-        DAL.Insert("Site", siteDAL);
+        if(isSupplier == 1 || isSupplier == -1){
+            DAL.Insert("Site", siteDAL);
+        }
+        else
+            DAL.Update("Site", siteDAL, "Address = " + "'" + Address + "'");
     }
 }

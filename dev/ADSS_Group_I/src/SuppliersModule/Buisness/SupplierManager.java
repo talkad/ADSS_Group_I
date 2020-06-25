@@ -1,20 +1,16 @@
 package SuppliersModule.Buisness;
 
 
-import DeliveryModule.BuisnessLayer.Supplier;
 import InventoryModule.DataAccessLayer.ProductMapper;
 import SuppliersModule.DAL.ArrangementMapper;
 import SuppliersModule.DAL.OrderMapper;
 import SuppliersModule.DAL.SupplierMapper;
-import SuppliersModule.Buisness.Arrangement;
 import Interface.Bussiness_Connector.Connector;
-import SuppliersModule.Buisness.Order;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -87,12 +83,13 @@ public class SupplierManager {
     public static int findCheapestSupplier(int itemId, int amount, int supermarketId){
         int supplierId = -1;
         boolean QE = false;
-        double cheapestPrice = ProductMapper.getInstance().getProduct(itemId, supermarketId).getBuyingPrice();
-        double discount = 0;
+        double cheapestPrice = ProductMapper.getInstance().getProduct(itemId).getBuyingPrice();
+        double discount = cheapestPrice;
         for (SupplierCard supplier: SupplierMapper.getInstance().getAll().values()) {
-            Arrangement arr = ArrangementMapper.getInstance().getArrangement(supplierId);
-            if (arr != null && !arr.getItems().containsKey(itemId))
+            Arrangement arr = ArrangementMapper.getInstance().getArrangement(supplier.getCompanyId());
+            if (arr != null && !arr.getItems().containsKey(itemId)){
                 continue;
+            }
             if (QE && supplier.getArrangement().get_quantityAgreement() == null)
                 continue;
             else if (QE){
@@ -102,7 +99,7 @@ public class SupplierManager {
                     cheapestPrice = discount;
                 }
             }
-            else if (supplierId == -1){
+            if (supplierId == -1){
                 if (supplier.getArrangement().get_quantityAgreement() == null || supplier.getArrangement().get_quantityAgreement().checkDiscount(itemId,amount) == -1 )
                     supplierId = supplier.getCompanyId();
                 else{
@@ -117,11 +114,12 @@ public class SupplierManager {
 
     public static int placeLackOfInventory(int itemID, int amount,int supermarketId) throws NumberFormatException, IOException, ParseException, ApplicationException{
         int orderID = -1;
-        int supplierID = findCheapestSupplier(itemID,amount,supermarketId);
-        if (supplierID == -1)
+        int supplierID = findCheapestSupplier(itemID, amount, supermarketId);
+        if (supplierID == -1) {
             return -1;
-        Map<Integer,Integer> map = new HashMap<>();
-        map.put(itemID,amount);
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(itemID, amount);
         String[] closestOrderValues = Connector.getPreviousDateForDelivery(map, supermarketId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate closestDate = LocalDate.parse(closestOrderValues[0],formatter);
@@ -132,7 +130,7 @@ public class SupplierManager {
             if (arr != null && !arr.getItems().containsKey(itemID))
                 continue;
             for (Order order : OrderMapper.getInstance().getOrders(supplier.getCompanyId()).values()){
-                if (order.getStatus() != "pending" || !order.getOrderDate().isBefore(closestDate) || order.getSupermarketID() != supermarketId)
+                if (!order.getStatus().equals("pending") || !order.getOrderDate().isBefore(closestDate) || order.getSupermarketID() != supermarketId)
                     continue;
                 else if (Connector.isPossibleUpdateForm(map,orderID)) {
                     closestDate = order.getOrderDate();
@@ -143,15 +141,16 @@ public class SupplierManager {
             }
         }
         if(newOrder){
-            if(SupplierManager.getSuppliers().get(supplierID).placeOrder(map, closestDate, supermarketId))
+            if(SupplierManager.getSuppliers().get(supplierID).placeOrder(map, closestDate, supermarketId, false)) {
                 Connector.createFormFinal(closestOrderValues, _orderNumIncrement - 1);
+                return _orderNumIncrement-1;
+            }
         }
         else{
             SupplierManager.getSuppliers().get(supplierID).getOrders().get(orderID).addItems(map);
         }
         return orderID;
     }
-
 
     public static boolean setPeriodicOrder(int orderId, Map<Integer, Integer> toSet, int status){
         int companyID = OrderMapper.getInstance().getSupplier(orderId);
@@ -181,7 +180,7 @@ public class SupplierManager {
         if(order == null)
             return null;
 
-        if (order.getStatus() != "delivered" || order.getSupermarketID() != supermarketId )
+        if (!order.getStatus().equals("delivered") || order.getSupermarketID() != supermarketId )
             return null;
         else
             return order.getItemList();
@@ -190,7 +189,7 @@ public class SupplierManager {
     public static Result DeliverOrder (int orderId){
         Order order = OrderMapper.getInstance().getOrder(orderId);
         if (order.isPeriodic()){
-            SupplierManager.getSuppliers().get(OrderMapper.getInstance().getSupplier(orderId)).placeOrder(order.getItemList(),order.getOrderDate().plusDays(7),order.getSupermarketID());
+            SupplierManager.getSuppliers().get(OrderMapper.getInstance().getSupplier(orderId)).placeOrder(order.getItemList(), order.getOrderDate().plusDays(7), order.getSupermarketID(), true);
         }
         return OrderMapper.getInstance().updateOrderStatus(orderId, "delivered");
     }
@@ -212,8 +211,11 @@ public class SupplierManager {
     	return OrderMapper.getInstance().getSupplier(orderID);
     } 
     
-    public static Map<Integer, Integer> getItemListString(int orderid) {
-    	return OrderMapper.getInstance().getItems(orderid);
+    public static Map<Integer, Integer> getItemListString(int orderId) {
+    	return OrderMapper.getInstance().getItems(orderId);
     }
-    
+
+    public static Map<String, Integer> getOrderAmount() {
+        return OrderMapper.getInstance().getOrderAmount();
+    }
 }

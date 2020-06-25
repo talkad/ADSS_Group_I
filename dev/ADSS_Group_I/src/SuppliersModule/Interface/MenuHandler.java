@@ -25,7 +25,7 @@ public class MenuHandler {
     }
 
 
-    public int handleChoice (String [] commands, boolean storeManager){
+    public int handleChoice (String [] commands, boolean storeManager) throws ApplicationException {
         for (String command : commands) System.out.println(command);
         int choice = -1;
         try {
@@ -62,7 +62,7 @@ public class MenuHandler {
         }
     }
 
-    public void handleEditSupplierMenu(String [] commands, int companyID, boolean storeManager) {
+    public void handleEditSupplierMenu(String [] commands, int companyID, boolean storeManager) throws ApplicationException {
         int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
@@ -83,7 +83,7 @@ public class MenuHandler {
         }
     }
 
-    public void handleContactMenu(String [] commands, int companyID, boolean storeManager) {
+    public void handleContactMenu(String [] commands, int companyID, boolean storeManager) throws ApplicationException {
         int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
@@ -104,7 +104,7 @@ public class MenuHandler {
         }
     }
 
-    public void handleEditContactMenu(String [] commands, int companyID, String contactName, boolean storeManager) {
+    public void handleEditContactMenu(String [] commands, int companyID, String contactName, boolean storeManager) throws ApplicationException {
         int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
@@ -121,7 +121,7 @@ public class MenuHandler {
         }
     }
 
-    public void handleArrangementMenu(String [] commands, int companyID, boolean storeManager){
+    public void handleArrangementMenu(String [] commands, int companyID, boolean storeManager) throws ApplicationException {
         int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
@@ -142,7 +142,7 @@ public class MenuHandler {
         }
     }
 
-    public void handleItemMenu(String [] commands, int companyID, boolean storeManager){
+    public void handleItemMenu(String [] commands, int companyID, boolean storeManager) throws ApplicationException {
         int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
@@ -157,7 +157,7 @@ public class MenuHandler {
          }
     }
 
-    public void handleDeliverDateMenu(String [] commands, int companyID, boolean storeManager){
+    public void handleDeliverDateMenu(String [] commands, int companyID, boolean storeManager) throws ApplicationException {
         int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
@@ -175,7 +175,7 @@ public class MenuHandler {
         }
     }
 
-    public void handleQuantityAgreementMenu(String [] commands, int companyID, boolean storeManager) {
+    public void handleQuantityAgreementMenu(String [] commands, int companyID, boolean storeManager) throws ApplicationException {
         int choice = handleChoice(commands, storeManager);
         switch (choice) {
             case 1:
@@ -196,7 +196,7 @@ public class MenuHandler {
         }
     }
 
-    public void handleOrderMenu(String [] commands, int companyID, boolean storeManager) {
+    public void handleOrderMenu(String [] commands, int companyID, boolean storeManager) throws ApplicationException {
         int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
@@ -204,7 +204,7 @@ public class MenuHandler {
                     System.out.println("a store manager cannot edit orders!\n");
                     break;
                 }
-                OrderMenu.placeOrder(companyID,storeManager);
+                OrderMenu.placeOrder(companyID, storeManager);
                 break;
             case 2:
                 if (storeManager) {
@@ -218,7 +218,7 @@ public class MenuHandler {
                     System.out.println("a store manager cannot edit orders!\n");
                     break;
                 }
-                OrderMenu.cancelOrder(companyID,storeManager);
+                OrderMenu.cancelOrder(companyID, storeManager);
                 break;
             case 4:
                 OrderMenu.printOrderHistory(companyID,storeManager);
@@ -232,7 +232,7 @@ public class MenuHandler {
         }
     }
 
-    public void handleModifyOrderMenu(String [] commands, int companyID, int orderNumber, boolean storeManager) {
+    public void handleModifyOrderMenu(String [] commands, int companyID, int orderNumber, boolean storeManager) throws ApplicationException {
         int choice = handleChoice(commands, storeManager);
         switch (choice){
             case 1:
